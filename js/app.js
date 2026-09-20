@@ -1,14 +1,12 @@
-let currentMonthIndex = 8; // Default: Aasin (September)
-let todayBodoInfo = { monthIndex: 8, bodoDay: 5 };
+let currentMonthIndex = 8; // Default: Aasin
+let todayBodoInfo = { monthIndex: 8, bodoDay: 2 };
 let selectedDateKey = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. Calculate Real-time Date
   const now = new Date();
   todayBodoInfo = calculateBodoDateFromGregorian(now);
-  currentMonthIndex = todayBodoInfo.monthIndex; // Auto open current month (Aasin)
+  currentMonthIndex = todayBodoInfo.monthIndex;
 
-  // 2. Render Components
   initMonthSelect();
   renderCalendar();
   loadAdminNotification();
@@ -17,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
   setupEventListeners();
 });
 
-// Convert Gregorian (English) Date to Bodo/Assamese Solar Calendar Date
 function calculateBodoDateFromGregorian(gregorianDate) {
   const gYear = gregorianDate.getFullYear();
 
@@ -33,44 +30,39 @@ function calculateBodoDateFromGregorian(gregorianDate) {
       return { monthIndex: i, bodoDay: bodoDay, dateObj: gregorianDate };
     }
   }
-  return { monthIndex: 8, bodoDay: 5, dateObj: gregorianDate };
+  return { monthIndex: 8, bodoDay: 2, dateObj: gregorianDate };
 }
 
-// Live Banner: Today, Tomorrow, and Day After Tomorrow Status
 function updateLiveDetectorBanner(todayDate) {
   const todayBox = document.getElementById("todayAlertBox");
   const todayText = document.getElementById("todayAlertText");
   if (!todayBox || !todayText) return;
 
-  // Today (+0)
   const tInfo = calculateBodoDateFromGregorian(todayDate);
   const tMonthName = bodoMonthsData[tInfo.monthIndex].englishName;
   const tEngStr = todayDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
 
-  // Tomorrow (+1)
   const tomDate = new Date(todayDate);
   tomDate.setDate(todayDate.getDate() + 1);
   const tomInfo = calculateBodoDateFromGregorian(tomDate);
   const tomMonthName = bodoMonthsData[tomInfo.monthIndex].englishName;
   const tomEngStr = tomDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
 
-  // Day After Tomorrow (+2)
   const datDate = new Date(todayDate);
   datDate.setDate(todayDate.getDate() + 2);
   const datInfo = calculateBodoDateFromGregorian(datDate);
   const datMonthName = bodoMonthsData[datInfo.monthIndex].englishName;
   const datEngStr = datDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
 
-  // Event checks
   const tEvt = bodoCulturalEvents[`${tInfo.monthIndex}-${tInfo.bodoDay}`]?.[0]?.title || "Normal Day";
   const tomEvt = bodoCulturalEvents[`${tomInfo.monthIndex}-${tomInfo.bodoDay}`]?.[0]?.title || "Normal Day";
   const datEvt = bodoCulturalEvents[`${datInfo.monthIndex}-${datInfo.bodoDay}`]?.[0]?.title || "Normal Day";
 
   todayText.innerHTML = `
-    <div class="space-y-1">
-      <div><strong>📅 Today (${tEngStr}):</strong> ${tInfo.bodoDay} ${tMonthName} — <span class="text-emerald-700 font-semibold">${tEvt}</span></div>
-      <div><strong>🔜 Tomorrow (${tomEngStr}):</strong> ${tomInfo.bodoDay} ${tomMonthName} — <span class="text-gray-600">${tomEvt}</span></div>
-      <div><strong>🔮 Day After Tomorrow (${datEngStr}):</strong> ${datInfo.bodoDay} ${datMonthName} — <span class="text-gray-600">${datEvt}</span></div>
+    <div class="space-y-1 text-xs">
+      <div><strong>📅 Today (${tEngStr}):</strong> Day ${tInfo.bodoDay} (${tMonthName}) — <span class="text-emerald-700 font-semibold">${tEvt}</span></div>
+      <div><strong>🔜 Tomorrow (${tomEngStr}):</strong> Day ${tomInfo.bodoDay} (${tomMonthName}) — <span class="text-gray-600">${tomEvt}</span></div>
+      <div><strong>🔮 Day After Tomorrow (${datEngStr}):</strong> Day ${datInfo.bodoDay} (${datMonthName}) — <span class="text-gray-600">${datEvt}</span></div>
     </div>
   `;
   todayBox.classList.remove("hidden");
@@ -109,14 +101,12 @@ function renderCalendar() {
   for (let day = 1; day <= monthData.daysCount; day++) {
     const dateKey = `${currentMonthIndex}-${day}`;
     
-    // Accurate English Date
     const gregDateObj = new Date(currentYear, monthData.startGregMonth, monthData.startGregDay + (day - 1));
     const gregDateString = gregDateObj.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
 
     const dayCard = document.createElement("div");
     dayCard.className = "day-card bg-white border border-gray-200 rounded-xl p-2 text-center cursor-pointer hover:border-emerald-500 hover:bg-emerald-50 transition relative shadow-sm";
 
-    // Highlight TODAY (5 Aasin)
     if (currentMonthIndex === todayBodoInfo.monthIndex && day === todayBodoInfo.bodoDay) {
       dayCard.classList.add("ring-2", "ring-emerald-600", "bg-emerald-100", "border-emerald-600");
     }
