@@ -2,241 +2,1680 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bodo Calendar (बर' दान)</title>
-  <link rel="manifest" href="./manifest.json">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="./css/style.css">
-</head>
-<body class="text-gray-800 antialiased min-h-screen flex flex-col justify-between">
 
-  <!-- Top Header Navigation -->
-  <header class="bg-[#1b4332] text-white shadow-md">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center font-bold text-lg text-white">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
+
+  <meta
+    name="description"
+    content="Bodo Calendar — Traditional Bodo Solar Calendar with Gregorian dates, Assamese calendar reference, festivals, historical events and personal reminders."
+  >
+
+  <meta
+    name="theme-color"
+    content="#075c47"
+  >
+
+  <meta
+    name="mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="default"
+  >
+
+  <meta
+    name="apple-mobile-web-app-title"
+    content="Bodo Calendar"
+  >
+
+  <title>Bodo Calendar — बर' दान</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json">
+
+  <!-- Favicon -->
+  <link
+    rel="icon"
+    type="image/png"
+    href="./assets/favicon.png"
+  >
+
+  <!-- Main CSS -->
+  <link
+    rel="stylesheet"
+    href="./css/style.css?v=5.0"
+  >
+
+  <!-- Google Font -->
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet"
+  >
+</head>
+
+<body>
+
+<!-- =========================================================
+     APP WRAPPER
+     ========================================================= -->
+
+<div id="app" class="app-shell">
+
+
+  <!-- =======================================================
+       HEADER
+       ======================================================= -->
+
+  <header class="site-header">
+
+    <div class="header-inner">
+
+      <!-- Logo / Brand -->
+      <div class="brand-area">
+
+        <div class="brand-logo" aria-hidden="true">
           B
         </div>
-        <div>
-          <h1 class="text-2xl font-extrabold tracking-tight">Bodo Calendar (बर' दान)</h1>
-          <p class="text-xs text-emerald-300 font-medium">Traditional Bodo Solar Calendar with Gregorian Dates</p>
+
+        <div class="brand-text">
+
+          <h1>
+            Bodo Calendar
+            <span class="brand-bodo">
+              (बर' दान)
+            </span>
+          </h1>
+
+          <p>
+            Traditional Bodo Solar Calendar with Gregorian Dates
+          </p>
+
         </div>
+
       </div>
 
-      <div class="flex items-center space-x-3">
-        <span id="vipBadgeHeader" class="hidden bg-amber-400 text-black font-bold text-xs px-3 py-1.5 rounded-full shadow">
-          👑 VIP Member
-        </span>
-        <button id="goVipBtn" onclick="openVipModal()" class="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-black font-bold text-xs px-4 py-2 rounded-lg shadow transition">
-          🚀 Remove Ads (VIP)
+
+      <!-- Header Actions -->
+      <div class="header-actions">
+
+        <button
+          type="button"
+          id="installAppBtn"
+          class="header-icon-btn hidden"
+          aria-label="Install Bodo Calendar"
+          title="Install App"
+        >
+          📲
         </button>
+
+        <button
+          type="button"
+          id="vipButton"
+          class="vip-button"
+        >
+          👑
+          <span>Go VIP</span>
+        </button>
+
       </div>
+
     </div>
+
   </header>
 
-  <!-- Main Container -->
-  <main class="max-w-7xl mx-auto px-4 py-6 w-full grow">
 
-    <!-- Admin Notification Banner -->
-    <div id="adminNoticeBanner" class="hidden mb-4 p-4 bg-emerald-900 text-white rounded-xl shadow-md border-l-4 border-amber-400">
-      <h4 id="adminNoticeTitle" class="font-bold text-sm text-amber-300">Notice Title</h4>
-      <p id="adminNoticeMsg" class="text-xs mt-1 text-emerald-100">Notice message details...</p>
-    </div>
+  <!-- =======================================================
+       MAIN CONTENT
+       ======================================================= -->
 
-    <!-- Live Today Detector Banner -->
-    <div id="todayAlertBox" class="hidden mb-6 p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-xs flex items-center justify-between">
-      <p id="todayAlertText">System date status</p>
-      <span class="bg-emerald-600 text-white font-bold text-[10px] px-2 py-0.5 rounded">LIVE</span>
-    </div>
+  <main class="main-container">
 
-    <!-- Month Controls Header -->
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6 flex flex-wrap items-center justify-between gap-3">
-      <button id="prevMonthBtn" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition">
-        &lt; Prev
+
+    <!-- =====================================================
+         WELCOME / ANNOUNCEMENT CARD
+         ===================================================== -->
+
+    <section
+      id="welcomeCard"
+      class="welcome-card"
+      aria-label="Welcome"
+    >
+
+      <div class="welcome-icon">
+        🎉
+      </div>
+
+      <div class="welcome-content">
+
+        <h2>
+          Welcome to Bodo Calendar
+        </h2>
+
+        <p>
+          Nwjwm Phung! Traditional Bodo Solar Calendar is now live.
+          Check Bodo dates, important events, historical anniversaries,
+          holidays and add your personal notes.
+        </p>
+
+      </div>
+
+      <button
+        type="button"
+        id="closeWelcomeBtn"
+        class="close-card-btn"
+        aria-label="Close welcome message"
+      >
+        ×
       </button>
 
-      <div class="flex items-center space-x-2">
-        <select id="monthSelect" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm font-semibold rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-emerald-500">
+    </section>
+
+
+    <!-- =====================================================
+         GLOBAL / ADMIN NOTIFICATION
+         ===================================================== -->
+
+    <section
+      id="notificationPanel"
+      class="notification-panel hidden"
+      aria-live="polite"
+    >
+
+      <div class="notification-icon">
+        📢
+      </div>
+
+      <div class="notification-content">
+
+        <div class="notification-heading-row">
+
+          <h2 id="notificationTitle">
+            Latest Update
+          </h2>
+
+          <span
+            id="notificationBadge"
+            class="notification-badge"
+          >
+            UPDATE
+          </span>
+
+        </div>
+
+        <p id="notificationMessage">
+          Welcome to Bodo Calendar.
+        </p>
+
+        <small id="notificationDate"></small>
+
+      </div>
+
+      <button
+        type="button"
+        id="closeNotificationBtn"
+        class="close-card-btn"
+        aria-label="Close notification"
+      >
+        ×
+      </button>
+
+    </section>
+
+
+    <!-- =====================================================
+         LIVE TODAY / TOMORROW / DAY AFTER TOMORROW
+         ===================================================== -->
+
+    <section
+      id="todayAlertBox"
+      class="live-calendar-panel"
+      aria-label="Live calendar status"
+    >
+
+      <!-- Live Header -->
+
+      <div class="live-panel-header">
+
+        <div>
+
+          <span class="live-small-label">
+            LIVE CALENDAR
+          </span>
+
+          <h2>
+            Today & Upcoming
+          </h2>
+
+          <p id="liveStatusUpdated">
+            Automatically updated every day at midnight
+          </p>
+
+        </div>
+
+        <div class="live-indicator">
+          <span class="live-dot"></span>
+          LIVE
+        </div>
+
+      </div>
+
+
+      <!-- Live Date Cards -->
+
+      <div class="live-date-grid">
+
+
+        <!-- TODAY -->
+
+        <article
+          id="todayStatusCard"
+          class="live-date-card today-card"
+        >
+
+          <div class="live-card-top">
+
+            <span class="live-card-label">
+              TODAY
+            </span>
+
+            <span class="live-card-icon">
+              📅
+            </span>
+
+          </div>
+
+          <div
+            id="todayAlertText"
+            class="live-date-content"
+          >
+            Loading today's calendar...
+          </div>
+
+        </article>
+
+
+        <!-- TOMORROW -->
+
+        <article
+          id="tomorrowStatusCard"
+          class="live-date-card"
+        >
+
+          <div class="live-card-top">
+
+            <span class="live-card-label">
+              TOMORROW
+            </span>
+
+            <span class="live-card-icon">
+              ➡️
+            </span>
+
+          </div>
+
+          <div
+            id="tomorrowAlertText"
+            class="live-date-content"
+          >
+            Loading tomorrow's calendar...
+          </div>
+
+        </article>
+
+
+        <!-- DAY AFTER TOMORROW -->
+
+        <article
+          id="dayAfterTomorrowStatusCard"
+          class="live-date-card"
+        >
+
+          <div class="live-card-top">
+
+            <span class="live-card-label">
+              DAY AFTER TOMORROW
+            </span>
+
+            <span class="live-card-icon">
+              🔮
+            </span>
+
+          </div>
+
+          <div
+            id="dayAfterTomorrowAlertText"
+            class="live-date-content"
+          >
+            Loading upcoming calendar...
+          </div>
+
+        </article>
+
+      </div>
+
+
+      <!-- Current Calendar Systems -->
+
+      <div
+        id="calendarSystemStatus"
+        class="calendar-system-status"
+      >
+
+        <div class="system-status-title">
+          Today's Calendar
+        </div>
+
+        <div class="calendar-system-grid">
+
+
+          <!-- Gregorian -->
+
+          <div class="system-card gregorian-system">
+
+            <span class="system-icon">
+              🇬🇧
+            </span>
+
+            <div>
+
+              <span class="system-label">
+                English Calendar
+              </span>
+
+              <strong id="englishTodayStatus">
+                Loading...
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <!-- Bodo -->
+
+          <div class="system-card bodo-system">
+
+            <span class="system-icon">
+              🟢
+            </span>
+
+            <div>
+
+              <span class="system-label">
+                Bodo Calendar
+              </span>
+
+              <strong id="bodoTodayStatus">
+                Loading...
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <!-- Assamese Reference -->
+
+          <div class="system-card assamese-system">
+
+            <span class="system-icon">
+              🟠
+            </span>
+
+            <div>
+
+              <span class="system-label">
+                Assamese Calendar Reference
+              </span>
+
+              <strong id="assameseTodayStatus">
+                Loading...
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CALENDAR NAVIGATION
+         ===================================================== -->
+
+    <section
+      class="calendar-navigation-card"
+      aria-label="Calendar navigation"
+    >
+
+      <button
+        type="button"
+        id="prevMonthBtn"
+        class="nav-button"
+        aria-label="Previous Bodo month"
+      >
+        <span>‹</span>
+        <span>Prev</span>
+      </button>
+
+
+      <!-- Month Selector -->
+
+      <div class="month-selector-wrapper">
+
+        <label
+          for="monthSelect"
+          class="sr-only"
+        >
+          Select Bodo month
+        </label>
+
+        <select
+          id="monthSelect"
+          class="month-selector"
+          aria-label="Select Bodo month"
+        >
+          <option value="">
+            Select Bodo Month
+          </option>
         </select>
+
       </div>
 
-      <div class="flex items-center space-x-2">
-        <button id="nextMonthBtn" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition">
-          Next &gt;
-        </button>
-        <button id="todayBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold px-3 py-2 rounded-lg transition">
-          Today
-        </button>
+
+      <button
+        type="button"
+        id="nextMonthBtn"
+        class="nav-button"
+        aria-label="Next Bodo month"
+      >
+        <span>Next</span>
+        <span>›</span>
+      </button>
+
+
+      <button
+        type="button"
+        id="todayBtn"
+        class="today-button"
+      >
+        Today
+      </button>
+
+    </section>
+
+
+    <!-- =====================================================
+         MONTH HERO / BANNER
+         ===================================================== -->
+
+    <section
+      id="monthBanner"
+      class="month-banner"
+      aria-label="Selected Bodo month"
+    >
+
+      <div class="month-banner-content">
+
+        <span
+          id="monthSeasonLabel"
+          class="month-season-label"
+        >
+          BODO SOLAR MONTH
+        </span>
+
+        <h2 id="currentMonthName">
+          Aasin
+        </h2>
+
+        <p
+          id="currentMonthNativeName"
+          class="month-native-name"
+        >
+          आसिन
+        </p>
+
+        <div class="month-date-range">
+
+          <span
+            id="currentMonthDateRange"
+          >
+            Loading date range...
+          </span>
+
+        </div>
+
       </div>
+
+
+      <div class="month-banner-decoration">
+
+        <span>☀️</span>
+        <span>🌿</span>
+        <span>🌾</span>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         DESKTOP CONTENT GRID
+         ===================================================== -->
+
+    <div class="calendar-layout">
+
+
+      <!-- ===================================================
+           LEFT / MAIN CALENDAR
+           =================================================== -->
+
+      <section class="calendar-main-section">
+
+
+        <!-- Weekday Header -->
+
+        <div
+          id="weekdayHeader"
+          class="weekday-header"
+        >
+
+          <!-- JavaScript will render 7 weekdays -->
+
+        </div>
+
+
+        <!-- Calendar Grid -->
+
+        <div
+          id="calendarGrid"
+          class="calendar-grid"
+          aria-label="Bodo calendar dates"
+        >
+
+          <!-- JavaScript renders dates -->
+
+        </div>
+
+
+        <!-- Calendar Legend -->
+
+        <div class="calendar-legend">
+
+          <div class="legend-item">
+
+            <span class="legend-dot today-legend"></span>
+
+            <span>
+              Today
+            </span>
+
+          </div>
+
+          <div class="legend-item">
+
+            <span class="legend-dot event-legend"></span>
+
+            <span>
+              Event
+            </span>
+
+          </div>
+
+          <div class="legend-item">
+
+            <span class="legend-dot note-legend"></span>
+
+            <span>
+              My Note
+            </span>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ===================================================
+           RIGHT / EVENTS SIDEBAR
+           =================================================== -->
+
+      <aside
+        class="events-sidebar"
+        aria-label="Events and information"
+      >
+
+
+        <!-- Selected Date -->
+
+        <section
+          id="selectedDatePanel"
+          class="sidebar-card selected-date-card"
+        >
+
+          <div class="sidebar-card-heading">
+
+            <span class="sidebar-icon">
+              📅
+            </span>
+
+            <div>
+
+              <span class="sidebar-overline">
+                SELECTED DATE
+              </span>
+
+              <h3 id="selectedDateTitle">
+                Select a date
+              </h3>
+
+            </div>
+
+          </div>
+
+          <div
+            id="selectedDateDetails"
+            class="selected-date-details"
+          >
+            Tap any calendar date to see details.
+          </div>
+
+        </section>
+
+
+        <!-- Today's Events -->
+
+        <section
+          id="eventsPanel"
+          class="sidebar-card events-card"
+        >
+
+          <div class="sidebar-card-heading">
+
+            <span class="sidebar-icon">
+              🎉
+            </span>
+
+            <div>
+
+              <span class="sidebar-overline">
+                MONTHLY EVENTS
+              </span>
+
+              <h3>
+                Festivals & Events
+              </h3>
+
+            </div>
+
+          </div>
+
+          <div
+            id="eventsList"
+            class="events-list"
+          >
+
+            <div class="empty-state">
+
+              <span>
+                📅
+              </span>
+
+              <p>
+                Loading events...
+              </p>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- Historical Today -->
+
+        <section
+          id="historyPanel"
+          class="sidebar-card history-card"
+        >
+
+          <div class="sidebar-card-heading">
+
+            <span class="sidebar-icon">
+              📜
+            </span>
+
+            <div>
+
+              <span class="sidebar-overline">
+                TODAY IN HISTORY
+              </span>
+
+              <h3>
+                Bodo History
+              </h3>
+
+            </div>
+
+          </div>
+
+          <div
+            id="historyList"
+            class="history-list"
+          >
+
+            <div class="empty-state">
+
+              <span>
+                🌿
+              </span>
+
+              <p>
+                No historical entry loaded.
+              </p>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- Season / Nature -->
+
+        <section
+          id="seasonPanel"
+          class="sidebar-card season-card"
+        >
+
+          <div class="sidebar-card-heading">
+
+            <span class="sidebar-icon">
+              🌿
+            </span>
+
+            <div>
+
+              <span class="sidebar-overline">
+                SEASON
+              </span>
+
+              <h3 id="seasonTitle">
+                Current Season
+              </h3>
+
+            </div>
+
+          </div>
+
+          <p id="seasonDescription">
+            Loading seasonal information...
+          </p>
+
+        </section>
+
+
+        <!-- Personal Notes Quick Action -->
+
+        <section
+          class="sidebar-card notes-quick-card"
+        >
+
+          <div class="sidebar-card-heading">
+
+            <span class="sidebar-icon">
+              📝
+            </span>
+
+            <div>
+
+              <span class="sidebar-overline">
+                PERSONAL NOTES
+              </span>
+
+              <h3>
+                My Reminders
+              </h3>
+
+            </div>
+
+          </div>
+
+          <p>
+            Save your own exam, birthday, pension,
+            important event or personal reminder.
+          </p>
+
+          <button
+            type="button"
+            id="openNotesBtn"
+            class="secondary-action-button"
+          >
+            📝 View My Notes
+          </button>
+
+        </section>
+
+      </aside>
+
     </div>
 
-    <!-- Layout Grid: Calendar + Sidebar -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-      <!-- Calendar Main Area (2 Columns) -->
-      <div class="lg:col-span-2 space-y-6">
+    <!-- =====================================================
+         QUICK REFERENCE
+         ===================================================== -->
 
-        <!-- Banner Card -->
-        <div class="bg-gradient-to-r from-emerald-800 to-emerald-950 text-white rounded-2xl p-6 shadow-md relative overflow-hidden">
-          <h2 id="currentMonthTitle" class="text-3xl font-extrabold">Aasin (आसिन)</h2>
-          <p id="currentMonthRange" class="text-sm text-emerald-300 mt-1 font-semibold">19 Sep – 18 Oct</p>
-        </div>
+    <section
+      class="reference-section"
+      aria-label="Bodo and English month reference"
+    >
 
-        <!-- Weekdays Header -->
-        <div class="grid grid-cols-7 gap-1 bg-[#2d6a4f] text-white text-center font-bold text-[11px] md:text-xs py-2.5 rounded-xl shadow-sm">
-          <div>Rabibar<br><span class="font-normal opacity-80">(रबिबार)</span></div>
-          <div>Sombar<br><span class="font-normal opacity-80">(समबार)</span></div>
-          <div>Mongolbar<br><span class="font-normal opacity-80">(मंगलबार)</span></div>
-          <div>Budhbar<br><span class="font-normal opacity-80">(बुधबार)</span></div>
-          <div>Brihospatibar<br><span class="font-normal opacity-80">(बृहस्पतीबार)</span></div>
-          <div>Sakrubar<br><span class="font-normal opacity-80">(शक्रुबार)</span></div>
-          <div>Shanibar<br><span class="font-normal opacity-80">(शनिबार)</span></div>
-        </div>
+      <div class="section-heading">
 
-        <!-- Days Grid -->
-        <div id="daysGrid" class="grid grid-cols-7 gap-2"></div>
+        <div>
 
-        <!-- Top Ad Banner Placeholder -->
-        <div class="ad-banner-box p-4 rounded-xl text-center text-xs text-gray-400">
-          Google AdSense Placement Area (300x100)
+          <span class="section-overline">
+            QUICK REFERENCE
+          </span>
+
+          <h2>
+            Bodo Solar Months
+          </h2>
+
+          <p>
+            Bodo month names and their approximate Gregorian date ranges.
+          </p>
+
         </div>
 
       </div>
 
-      <!-- Right Sidebar (1 Column) -->
-      <div class="space-y-6">
 
-        <!-- Monthly Events -->
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
-          <h3 class="text-base font-bold text-gray-900 border-b pb-3 mb-3 flex items-center justify-between">
-            <span>📅 Monthly Events</span>
-          </h3>
-          <div id="monthlyEventsList" class="space-y-3"></div>
-        </div>
+      <div
+        id="monthReferenceTable"
+        class="reference-table-wrapper"
+      >
 
-        <!-- Season Box -->
-        <div class="bg-emerald-50 p-5 rounded-2xl border border-emerald-200">
-          <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-800">Season (Ritu)</h4>
-          <p id="seasonName" class="text-base font-bold text-emerald-950 mt-1">Sirri / Autumn</p>
-          <p class="text-xs text-emerald-700 mt-1">Time of autumn breeze and cultural festivities.</p>
-        </div>
+        <table class="reference-table">
 
-        <!-- Sidebar Ad Banner Placeholder -->
-        <div class="ad-banner-box p-6 rounded-xl text-center text-xs text-gray-400">
-          Google AdSense Sidebar Banner (300x250)
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- Quick Reference Table -->
-    <div class="mt-8 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-      <h3 class="text-sm font-bold text-gray-800 mb-4">Bodo vs English 12 Months (Quick Reference)</h3>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs border-collapse">
           <thead>
-            <tr class="bg-gray-50 border-b text-gray-600">
-              <th class="p-2">No.</th>
-              <th class="p-2">Bodo Month</th>
-              <th class="p-2">Gregorian Range</th>
+
+            <tr>
+
+              <th>
+                #
+              </th>
+
+              <th>
+                Bodo Month
+              </th>
+
+              <th>
+                Native Name
+              </th>
+
+              <th>
+                Gregorian Period
+              </th>
+
             </tr>
+
           </thead>
-          <tbody class="divide-y divide-gray-100">
-            <tr><td class="p-2">1</td><td class="p-2 font-semibold">Magh (माघ)</td><td class="p-2">15 Jan – 14 Feb</td></tr>
-            <tr><td class="p-2">2</td><td class="p-2 font-semibold">Fagun (फागुन)</td><td class="p-2">15 Feb – 14 Mar</td></tr>
-            <tr><td class="p-2">3</td><td class="p-2 font-semibold">Chaitra (चैत्र)</td><td class="p-2">15 Mar – 13 Apr</td></tr>
-            <tr><td class="p-2">4</td><td class="p-2 font-semibold">Bwisag (बैसाग)</td><td class="p-2">14 Apr – 14 May</td></tr>
-            <tr><td class="p-2">5</td><td class="p-2 font-semibold">Jeth (जेथो)</td><td class="p-2">15 May – 14 Jun</td></tr>
-            <tr><td class="p-2">6</td><td class="p-2 font-semibold">Aasar (आसार)</td><td class="p-2">15 Jun – 15 Jul</td></tr>
-            <tr><td class="p-2">7</td><td class="p-2 font-semibold">Sawan (सावन)</td><td class="p-2">16 Jul – 16 Aug</td></tr>
-            <tr><td class="p-2">8</td><td class="p-2 font-semibold">Bhadra (भाद्र)</td><td class="p-2">17 Aug – 18 Sep</td></tr>
-            <tr><td class="p-2">9</td><td class="p-2 font-semibold">Aasin (आसिन)</td><td class="p-2">19 Sep – 18 Oct</td></tr>
-            <tr><td class="p-2">10</td><td class="p-2 font-semibold">Kati (खाथि)</td><td class="p-2">19 Oct – 18 Nov</td></tr>
-            <tr><td class="p-2">11</td><td class="p-2 font-semibold">Aghon (आघन)</td><td class="p-2">19 Nov – 18 Dec</td></tr>
-            <tr><td class="p-2">12</td><td class="p-2 font-semibold">Push (फुष)</td><td class="p-2">19 Dec – 14 Jan</td></tr>
+
+          <tbody id="monthReferenceBody">
+
+            <!-- JavaScript renders month reference -->
+
           </tbody>
+
         </table>
+
       </div>
-    </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ABOUT CALENDAR
+         ===================================================== -->
+
+    <section
+      class="about-calendar-card"
+    >
+
+      <div class="about-icon">
+        🌿
+      </div>
+
+      <div>
+
+        <span class="section-overline">
+          ABOUT BODO CALENDAR
+        </span>
+
+        <h2>
+          Traditional Bodo Solar Calendar
+        </h2>
+
+        <p>
+          Bodo Calendar is designed to provide a simple digital
+          reference for Bodo solar dates alongside Gregorian dates.
+          The website also brings festivals, cultural events,
+          historical anniversaries and personal reminders together
+          in one place.
+        </p>
+
+        <p class="about-note">
+          Assamese calendar information is used only as a calendar
+          reference and cross-check layer. The website interface
+          displays the information in English and Bodo.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ADVERTISEMENT AREA
+         ===================================================== -->
+
+    <section
+      id="adContainer"
+      class="ad-container"
+      aria-label="Advertisement"
+    >
+
+      <div class="ad-placeholder">
+
+        <span>
+          Advertisement
+        </span>
+
+      </div>
+
+    </section>
+
 
   </main>
 
-  <!-- User Notes Modal -->
-  <div id="noteModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-custom flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-      <h3 id="noteModalTitle" class="text-base font-bold text-gray-900 mb-4">Add Personal Note</h3>
-      
-      <div class="space-y-3">
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1">Category</label>
-          <select id="noteCategory" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2 text-xs font-medium">
-            <option value="Exam">Exam</option>
-            <option value="Birthday">Birthday</option>
-            <option value="Pension">Pension</option>
-            <option value="Important">Important Event</option>
-            <option value="Other">Other</option>
-          </select>
+
+  <!-- =======================================================
+       FOOTER
+       ======================================================= -->
+
+  <footer class="site-footer">
+
+    <div class="footer-inner">
+
+
+      <!-- Footer Brand -->
+
+      <div class="footer-brand">
+
+        <div class="footer-logo">
+          B
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1">Details / Title</label>
-          <input id="noteTitleInput" type="text" placeholder="e.g. Maths Final Exam or Sister's Birthday" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2 text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+
+          <h3>
+            Bodo Calendar
+          </h3>
+
+          <p>
+            Traditional Bodo Solar Calendar
+          </p>
+
         </div>
 
-        <button id="saveNoteBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs py-2.5 rounded-lg transition">
-          Save Note
+      </div>
+
+
+      <!-- Footer Links -->
+
+      <div class="footer-links">
+
+        <button
+          type="button"
+          id="footerAboutBtn"
+        >
+          About
         </button>
+
+        <button
+          type="button"
+          id="footerNotesBtn"
+        >
+          My Notes
+        </button>
+
+        <button
+          type="button"
+          id="footerVipBtn"
+        >
+          VIP
+        </button>
+
       </div>
 
-      <div class="mt-5 border-t pt-3">
-        <h4 class="text-xs font-bold text-gray-700 mb-2">Saved Notes on this day:</h4>
-        <div id="savedNotesList" class="space-y-2 max-h-36 overflow-y-auto"></div>
+
+      <!-- Copyright -->
+
+      <div class="footer-bottom">
+
+        <p>
+          © <span id="copyrightYear">2026</span>
+          Bodo Calendar. All rights reserved.
+        </p>
+
+        <p>
+          Designed for Bodo cultural & calendar reference.
+        </p>
+
       </div>
 
-      <button onclick="closeNoteModal()" class="mt-4 w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs py-2 rounded-lg">
-        Close
-      </button>
     </div>
-  </div>
 
-  <!-- VIP Subscription Modal -->
-  <div id="vipModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-custom flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center relative">
-      <div class="text-3xl mb-2">👑</div>
-      <h3 class="text-lg font-extrabold text-gray-900">Upgrade to VIP Pass</h3>
-      <p class="text-xs text-gray-500 mt-1">Enjoy ad-free browsing and clean calendar experience.</p>
-
-      <div class="my-5 space-y-3">
-        <div onclick="triggerVIPPayment('monthly')" class="p-3 border-2 border-emerald-500 rounded-xl bg-emerald-50 cursor-pointer hover:bg-emerald-100 transition">
-          <div class="font-bold text-sm text-emerald-950">Monthly Pass</div>
-          <div class="text-xl font-extrabold text-emerald-800">₹59 <span class="text-xs font-normal">/ month</span></div>
-        </div>
-
-        <div onclick="triggerVIPPayment('yearly')" class="p-3 border-2 border-amber-400 rounded-xl bg-amber-50 cursor-pointer hover:bg-amber-100 transition">
-          <div class="font-bold text-sm text-amber-950">Yearly Pass (Best Value)</div>
-          <div class="text-xl font-extrabold text-amber-800">₹500 <span class="text-xs font-normal">/ year</span></div>
-        </div>
-      </div>
-
-      <button onclick="closeVipModal()" class="w-full text-xs text-gray-500 hover:underline">
-        Maybe Later
-      </button>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <footer class="bg-emerald-950 text-emerald-300 text-xs py-4 border-t border-emerald-900">
-    <div class="max-w-7xl mx-auto px-4 text-center">
-      <p>© 2026 Bodo Calendar App. Developed by Swrang Swargiary.</p>
-    </div>
   </footer>
 
-  <!-- Scripts (Version Tag appended to force cache refresh) -->
-  <script src="./js/calendar-data.js?v=3.0"></script>
-  <script src="./js/events.js?v=3.0"></script>
-  <script src="./js/notes.js?v=3.0"></script>
-  <script src="./js/vip.js?v=3.0"></script>
-  <script src="./js/app.js?v=3.0"></script>
+</div>
+
+
+<!-- =========================================================
+     DATE DETAILS MODAL
+     ========================================================= -->
+
+<div
+  id="dateModal"
+  class="modal-overlay hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="dateModalTitle"
+>
+
+  <div class="modal-box">
+
+    <div class="modal-header">
+
+      <div>
+
+        <span class="modal-overline">
+          CALENDAR DATE
+        </span>
+
+        <h2 id="dateModalTitle">
+          Date Details
+        </h2>
+
+      </div>
+
+      <button
+        type="button"
+        id="closeDateModalBtn"
+        class="modal-close-btn"
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div
+      id="dateModalBody"
+      class="modal-body"
+    >
+
+      <!-- JavaScript renders date details -->
+
+    </div>
+
+
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        id="addNoteFromDateBtn"
+        class="primary-action-button"
+      >
+        📝 Add Personal Note
+      </button>
+
+      <button
+        type="button"
+        id="closeDateModalBottomBtn"
+        class="secondary-action-button"
+      >
+        Close
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     PERSONAL NOTE MODAL
+     ========================================================= -->
+
+<div
+  id="noteModal"
+  class="modal-overlay hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="noteModalTitle"
+>
+
+  <div class="modal-box note-modal-box">
+
+    <div class="modal-header">
+
+      <div>
+
+        <span class="modal-overline">
+          PERSONAL REMINDER
+        </span>
+
+        <h2 id="noteModalTitle">
+          Add a Note
+        </h2>
+
+      </div>
+
+      <button
+        type="button"
+        id="closeNoteModalBtn"
+        class="modal-close-btn"
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <form
+      id="noteForm"
+      class="note-form"
+    >
+
+      <input
+        type="hidden"
+        id="noteDate"
+        name="date"
+      >
+
+
+      <div class="form-group">
+
+        <label for="noteCategory">
+          Category
+        </label>
+
+        <select
+          id="noteCategory"
+          name="category"
+          required
+        >
+
+          <option value="Exam">
+            📚 Exam
+          </option>
+
+          <option value="Birthday">
+            🎂 Birthday
+          </option>
+
+          <option value="Pension">
+            💰 Pension
+          </option>
+
+          <option value="Important Event">
+            ⭐ Important Event
+          </option>
+
+          <option value="Other">
+            📝 Other
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="noteTitle">
+          Title
+        </label>
+
+        <input
+          type="text"
+          id="noteTitle"
+          name="title"
+          placeholder="Example: Mathematics Exam"
+          maxlength="100"
+          required
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="noteDescription">
+          Details
+        </label>
+
+        <textarea
+          id="noteDescription"
+          name="description"
+          rows="4"
+          placeholder="Write your reminder..."
+          maxlength="500"
+        ></textarea>
+
+      </div>
+
+
+      <div class="form-group checkbox-group">
+
+        <label>
+
+          <input
+            type="checkbox"
+            id="noteReminder"
+            name="reminder"
+          >
+
+          <span>
+            Show this as an important reminder
+          </span>
+
+        </label>
+
+      </div>
+
+
+      <div class="modal-actions">
+
+        <button
+          type="submit"
+          class="primary-action-button"
+        >
+          💾 Save Note
+        </button>
+
+        <button
+          type="button"
+          id="cancelNoteBtn"
+          class="secondary-action-button"
+        >
+          Cancel
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     MY NOTES MODAL
+     ========================================================= -->
+
+<div
+  id="notesListModal"
+  class="modal-overlay hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="notesListModalTitle"
+>
+
+  <div class="modal-box large-modal-box">
+
+    <div class="modal-header">
+
+      <div>
+
+        <span class="modal-overline">
+          LOCAL STORAGE
+        </span>
+
+        <h2 id="notesListModalTitle">
+          My Notes
+        </h2>
+
+      </div>
+
+      <button
+        type="button"
+        id="closeNotesListBtn"
+        class="modal-close-btn"
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div
+      id="notesListContainer"
+      class="notes-list-container"
+    >
+
+      <div class="empty-state">
+
+        <span>
+          📝
+        </span>
+
+        <p>
+          You have no personal notes yet.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     VIP MODAL
+     ========================================================= -->
+
+<div
+  id="vipModal"
+  class="modal-overlay hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="vipModalTitle"
+>
+
+  <div class="modal-box vip-modal-box">
+
+    <div class="vip-modal-top">
+
+      <div class="vip-crown">
+        👑
+      </div>
+
+      <button
+        type="button"
+        id="closeVipModalBtn"
+        class="modal-close-btn"
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <span class="modal-overline">
+      BODO CALENDAR VIP
+    </span>
+
+    <h2 id="vipModalTitle">
+      Go VIP & Remove Ads
+    </h2>
+
+    <p class="vip-description">
+      Enjoy a cleaner calendar experience with VIP features.
+    </p>
+
+
+    <div class="vip-benefits">
+
+      <div>
+        ✓ Remove advertisements
+      </div>
+
+      <div>
+        ✓ VIP member badge
+      </div>
+
+      <div>
+        ✓ Premium calendar experience
+      </div>
+
+      <div>
+        ✓ Support Bodo Calendar development
+      </div>
+
+    </div>
+
+
+    <div class="vip-plans">
+
+
+      <!-- Monthly -->
+
+      <button
+        type="button"
+        class="vip-plan"
+        data-vip-plan="monthly"
+      >
+
+        <span class="vip-plan-name">
+          Monthly
+        </span>
+
+        <strong>
+          ₹59
+        </strong>
+
+        <small>
+          per month
+        </small>
+
+      </button>
+
+
+      <!-- Yearly -->
+
+      <button
+        type="button"
+        class="vip-plan vip-plan-featured"
+        data-vip-plan="yearly"
+      >
+
+        <span class="vip-plan-tag">
+          POPULAR
+        </span>
+
+        <span class="vip-plan-name">
+          Yearly
+        </span>
+
+        <strong>
+          ₹500
+        </strong>
+
+        <small>
+          per year
+        </small>
+
+      </button>
+
+    </div>
+
+
+    <p class="payment-note">
+      Payment verification will be handled securely before VIP
+      access is activated.
+    </p>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     TOAST NOTIFICATION
+     ========================================================= -->
+
+<div
+  id="toastContainer"
+  class="toast-container"
+  aria-live="polite"
+  aria-atomic="true"
+></div>
+
+
+<!-- =========================================================
+     LOADING SCREEN
+     ========================================================= -->
+
+<div
+  id="loadingScreen"
+  class="loading-screen"
+>
+
+  <div class="loading-content">
+
+    <div class="loading-logo">
+      B
+    </div>
+
+    <h2>
+      Bodo Calendar
+    </h2>
+
+    <p>
+      Loading calendar...
+    </p>
+
+    <div class="loading-spinner"></div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+     
+     IMPORTANT:
+     Existing files are loaded in dependency order.
+     ========================================================= -->
+
+<script src="./js/calendar-data.js?v=5.0"></script>
+
+<script src="./js/events.js?v=5.0"></script>
+
+<script src="./js/notes.js?v=5.0"></script>
+
+<script src="./js/vip.js?v=5.0"></script>
+
+<script src="./js/app.js?v=5.0"></script>
+
+
+<!-- =========================================================
+     PWA SERVICE WORKER
+     ========================================================= -->
+
+<script>
+
+  /*
+   * Register service worker only when supported.
+   * The actual service-worker file can be added later.
+   */
+
+  if ("serviceWorker" in navigator) {
+
+    window.addEventListener("load", function () {
+
+      /*
+       * Service worker registration is intentionally kept
+       * disabled until the final PWA setup is completed.
+       */
+
+      // navigator.serviceWorker.register("./sw.js");
+
+    });
+
+  }
+
+
+  /*
+   * Current copyright year.
+   */
+
+  const copyrightYear =
+    document.getElementById("copyrightYear");
+
+  if (copyrightYear) {
+
+    copyrightYear.textContent =
+      new Date().getFullYear();
+
+  }
+
+
+  /*
+   * Prevent accidental form submission from reloading
+   * the entire website.
+   */
+
+  document.addEventListener(
+    "submit",
+    function (event) {
+
+      const form = event.target;
+
+      if (
+        form &&
+        form.id === "noteForm"
+      ) {
+
+        /*
+         * notes.js will handle the actual submission.
+         */
+
+      }
+
+    },
+    false
+  );
+
+</script>
+
 </body>
 </html>
