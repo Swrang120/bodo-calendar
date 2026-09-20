@@ -3,7 +3,7 @@ let todayBodoInfo = { monthIndex: 8, bodoDay: 2 };
 let selectedDateKey = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-  const now = new Date();
+  const now = new Date(); // Detects live date
   todayBodoInfo = calculateBodoDateFromGregorian(now);
   currentMonthIndex = todayBodoInfo.monthIndex;
 
@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupEventListeners();
 });
 
+// Real-Time Conversion logic
 function calculateBodoDateFromGregorian(gregorianDate) {
   const gYear = gregorianDate.getFullYear();
 
@@ -33,6 +34,7 @@ function calculateBodoDateFromGregorian(gregorianDate) {
   return { monthIndex: 8, bodoDay: 2, dateObj: gregorianDate };
 }
 
+// Banner: Today, Tomorrow & Day After Tomorrow Forecast
 function updateLiveDetectorBanner(todayDate) {
   const todayBox = document.getElementById("todayAlertBox");
   const todayText = document.getElementById("todayAlertText");
@@ -98,6 +100,18 @@ function renderCalendar() {
   const monthEventsMap = [];
   const currentYear = new Date().getFullYear();
 
+  // Calculate Weekday Offset for Day 1 (To match Sunday - Saturday columns)
+  const firstDayDate = new Date(currentYear, monthData.startGregMonth, monthData.startGregDay);
+  const startDayOfWeek = firstDayDate.getDay(); // 0 = Sunday, 6 = Saturday
+
+  // Add empty filler boxes for alignment
+  for (let i = 0; i < startDayOfWeek; i++) {
+    const emptyCell = document.createElement("div");
+    emptyCell.className = "bg-gray-50/50 rounded-xl border border-dashed border-gray-200 p-2 opacity-30";
+    grid.appendChild(emptyCell);
+  }
+
+  // Render Days 1 to 30
   for (let day = 1; day <= monthData.daysCount; day++) {
     const dateKey = `${currentMonthIndex}-${day}`;
     
@@ -107,6 +121,7 @@ function renderCalendar() {
     const dayCard = document.createElement("div");
     dayCard.className = "day-card bg-white border border-gray-200 rounded-xl p-2 text-center cursor-pointer hover:border-emerald-500 hover:bg-emerald-50 transition relative shadow-sm";
 
+    // Highlight TODAY (2 Aasin / 20 Sep)
     if (currentMonthIndex === todayBodoInfo.monthIndex && day === todayBodoInfo.bodoDay) {
       dayCard.classList.add("ring-2", "ring-emerald-600", "bg-emerald-100", "border-emerald-600");
     }
