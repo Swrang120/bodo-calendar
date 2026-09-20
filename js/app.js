@@ -1,14 +1,54 @@
-let currentMonthIndex = 3; // Default: Bwisag
+let currentMonthIndex = 0;
+let todayBodoInfo = { monthIndex: 0, bodoDay: 0 };
 let selectedDateKey = null;
 
 document.addEventListener("DOMContentLoaded", () => {
+  // 1. Automatic Live System Date Calculation
+  todayBodoInfo = calculateBodoDateFromGregorian(new Date());
+  currentMonthIndex = todayBodoInfo.monthIndex; // Open current live month automatically
+
+  // 2. Initialize UI
   initMonthSelect();
   renderCalendar();
   loadAdminNotification();
-  detectTodayStatus();
+  updateTodayAlertBanner();
   updateVIPUI();
   setupEventListeners();
 });
+
+// Real-time conversion: Gregorian Date -> Bodo Month & Day
+function calculateBodoDateFromGregorian(gregorianDate) {
+  const gYear = gregorianDate.getFullYear();
+
+  for (let i = 0; i < bodoMonthsData.length; i++) {
+    const m = bodoMonthsData[i];
+    let startDate = new Date(gYear, m.startGregMonth, m.startGregDay);
+    let endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + m.daysCount - 1);
+
+    if (gregorianDate >= startDate && gregorianDate <= endDate) {
+      const timeDiff = gregorianDate.getTime() - startDate.getTime();
+      const bodoDay = Math.floor(timeDiff / (1000 * 3600 * 24)) + 1;
+      return { monthIndex: i, bodoDay: bodoDay, dateObj: gregorianDate };
+    }
+  }
+
+  // Edge Case Fallback
+  return { monthIndex: 8, bodoDay: 5, dateObj: gregorianDate };
+}
+
+function updateTodayAlertBanner() {
+  const todayBox = document.getElementById("todayAlertBox");
+  const todayText = document.getElementById("todayAlertText");
+  if (!todayBox || !todayText) return;
+
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+  const currentBodoMonthObj = bodoMonthsData[todayBodoInfo.monthIndex];
+
+  todayText.innerHTML = `<strong>Today (${dateStr}):</strong> Bodo Date is <strong>${todayBodoInfo.bodoDay} ${currentBodoMonthObj.englishName}</strong>. Click any box to add Exam, Birthday, or Pension notes!`;
+  todayBox.classList.remove("hidden");
+}
 
 function initMonthSelect() {
   const select = document.getElementById("monthSelect");
@@ -27,7 +67,6 @@ function initMonthSelect() {
 function renderCalendar() {
   const monthData = bodoMonthsData[currentMonthIndex];
   
-  // Update header titles & subtext
   document.getElementById("currentMonthTitle").textContent = monthData.name;
   document.getElementById("currentMonthRange").textContent = monthData.dateRange;
   document.getElementById("seasonName").textContent = monthData.season;
@@ -39,54 +78,57 @@ function renderCalendar() {
 
   const userNotes = getAllNotes();
   const monthEventsMap = [];
+  const currentYear = new Date().getFullYear();
 
-  // Render 30/31 days grid
+  // Generate 30/31 days grid with EXACT Gregorian Dates
   for (let day = 1; day <= monthData.daysCount; day++) {
     const dateKey = `${currentMonthIndex}-${day}`;
-    const dayCard = document.createElement("div");
-    dayCard.className = "day-card bg-white border border-gray-200 rounded-xl p-3 text-center cursor-pointer hover:border-emerald-500 hover:bg-emerald-50 transition relative shadow-sm";
+    
+    // Calculate exact English date for this Bodo day box
+    const gregDateObj = new Date(currentYear, monthData.startGregMonth, monthData.startGregDay + (day - 1));
+    const gregDateString = gregDateObj.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
 
-    // Highlight today (e.g. Bwisag day 16)
-    if (currentMonthIndex === 3 && day === 16) {
-      dayCard.classList.add("ring-2", "ring-emerald-600", "bg-emerald-100");
+    const dayCard = document.createElement("div");
+    dayCard.className = "day-card bg-white border border-gray-200 rounded-xl p-2.5 text-center cursor-pointer hover:border-emerald-500 hover:bg-emerald-50 transition relative shadow-sm";
+
+    // Highlight TODAY automatically if current month & day match
+    if (currentMonthIndex === todayBodoInfo.monthIndex && day === todayBodoInfo.bodoDay) {
+      dayCard.classList.add("ring-2", "ring-emerald-600", "bg-emerald-100", "border-emerald-600");
     }
 
-    // Gregorian date mapping math
-    const gregDayNum = (monthData.startDate + day - 1) % 31 || 31;
-    
-    // Notes indicator
+    // Notes Indicator Badge
     const hasNotes = userNotes[dateKey] && userNotes[dateKey].length > 0;
     const noteBadge = hasNotes ? `<span class="absolute top-1 right-1 w-2.5 h-2.5 bg-indigo-600 rounded-full"></span>` : "";
 
-    // Cultural events indicator
+    // Events Indicator
     const events = bodoCulturalEvents[dateKey] || [];
     if (events.length > 0) {
-      events.forEach(e => monthEventsMap.push({ day, gregDayNum, ...e }));
+      events.forEach(e => monthEventsMap.push({ day, gregDateString, ...e }));
     }
 
     dayCard.innerHTML = `
       ${noteBadge}
       <div class="text-xl font-bold text-emerald-950">${day}</div>
-      <div class="text-xs text-gray-500 mt-1">${gregDayNum} Day</div>
+      <div class="text-[11px] text-gray-500 font-medium mt-0.5">${gregDateString}</div>
       ${events.length > 0 ? `<div class="text-[10px] text-emerald-700 font-semibold truncate mt-1">${events[0].title}</div>` : ""}
     `;
 
-    dayCard.addEventListener("click", () => openNoteModal(dateKey, day, monthData.name));
+    dayCard.addEventListener("click", () => openNoteModal(dateKey, day, monthData.name, gregDateString));
     grid.appendChild(dayCard);
   }
 
-  // Populate Monthly Events List Panel
+  // Render Monthly Events Panel
   if (monthEventsMap.length === 0) {
-    eventsListEl.innerHTML = `<p class="text-sm text-gray-500 italic">No specific holidays listed for this month.</p>`;
+    eventsListEl.innerHTML = `<p class="text-xs text-gray-500 italic">No official holidays listed for this month.</p>`;
   } else {
     monthEventsMap.forEach((evt) => {
       const item = document.createElement("div");
-      item.className = "flex items-start space-x-3 p-2 rounded-lg hover:bg-emerald-50 transition";
+      item.className = "flex items-start space-x-2.5 p-2 rounded-lg hover:bg-emerald-50 transition";
       item.innerHTML = `
-        <div class="bg-emerald-100 text-emerald-800 font-bold text-xs px-2 py-1 rounded">Day ${evt.day}</div>
+        <div class="bg-emerald-100 text-emerald-800 font-bold text-xs px-2 py-1 rounded whitespace-nowrap">${evt.gregDateString}</div>
         <div>
-          <div class="text-sm font-bold text-gray-800">${evt.title}</div>
-          <div class="text-xs text-gray-500">${evt.desc}</div>
+          <div class="text-xs font-bold text-gray-800">${evt.title}</div>
+          <div class="text-[11px] text-gray-500">${evt.desc}</div>
         </div>
       `;
       eventsListEl.appendChild(item);
@@ -109,12 +151,11 @@ function setupEventListeners() {
   document.getElementById("prevMonthBtn").addEventListener("click", () => changeMonth(-1));
   document.getElementById("nextMonthBtn").addEventListener("click", () => changeMonth(1));
   document.getElementById("todayBtn").addEventListener("click", () => {
-    currentMonthIndex = 3;
-    document.getElementById("monthSelect").value = 3;
+    currentMonthIndex = todayBodoInfo.monthIndex;
+    document.getElementById("monthSelect").value = currentMonthIndex;
     renderCalendar();
   });
 
-  // Note Modal Save
   document.getElementById("saveNoteBtn").addEventListener("click", () => {
     const category = document.getElementById("noteCategory").value;
     const title = document.getElementById("noteTitleInput").value.trim();
@@ -131,9 +172,9 @@ function setupEventListeners() {
   });
 }
 
-function openNoteModal(dateKey, dayNum, monthName) {
+function openNoteModal(dateKey, dayNum, monthName, gregDateString) {
   selectedDateKey = dateKey;
-  document.getElementById("noteModalTitle").textContent = `Notes for Day ${dayNum} (${monthName})`;
+  document.getElementById("noteModalTitle").textContent = `Notes for Day ${dayNum} (${monthName}) - ${gregDateString}`;
   renderSavedNotesList(dateKey);
   document.getElementById("noteModal").classList.remove("hidden");
 }
