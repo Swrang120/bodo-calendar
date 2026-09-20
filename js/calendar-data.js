@@ -5,8 +5,8 @@ const bodoMonthsData = [
     englishName: "Magh",
     dateRange: "16 Jan – 15 Feb",
     season: "Gozon / Winter",
-    startMonth: 0, // Jan
-    startDate: 16,
+    startGregMonth: 0, // Jan (0-indexed)
+    startGregDay: 16,
     daysCount: 31
   },
   {
@@ -15,8 +15,8 @@ const bodoMonthsData = [
     englishName: "Fagun",
     dateRange: "16 Feb – 15 Mar",
     season: "Gozon / Late Winter",
-    startMonth: 1, // Feb
-    startDate: 16,
+    startGregMonth: 1, // Feb
+    startGregDay: 16,
     daysCount: 28
   },
   {
@@ -25,8 +25,8 @@ const bodoMonthsData = [
     englishName: "Chaitra",
     dateRange: "16 Mar – 14 Apr",
     season: "Bwisagu / Early Spring",
-    startMonth: 2, // Mar
-    startDate: 16,
+    startGregMonth: 2, // Mar
+    startGregDay: 16,
     daysCount: 30
   },
   {
@@ -35,8 +35,8 @@ const bodoMonthsData = [
     englishName: "Bwisag",
     dateRange: "15 Apr – 15 May",
     season: "Bwisag Ritu (Spring Season)",
-    startMonth: 3, // Apr
-    startDate: 15,
+    startGregMonth: 3, // Apr
+    startGregDay: 15,
     daysCount: 31
   },
   {
@@ -45,8 +45,8 @@ const bodoMonthsData = [
     englishName: "Jeth",
     dateRange: "16 May – 15 Jun",
     season: "Dungfu / Early Summer",
-    startMonth: 4, // May
-    startDate: 16,
+    startGregMonth: 4, // May
+    startGregDay: 16,
     daysCount: 31
   },
   {
@@ -55,8 +55,8 @@ const bodoMonthsData = [
     englishName: "Aasar",
     dateRange: "16 Jun – 15 Jul",
     season: "Akhra / Monsoon",
-    startMonth: 5, // Jun
-    startDate: 16,
+    startGregMonth: 5, // Jun
+    startGregDay: 16,
     daysCount: 30
   },
   {
@@ -65,8 +65,8 @@ const bodoMonthsData = [
     englishName: "Sawan",
     dateRange: "16 Jul – 15 Aug",
     season: "Akhra / Rainy Season",
-    startMonth: 6, // Jul
-    startDate: 16,
+    startGregMonth: 6, // Jul
+    startGregDay: 16,
     daysCount: 31
   },
   {
@@ -75,8 +75,8 @@ const bodoMonthsData = [
     englishName: "Bhadra",
     dateRange: "16 Aug – 15 Sep",
     season: "Late Monsoon",
-    startMonth: 7, // Aug
-    startDate: 16,
+    startGregMonth: 7, // Aug
+    startGregDay: 16,
     daysCount: 31
   },
   {
@@ -85,8 +85,8 @@ const bodoMonthsData = [
     englishName: "Aasin",
     dateRange: "16 Sep – 15 Oct",
     season: "Sirri / Autumn",
-    startMonth: 8, // Sep
-    startDate: 16,
+    startGregMonth: 8, // Sep
+    startGregDay: 16,
     daysCount: 30
   },
   {
@@ -95,8 +95,8 @@ const bodoMonthsData = [
     englishName: "Kati",
     dateRange: "16 Oct – 15 Nov",
     season: "Sirri / Late Autumn",
-    startMonth: 9, // Oct
-    startDate: 16,
+    startGregMonth: 9, // Oct
+    startGregDay: 16,
     daysCount: 31
   },
   {
@@ -105,8 +105,8 @@ const bodoMonthsData = [
     englishName: "Aghon",
     dateRange: "16 Nov – 15 Dec",
     season: "Gozon / Pre-Winter",
-    startMonth: 10, // Nov
-    startDate: 16,
+    startGregMonth: 10, // Nov
+    startGregDay: 16,
     daysCount: 30
   },
   {
@@ -115,8 +115,8 @@ const bodoMonthsData = [
     englishName: "Push",
     dateRange: "16 Dec – 15 Jan",
     season: "Gozon / Peak Winter",
-    startMonth: 11, // Dec
-    startDate: 16,
+    startGregMonth: 11, // Dec
+    startGregDay: 16,
     daysCount: 31
   }
 ];
