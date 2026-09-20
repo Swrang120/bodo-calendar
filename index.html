@@ -10,7 +10,7 @@
 
   <meta
     name="description"
-    content="Bodo Calendar — Traditional Bodo Solar Calendar with Gregorian dates, Assamese calendar reference, festivals, historical events and personal reminders."
+    content="Bodo Calendar — Traditional Bodo Solar Calendar with Gregorian dates, Bodo cultural events, historical anniversaries and personal reminders."
   >
 
   <meta
@@ -40,23 +40,38 @@
 
   <title>Bodo Calendar — बर' दान</title>
 
-  <!-- PWA -->
-  <link rel="manifest" href="./manifest.json">
+  <!-- =======================================================
+       PWA
+       ======================================================= -->
 
-  <!-- Favicon -->
+  <link
+    rel="manifest"
+    href="./manifest.json"
+  >
+
+  <!-- =======================================================
+       FAVICON
+       ======================================================= -->
+
   <link
     rel="icon"
     type="image/png"
     href="./assets/favicon.png"
   >
 
-  <!-- Main CSS -->
+  <!-- =======================================================
+       MAIN CSS
+       ======================================================= -->
+
   <link
     rel="stylesheet"
-    href="./css/style.css?v=5.0"
+    href="./css/style.css?v=6.0"
   >
 
-  <!-- Google Font -->
+  <!-- =======================================================
+       GOOGLE FONTS
+       ======================================================= -->
+
   <link
     rel="preconnect"
     href="https://fonts.googleapis.com"
@@ -72,7 +87,77 @@
     href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet"
   >
+
+  <!-- =======================================================
+       EARLY PAGE SAFETY
+       ======================================================= -->
+
+  <style>
+    /*
+     * Prevent a flash of the page while the application
+     * initializes.
+     */
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+    /*
+     * The loading screen is removed by app.js.
+     * This fallback prevents it from remaining forever
+     * if JavaScript takes longer than expected.
+     */
+
+    #loadingScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+    }
+
+    /*
+     * Keep the calendar application usable even if
+     * JavaScript encounters an unexpected error.
+     */
+
+    .js-error-message {
+      display: none;
+      margin: 12px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #fff3cd;
+      color: #664d03;
+      border: 1px solid #ffecb5;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .js-error-message.show {
+      display: block;
+    }
+  </style>
+
 </head>
+
 
 <body>
 
@@ -80,7 +165,10 @@
      APP WRAPPER
      ========================================================= -->
 
-<div id="app" class="app-shell">
+<div
+  id="app"
+  class="app-shell"
+>
 
 
   <!-- =======================================================
@@ -91,10 +179,19 @@
 
     <div class="header-inner">
 
-      <!-- Logo / Brand -->
-      <div class="brand-area">
 
-        <div class="brand-logo" aria-hidden="true">
+      <!-- BRAND -->
+
+      <a
+        href="./"
+        class="brand-area"
+        aria-label="Bodo Calendar Home"
+      >
+
+        <div
+          class="brand-logo"
+          aria-hidden="true"
+        >
           B
         </div>
 
@@ -113,10 +210,11 @@
 
         </div>
 
-      </div>
+      </a>
 
 
-      <!-- Header Actions -->
+      <!-- HEADER ACTIONS -->
+
       <div class="header-actions">
 
         <button
@@ -133,6 +231,7 @@
           type="button"
           id="vipButton"
           class="vip-button"
+          aria-label="Open Bodo Calendar VIP"
         >
           👑
           <span>Go VIP</span>
@@ -146,23 +245,40 @@
 
 
   <!-- =======================================================
-       MAIN CONTENT
+       MAIN
        ======================================================= -->
 
   <main class="main-container">
 
 
     <!-- =====================================================
-         WELCOME / ANNOUNCEMENT CARD
+         JAVASCRIPT ERROR FALLBACK
+         ===================================================== -->
+
+    <div
+      id="jsErrorMessage"
+      class="js-error-message"
+      role="alert"
+    >
+      Calendar data is taking longer than expected to load.
+      Please refresh the page once.
+    </div>
+
+
+    <!-- =====================================================
+         WELCOME CARD
          ===================================================== -->
 
     <section
       id="welcomeCard"
       class="welcome-card"
-      aria-label="Welcome"
+      aria-label="Welcome to Bodo Calendar"
     >
 
-      <div class="welcome-icon">
+      <div
+        class="welcome-icon"
+        aria-hidden="true"
+      >
         🎉
       </div>
 
@@ -193,7 +309,7 @@
 
 
     <!-- =====================================================
-         GLOBAL / ADMIN NOTIFICATION
+         ADMIN NOTIFICATION
          ===================================================== -->
 
     <section
@@ -202,7 +318,10 @@
       aria-live="polite"
     >
 
-      <div class="notification-icon">
+      <div
+        class="notification-icon"
+        aria-hidden="true"
+      >
         📢
       </div>
 
@@ -244,7 +363,7 @@
 
 
     <!-- =====================================================
-         LIVE TODAY / TOMORROW / DAY AFTER TOMORROW
+         LIVE CALENDAR
          ===================================================== -->
 
     <section
@@ -253,7 +372,7 @@
       aria-label="Live calendar status"
     >
 
-      <!-- Live Header -->
+      <!-- LIVE HEADER -->
 
       <div class="live-panel-header">
 
@@ -264,7 +383,7 @@
           </span>
 
           <h2>
-            Today & Upcoming
+            Today &amp; Upcoming
           </h2>
 
           <p id="liveStatusUpdated">
@@ -273,15 +392,21 @@
 
         </div>
 
-        <div class="live-indicator">
+        <div
+          class="live-indicator"
+          aria-label="Live"
+        >
+
           <span class="live-dot"></span>
+
           LIVE
+
         </div>
 
       </div>
 
 
-      <!-- Live Date Cards -->
+      <!-- LIVE DATE GRID -->
 
       <div class="live-date-grid">
 
@@ -299,7 +424,10 @@
               TODAY
             </span>
 
-            <span class="live-card-icon">
+            <span
+              class="live-card-icon"
+              aria-hidden="true"
+            >
               📅
             </span>
 
@@ -328,7 +456,10 @@
               TOMORROW
             </span>
 
-            <span class="live-card-icon">
+            <span
+              class="live-card-icon"
+              aria-hidden="true"
+            >
               ➡️
             </span>
 
@@ -357,7 +488,10 @@
               DAY AFTER TOMORROW
             </span>
 
-            <span class="live-card-icon">
+            <span
+              class="live-card-icon"
+              aria-hidden="true"
+            >
               🔮
             </span>
 
@@ -375,7 +509,9 @@
       </div>
 
 
-      <!-- Current Calendar Systems -->
+      <!-- ===================================================
+           CALENDAR SYSTEM STATUS
+           =================================================== -->
 
       <div
         id="calendarSystemStatus"
@@ -389,11 +525,14 @@
         <div class="calendar-system-grid">
 
 
-          <!-- Gregorian -->
+          <!-- GREGORIAN -->
 
           <div class="system-card gregorian-system">
 
-            <span class="system-icon">
+            <span
+              class="system-icon"
+              aria-hidden="true"
+            >
               🇬🇧
             </span>
 
@@ -412,11 +551,14 @@
           </div>
 
 
-          <!-- Bodo -->
+          <!-- BODO -->
 
           <div class="system-card bodo-system">
 
-            <span class="system-icon">
+            <span
+              class="system-icon"
+              aria-hidden="true"
+            >
               🟢
             </span>
 
@@ -435,11 +577,14 @@
           </div>
 
 
-          <!-- Assamese Reference -->
+          <!-- ASSAMESE REFERENCE -->
 
           <div class="system-card assamese-system">
 
-            <span class="system-icon">
+            <span
+              class="system-icon"
+              aria-hidden="true"
+            >
               🟠
             </span>
 
@@ -479,12 +624,12 @@
         class="nav-button"
         aria-label="Previous Bodo month"
       >
-        <span>‹</span>
+        <span aria-hidden="true">‹</span>
         <span>Prev</span>
       </button>
 
 
-      <!-- Month Selector -->
+      <!-- MONTH SELECT -->
 
       <div class="month-selector-wrapper">
 
@@ -500,13 +645,17 @@
           class="month-selector"
           aria-label="Select Bodo month"
         >
+
           <option value="">
             Select Bodo Month
           </option>
+
         </select>
 
       </div>
 
+
+      <!-- NEXT -->
 
       <button
         type="button"
@@ -514,10 +663,19 @@
         class="nav-button"
         aria-label="Next Bodo month"
       >
-        <span>Next</span>
-        <span>›</span>
+
+        <span>
+          Next
+        </span>
+
+        <span aria-hidden="true">
+          ›
+        </span>
+
       </button>
 
+
+      <!-- TODAY -->
 
       <button
         type="button"
@@ -531,7 +689,7 @@
 
 
     <!-- =====================================================
-         MONTH HERO / BANNER
+         MONTH BANNER
          ===================================================== -->
 
     <section
@@ -562,9 +720,7 @@
 
         <div class="month-date-range">
 
-          <span
-            id="currentMonthDateRange"
-          >
+          <span id="currentMonthDateRange">
             Loading date range...
           </span>
 
@@ -573,7 +729,10 @@
       </div>
 
 
-      <div class="month-banner-decoration">
+      <div
+        class="month-banner-decoration"
+        aria-hidden="true"
+      >
 
         <span>☀️</span>
         <span>🌿</span>
@@ -585,51 +744,53 @@
 
 
     <!-- =====================================================
-         DESKTOP CONTENT GRID
+         CALENDAR LAYOUT
          ===================================================== -->
 
     <div class="calendar-layout">
 
 
       <!-- ===================================================
-           LEFT / MAIN CALENDAR
+           MAIN CALENDAR
            =================================================== -->
 
-      <section class="calendar-main-section">
+      <section
+        class="calendar-main-section"
+        aria-label="Bodo calendar"
+      >
 
 
-        <!-- Weekday Header -->
+        <!-- WEEKDAY HEADER -->
 
         <div
           id="weekdayHeader"
           class="weekday-header"
         >
-
-          <!-- JavaScript will render 7 weekdays -->
-
+          <!-- JavaScript renders weekdays -->
         </div>
 
 
-        <!-- Calendar Grid -->
+        <!-- CALENDAR GRID -->
 
         <div
           id="calendarGrid"
           class="calendar-grid"
           aria-label="Bodo calendar dates"
         >
-
-          <!-- JavaScript renders dates -->
-
+          <!-- JavaScript renders calendar dates -->
         </div>
 
 
-        <!-- Calendar Legend -->
+        <!-- LEGEND -->
 
         <div class="calendar-legend">
 
           <div class="legend-item">
 
-            <span class="legend-dot today-legend"></span>
+            <span
+              class="legend-dot today-legend"
+              aria-hidden="true"
+            ></span>
 
             <span>
               Today
@@ -639,7 +800,10 @@
 
           <div class="legend-item">
 
-            <span class="legend-dot event-legend"></span>
+            <span
+              class="legend-dot event-legend"
+              aria-hidden="true"
+            ></span>
 
             <span>
               Event
@@ -649,7 +813,10 @@
 
           <div class="legend-item">
 
-            <span class="legend-dot note-legend"></span>
+            <span
+              class="legend-dot note-legend"
+              aria-hidden="true"
+            ></span>
 
             <span>
               My Note
@@ -663,7 +830,7 @@
 
 
       <!-- ===================================================
-           RIGHT / EVENTS SIDEBAR
+           SIDEBAR
            =================================================== -->
 
       <aside
@@ -672,7 +839,7 @@
       >
 
 
-        <!-- Selected Date -->
+        <!-- SELECTED DATE -->
 
         <section
           id="selectedDatePanel"
@@ -681,7 +848,10 @@
 
           <div class="sidebar-card-heading">
 
-            <span class="sidebar-icon">
+            <span
+              class="sidebar-icon"
+              aria-hidden="true"
+            >
               📅
             </span>
 
@@ -709,7 +879,7 @@
         </section>
 
 
-        <!-- Today's Events -->
+        <!-- MONTHLY EVENTS -->
 
         <section
           id="eventsPanel"
@@ -718,7 +888,10 @@
 
           <div class="sidebar-card-heading">
 
-            <span class="sidebar-icon">
+            <span
+              class="sidebar-icon"
+              aria-hidden="true"
+            >
               🎉
             </span>
 
@@ -729,7 +902,7 @@
               </span>
 
               <h3>
-                Festivals & Events
+                Festivals &amp; Events
               </h3>
 
             </div>
@@ -743,7 +916,7 @@
 
             <div class="empty-state">
 
-              <span>
+              <span aria-hidden="true">
                 📅
               </span>
 
@@ -758,7 +931,7 @@
         </section>
 
 
-        <!-- Historical Today -->
+        <!-- BODO HISTORY -->
 
         <section
           id="historyPanel"
@@ -767,7 +940,10 @@
 
           <div class="sidebar-card-heading">
 
-            <span class="sidebar-icon">
+            <span
+              class="sidebar-icon"
+              aria-hidden="true"
+            >
               📜
             </span>
 
@@ -792,7 +968,7 @@
 
             <div class="empty-state">
 
-              <span>
+              <span aria-hidden="true">
                 🌿
               </span>
 
@@ -807,7 +983,7 @@
         </section>
 
 
-        <!-- Season / Nature -->
+        <!-- SEASON -->
 
         <section
           id="seasonPanel"
@@ -816,7 +992,10 @@
 
           <div class="sidebar-card-heading">
 
-            <span class="sidebar-icon">
+            <span
+              class="sidebar-icon"
+              aria-hidden="true"
+            >
               🌿
             </span>
 
@@ -841,7 +1020,7 @@
         </section>
 
 
-        <!-- Personal Notes Quick Action -->
+        <!-- PERSONAL NOTES -->
 
         <section
           class="sidebar-card notes-quick-card"
@@ -849,7 +1028,10 @@
 
           <div class="sidebar-card-heading">
 
-            <span class="sidebar-icon">
+            <span
+              class="sidebar-icon"
+              aria-hidden="true"
+            >
               📝
             </span>
 
@@ -893,7 +1075,7 @@
 
     <section
       class="reference-section"
-      aria-label="Bodo and English month reference"
+      aria-label="Bodo solar month reference"
     >
 
       <div class="section-heading">
@@ -928,19 +1110,19 @@
 
             <tr>
 
-              <th>
+              <th scope="col">
                 #
               </th>
 
-              <th>
+              <th scope="col">
                 Bodo Month
               </th>
 
-              <th>
+              <th scope="col">
                 Native Name
               </th>
 
-              <th>
+              <th scope="col">
                 Gregorian Period
               </th>
 
@@ -949,9 +1131,7 @@
           </thead>
 
           <tbody id="monthReferenceBody">
-
             <!-- JavaScript renders month reference -->
-
           </tbody>
 
         </table>
@@ -962,14 +1142,15 @@
 
 
     <!-- =====================================================
-         ABOUT CALENDAR
+         ABOUT
          ===================================================== -->
 
-    <section
-      class="about-calendar-card"
-    >
+    <section class="about-calendar-card">
 
-      <div class="about-icon">
+      <div
+        class="about-icon"
+        aria-hidden="true"
+      >
         🌿
       </div>
 
@@ -994,7 +1175,7 @@
         <p class="about-note">
           Assamese calendar information is used only as a calendar
           reference and cross-check layer. The website interface
-          displays the information in English and Bodo.
+          displays information in English and Bodo.
         </p>
 
       </div>
@@ -1003,7 +1184,7 @@
 
 
     <!-- =====================================================
-         ADVERTISEMENT AREA
+         ADVERTISEMENT
          ===================================================== -->
 
     <section
@@ -1022,7 +1203,6 @@
 
     </section>
 
-
   </main>
 
 
@@ -1035,11 +1215,14 @@
     <div class="footer-inner">
 
 
-      <!-- Footer Brand -->
+      <!-- FOOTER BRAND -->
 
       <div class="footer-brand">
 
-        <div class="footer-logo">
+        <div
+          class="footer-logo"
+          aria-hidden="true"
+        >
           B
         </div>
 
@@ -1058,7 +1241,7 @@
       </div>
 
 
-      <!-- Footer Links -->
+      <!-- FOOTER LINKS -->
 
       <div class="footer-links">
 
@@ -1086,17 +1269,20 @@
       </div>
 
 
-      <!-- Copyright -->
+      <!-- FOOTER BOTTOM -->
 
       <div class="footer-bottom">
 
         <p>
-          © <span id="copyrightYear">2026</span>
+          ©
+          <span id="copyrightYear">
+            2026
+          </span>
           Bodo Calendar. All rights reserved.
         </p>
 
         <p>
-          Designed for Bodo cultural & calendar reference.
+          Designed for Bodo cultural &amp; calendar reference.
         </p>
 
       </div>
@@ -1140,23 +1326,19 @@
         type="button"
         id="closeDateModalBtn"
         class="modal-close-btn"
-        aria-label="Close"
+        aria-label="Close date details"
       >
         ×
       </button>
 
     </div>
 
-
     <div
       id="dateModalBody"
       class="modal-body"
     >
-
       <!-- JavaScript renders date details -->
-
     </div>
-
 
     <div class="modal-actions">
 
@@ -1215,7 +1397,7 @@
         type="button"
         id="closeNoteModalBtn"
         class="modal-close-btn"
-        aria-label="Close"
+        aria-label="Close note form"
       >
         ×
       </button>
@@ -1284,6 +1466,7 @@
           name="title"
           placeholder="Example: Mathematics Exam"
           maxlength="100"
+          autocomplete="off"
           required
         >
 
@@ -1384,7 +1567,7 @@
         type="button"
         id="closeNotesListBtn"
         class="modal-close-btn"
-        aria-label="Close"
+        aria-label="Close my notes"
       >
         ×
       </button>
@@ -1399,7 +1582,7 @@
 
       <div class="empty-state">
 
-        <span>
+        <span aria-hidden="true">
           📝
         </span>
 
@@ -1432,7 +1615,10 @@
 
     <div class="vip-modal-top">
 
-      <div class="vip-crown">
+      <div
+        class="vip-crown"
+        aria-hidden="true"
+      >
         👑
       </div>
 
@@ -1440,7 +1626,7 @@
         type="button"
         id="closeVipModalBtn"
         class="modal-close-btn"
-        aria-label="Close"
+        aria-label="Close VIP"
       >
         ×
       </button>
@@ -1453,7 +1639,7 @@
     </span>
 
     <h2 id="vipModalTitle">
-      Go VIP & Remove Ads
+      Go VIP &amp; Remove Ads
     </h2>
 
     <p class="vip-description">
@@ -1485,7 +1671,7 @@
     <div class="vip-plans">
 
 
-      <!-- Monthly -->
+      <!-- MONTHLY -->
 
       <button
         type="button"
@@ -1508,7 +1694,7 @@
       </button>
 
 
-      <!-- Yearly -->
+      <!-- YEARLY -->
 
       <button
         type="button"
@@ -1548,7 +1734,7 @@
 
 
 <!-- =========================================================
-     TOAST NOTIFICATION
+     TOAST
      ========================================================= -->
 
 <div
@@ -1566,11 +1752,16 @@
 <div
   id="loadingScreen"
   class="loading-screen"
+  aria-live="polite"
+  aria-label="Loading Bodo Calendar"
 >
 
   <div class="loading-content">
 
-    <div class="loading-logo">
+    <div
+      class="loading-logo"
+      aria-hidden="true"
+    >
       B
     </div>
 
@@ -1582,7 +1773,10 @@
       Loading calendar...
     </p>
 
-    <div class="loading-spinner"></div>
+    <div
+      class="loading-spinner"
+      aria-hidden="true"
+    ></div>
 
   </div>
 
@@ -1591,51 +1785,44 @@
 
 <!-- =========================================================
      JAVASCRIPT
+     =========================================================
      
      IMPORTANT:
-     Existing files are loaded in dependency order.
+     Files are loaded in dependency order.
+     
+     1. calendar-data.js
+     2. events.js
+     3. notes.js
+     4. vip.js
+     5. app.js
+     
+     Do NOT change this order.
      ========================================================= -->
 
-<script src="./js/calendar-data.js?v=5.0"></script>
+<script src="./js/calendar-data.js?v=6.0"></script>
 
-<script src="./js/events.js?v=5.0"></script>
+<script src="./js/events.js?v=6.0"></script>
 
-<script src="./js/notes.js?v=5.0"></script>
+<script src="./js/notes.js?v=6.0"></script>
 
-<script src="./js/vip.js?v=5.0"></script>
+<script src="./js/vip.js?v=6.0"></script>
 
-<script src="./js/app.js?v=5.0"></script>
+<script src="./js/app.js?v=6.0"></script>
 
 
 <!-- =========================================================
-     PWA SERVICE WORKER
+     PAGE INITIALIZATION / FALLBACK
      ========================================================= -->
 
 <script>
 
-  /*
-   * Register service worker only when supported.
-   * The actual service-worker file can be added later.
-   */
+(function () {
 
-  if ("serviceWorker" in navigator) {
-
-    window.addEventListener("load", function () {
-
-      /*
-       * Service worker registration is intentionally kept
-       * disabled until the final PWA setup is completed.
-       */
-
-      // navigator.serviceWorker.register("./sw.js");
-
-    });
-
-  }
+  "use strict";
 
 
   /*
-   * Current copyright year.
+   * Current year.
    */
 
   const copyrightYear =
@@ -1644,36 +1831,240 @@
   if (copyrightYear) {
 
     copyrightYear.textContent =
-      new Date().getFullYear();
+      String(new Date().getFullYear());
 
   }
 
 
   /*
-   * Prevent accidental form submission from reloading
-   * the entire website.
+   * Detect whether the application initialized.
+   *
+   * The normal app.js should remove the loading screen.
+   * This is only a safety fallback.
    */
 
-  document.addEventListener(
-    "submit",
+  window.setTimeout(function () {
+
+    const loadingScreen =
+      document.getElementById("loadingScreen");
+
+    const calendarGrid =
+      document.getElementById("calendarGrid");
+
+    if (!loadingScreen) {
+      return;
+    }
+
+
+    /*
+     * If calendar content has already been rendered,
+     * simply remove the loading screen.
+     */
+
+    if (
+      calendarGrid &&
+      calendarGrid.children.length > 0
+    ) {
+
+      loadingScreen.classList.add("hidden");
+
+      return;
+
+    }
+
+
+    /*
+     * Do not leave the user trapped behind an
+     * infinite loading screen.
+     */
+
+    loadingScreen.classList.add("hidden");
+
+
+    const errorMessage =
+      document.getElementById("jsErrorMessage");
+
+    if (errorMessage) {
+      errorMessage.classList.add("show");
+    }
+
+  }, 7000);
+
+
+  /*
+   * Make the current year update automatically.
+   */
+
+  window.addEventListener(
+    "load",
+    function () {
+
+      const year =
+        document.getElementById("copyrightYear");
+
+      if (year) {
+        year.textContent =
+          String(new Date().getFullYear());
+      }
+
+    }
+  );
+
+
+  /*
+   * PWA install support.
+   *
+   * The actual beforeinstallprompt event is handled
+   * here without requiring a service worker.
+   */
+
+  let deferredInstallPrompt = null;
+
+  window.addEventListener(
+    "beforeinstallprompt",
     function (event) {
 
-      const form = event.target;
+      event.preventDefault();
 
-      if (
-        form &&
-        form.id === "noteForm"
-      ) {
+      deferredInstallPrompt = event;
+
+      const installButton =
+        document.getElementById("installAppBtn");
+
+      if (installButton) {
+        installButton.classList.remove("hidden");
+      }
+
+    }
+  );
+
+
+  const installButton =
+    document.getElementById("installAppBtn");
+
+  if (installButton) {
+
+    installButton.addEventListener(
+      "click",
+      async function () {
+
+        if (!deferredInstallPrompt) {
+          return;
+        }
+
+        deferredInstallPrompt.prompt();
+
+        try {
+
+          await deferredInstallPrompt.userChoice;
+
+        } catch (error) {
+
+          /*
+           * User cancelled or browser rejected the prompt.
+           * Nothing else is required.
+           */
+
+        }
+
+        deferredInstallPrompt = null;
+
+        installButton.classList.add("hidden");
+
+      }
+    );
+
+  }
+
+
+  /*
+   * Hide install button after successful installation.
+   */
+
+  window.addEventListener(
+    "appinstalled",
+    function () {
+
+      const button =
+        document.getElementById("installAppBtn");
+
+      if (button) {
+        button.classList.add("hidden");
+      }
+
+      deferredInstallPrompt = null;
+
+    }
+  );
+
+
+  /*
+   * Service worker registration.
+   *
+   * Currently disabled intentionally because sw.js is
+   * not one of the current project files.
+   *
+   * Enable only after sw.js is actually added.
+   */
+
+  if ("serviceWorker" in navigator) {
+
+    window.addEventListener(
+      "load",
+      function () {
 
         /*
-         * notes.js will handle the actual submission.
+         * navigator.serviceWorker.register("./sw.js");
          */
 
       }
+    );
 
-    },
-    false
-  );
+  }
+
+})();
+
+</script>
+
+
+<!-- =========================================================
+     GLOBAL ERROR FALLBACK
+     ========================================================= -->
+
+<script>
+
+window.addEventListener(
+  "error",
+  function (event) {
+
+    /*
+     * Ignore harmless resource errors.
+     */
+
+    if (
+      event &&
+      event.target &&
+      event.target !== window
+    ) {
+      return;
+    }
+
+    const errorMessage =
+      document.getElementById("jsErrorMessage");
+
+    if (errorMessage) {
+      errorMessage.classList.add("show");
+    }
+
+    const loadingScreen =
+      document.getElementById("loadingScreen");
+
+    if (loadingScreen) {
+      loadingScreen.classList.add("hidden");
+    }
+
+  }
+);
 
 </script>
 
