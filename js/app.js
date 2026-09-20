@@ -1,9 +1,21 @@
 let currentMonthIndex = 8; // Default: Aasin
 let todayBodoInfo = { monthIndex: 8, bodoDay: 2 };
 let selectedDateKey = null;
+let midnightTimer = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-  const now = new Date(); // Detects live date
+  initApp();
+  
+  // Auto-refresh on Tab focus / phone unlock
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+      initApp();
+    }
+  });
+});
+
+function initApp() {
+  const now = new Date(); // Real system date
   todayBodoInfo = calculateBodoDateFromGregorian(now);
   currentMonthIndex = todayBodoInfo.monthIndex;
 
@@ -13,7 +25,21 @@ document.addEventListener("DOMContentLoaded", () => {
   updateLiveDetectorBanner(now);
   updateVIPUI();
   setupEventListeners();
-});
+  scheduleMidnightRefresh();
+}
+
+// Raat ke 12 Baje (00:00:00) automatic live date change karne ka timer
+function scheduleMidnightRefresh() {
+  if (midnightTimer) clearTimeout(midnightTimer);
+
+  const now = new Date();
+  const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1);
+  const msToMidnight = nextMidnight.getTime() - now.getTime();
+
+  midnightTimer = setTimeout(() => {
+    initApp(); // Automatic re-render at 12:00 AM sharp
+  }, msToMidnight);
+}
 
 // Real-Time Conversion logic
 function calculateBodoDateFromGregorian(gregorianDate) {
@@ -34,37 +60,45 @@ function calculateBodoDateFromGregorian(gregorianDate) {
   return { monthIndex: 8, bodoDay: 2, dateObj: gregorianDate };
 }
 
-// Banner: Today, Tomorrow & Day After Tomorrow Forecast
+// Live Banner: Today, Tomorrow & Day After Tomorrow Historical / Puja Events
 function updateLiveDetectorBanner(todayDate) {
   const todayBox = document.getElementById("todayAlertBox");
   const todayText = document.getElementById("todayAlertText");
   if (!todayBox || !todayText) return;
 
+  const getEventText = (monthIdx, dayNum) => {
+    const evts = bodoCulturalEvents[`${monthIdx}-${dayNum}`];
+    if (!evts || evts.length === 0) return "Normal Day";
+    return `${evts[0].title} — <span class="text-gray-600 font-medium">${evts[0].desc}</span>`;
+  };
+
+  // Today
   const tInfo = calculateBodoDateFromGregorian(todayDate);
   const tMonthName = bodoMonthsData[tInfo.monthIndex].englishName;
   const tEngStr = todayDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+  const tEvt = getEventText(tInfo.monthIndex, tInfo.bodoDay);
 
+  // Tomorrow
   const tomDate = new Date(todayDate);
   tomDate.setDate(todayDate.getDate() + 1);
   const tomInfo = calculateBodoDateFromGregorian(tomDate);
   const tomMonthName = bodoMonthsData[tomInfo.monthIndex].englishName;
   const tomEngStr = tomDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+  const tomEvt = getEventText(tomInfo.monthIndex, tomInfo.bodoDay);
 
+  // Day After Tomorrow
   const datDate = new Date(todayDate);
   datDate.setDate(todayDate.getDate() + 2);
   const datInfo = calculateBodoDateFromGregorian(datDate);
   const datMonthName = bodoMonthsData[datInfo.monthIndex].englishName;
   const datEngStr = datDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
-
-  const tEvt = bodoCulturalEvents[`${tInfo.monthIndex}-${tInfo.bodoDay}`]?.[0]?.title || "Normal Day";
-  const tomEvt = bodoCulturalEvents[`${tomInfo.monthIndex}-${tomInfo.bodoDay}`]?.[0]?.title || "Normal Day";
-  const datEvt = bodoCulturalEvents[`${datInfo.monthIndex}-${datInfo.bodoDay}`]?.[0]?.title || "Normal Day";
+  const datEvt = getEventText(datInfo.monthIndex, datInfo.bodoDay);
 
   todayText.innerHTML = `
-    <div class="space-y-1 text-xs">
-      <div><strong>📅 Today (${tEngStr}):</strong> Day ${tInfo.bodoDay} (${tMonthName}) — <span class="text-emerald-700 font-semibold">${tEvt}</span></div>
-      <div><strong>🔜 Tomorrow (${tomEngStr}):</strong> Day ${tomInfo.bodoDay} (${tomMonthName}) — <span class="text-gray-600">${tomEvt}</span></div>
-      <div><strong>🔮 Day After Tomorrow (${datEngStr}):</strong> Day ${datInfo.bodoDay} (${datMonthName}) — <span class="text-gray-600">${datEvt}</span></div>
+    <div class="space-y-1.5 text-xs">
+      <div><strong>📅 Aaj (${tEngStr}):</strong> Day ${tInfo.bodoDay} (${tMonthName}) — <span class="text-emerald-800 font-semibold">${tEvt}</span></div>
+      <div><strong>🔜 Kal (${tomEngStr}):</strong> Day ${tomInfo.bodoDay} (${tomMonthName}) — <span>${tomEvt}</span></div>
+      <div><strong>🔮 Parson (${datEngStr}):</strong> Day ${datInfo.bodoDay} (${datMonthName}) — <span>${datEvt}</span></div>
     </div>
   `;
   todayBox.classList.remove("hidden");
@@ -100,18 +134,16 @@ function renderCalendar() {
   const monthEventsMap = [];
   const currentYear = new Date().getFullYear();
 
-  // Calculate Weekday Offset for Day 1 (To match Sunday - Saturday columns)
+  // Calculate Weekday Offset for Day 1
   const firstDayDate = new Date(currentYear, monthData.startGregMonth, monthData.startGregDay);
-  const startDayOfWeek = firstDayDate.getDay(); // 0 = Sunday, 6 = Saturday
+  const startDayOfWeek = firstDayDate.getDay(); 
 
-  // Add empty filler boxes for alignment
   for (let i = 0; i < startDayOfWeek; i++) {
     const emptyCell = document.createElement("div");
     emptyCell.className = "bg-gray-50/50 rounded-xl border border-dashed border-gray-200 p-2 opacity-30";
     grid.appendChild(emptyCell);
   }
 
-  // Render Days 1 to 30
   for (let day = 1; day <= monthData.daysCount; day++) {
     const dateKey = `${currentMonthIndex}-${day}`;
     
@@ -121,7 +153,6 @@ function renderCalendar() {
     const dayCard = document.createElement("div");
     dayCard.className = "day-card bg-white border border-gray-200 rounded-xl p-2 text-center cursor-pointer hover:border-emerald-500 hover:bg-emerald-50 transition relative shadow-sm";
 
-    // Highlight TODAY (2 Aasin / 20 Sep)
     if (currentMonthIndex === todayBodoInfo.monthIndex && day === todayBodoInfo.bodoDay) {
       dayCard.classList.add("ring-2", "ring-emerald-600", "bg-emerald-100", "border-emerald-600");
     }
