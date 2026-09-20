@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bodo Calendar (बर' दान)</title>
+  <link rel="manifest" href="./manifest.json">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="text-gray-800 antialiased min-h-screen flex flex-col justify-between">
+
+  <!-- Top Header Navigation -->
+  <header class="bg-[#1b4332] text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center font-bold text-lg text-white">
+          B
+        </div>
+        <div>
+          <h1 class="text-2xl font-extrabold tracking-tight">Bodo Calendar (बर' दान)</h1>
+          <p class="text-xs text-emerald-300 font-medium">Traditional Bodo Solar Calendar with Gregorian Dates</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <span id="vipBadgeHeader" class="hidden bg-amber-400 text-black font-bold text-xs px-3 py-1.5 rounded-full shadow">
+          👑 VIP Member
+        </span>
+        <button id="goVipBtn" onclick="openVipModal()" class="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-black font-bold text-xs px-4 py-2 rounded-lg shadow transition">
+          🚀 Remove Ads (VIP)
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 py-6 w-full grow">
+
+    <!-- Admin Notification Banner -->
+    <div id="adminNoticeBanner" class="hidden mb-4 p-4 bg-emerald-900 text-white rounded-xl shadow-md border-l-4 border-amber-400">
+      <h4 id="adminNoticeTitle" class="font-bold text-sm text-amber-300">Notice Title</h4>
+      <p id="adminNoticeMsg" class="text-xs mt-1 text-emerald-100">Notice message details...</p>
+    </div>
+
+    <!-- Live Today Detector Banner -->
+    <div id="todayAlertBox" class="hidden mb-6 p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-xs flex items-center justify-between">
+      <p id="todayAlertText">System date status</p>
+      <span class="bg-emerald-600 text-white font-bold text-[10px] px-2 py-0.5 rounded">LIVE</span>
+    </div>
+
+    <!-- Month Controls Header -->
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6 flex flex-wrap items-center justify-between gap-3">
+      <button id="prevMonthBtn" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition">
+        &lt; Prev
+      </button>
+
+      <div class="flex items-center space-x-2">
+        <select id="monthSelect" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm font-semibold rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-emerald-500">
+        </select>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button id="nextMonthBtn" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition">
+          Next &gt;
+        </button>
+        <button id="todayBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold px-3 py-2 rounded-lg transition">
+          Today
+        </button>
+      </div>
+    </div>
+
+    <!-- Layout Grid: Calendar + Sidebar -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Calendar Main Area (2 Columns) -->
+      <div class="lg:col-span-2 space-y-6">
+
+        <!-- Banner Card -->
+        <div class="bg-gradient-to-r from-emerald-800 to-emerald-950 text-white rounded-2xl p-6 shadow-md relative overflow-hidden">
+          <h2 id="currentMonthTitle" class="text-3xl font-extrabold">Bwisag (बैसागो)</h2>
+          <p id="currentMonthRange" class="text-sm text-emerald-300 mt-1 font-semibold">15 April – 15 May</p>
+        </div>
+
+        <!-- Weekdays Header -->
+        <div class="grid grid-cols-7 gap-1 bg-[#2d6a4f] text-white text-center font-bold text-[11px] md:text-xs py-2.5 rounded-xl shadow-sm">
+          <div>Rabibar<br><span class="font-normal opacity-80">(रबिबार)</span></div>
+          <div>Sombar<br><span class="font-normal opacity-80">(समबार)</span></div>
+          <div>Mongolbar<br><span class="font-normal opacity-80">(मंगलबार)</span></div>
+          <div>Budhbar<br><span class="font-normal opacity-80">(बुधबार)</span></div>
+          <div>Brihospatibar<br><span class="font-normal opacity-80">(बृहस्पतीबार)</span></div>
+          <div>Sakrubar<br><span class="font-normal opacity-80">(शक्रुबार)</span></div>
+          <div>Shanibar<br><span class="font-normal opacity-80">(शनिबार)</span></div>
+        </div>
+
+        <!-- Days Grid -->
+        <div id="daysGrid" class="grid grid-cols-7 gap-2"></div>
+
+        <!-- Top Ad Banner Placeholder -->
+        <div class="ad-banner-box p-4 rounded-xl text-center text-xs text-gray-400">
+          Google AdSense Placement Area (300x100)
+        </div>
+
+      </div>
+
+      <!-- Right Sidebar (1 Column) -->
+      <div class="space-y-6">
+
+        <!-- Monthly Events -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200">
+          <h3 class="text-base font-bold text-gray-900 border-b pb-3 mb-3 flex items-center justify-between">
+            <span>📅 Monthly Events</span>
+          </h3>
+          <div id="monthlyEventsList" class="space-y-3"></div>
+        </div>
+
+        <!-- Season Box -->
+        <div class="bg-emerald-50 p-5 rounded-2xl border border-emerald-200">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-800">Season (Ritu)</h4>
+          <p id="seasonName" class="text-base font-bold text-emerald-950 mt-1">Bwisag Ritu (Spring Season)</p>
+          <p class="text-xs text-emerald-700 mt-1">Time of new blooms, cultural festivities, and joyous celebrations.</p>
+        </div>
+
+        <!-- Sidebar Ad Banner Placeholder -->
+        <div class="ad-banner-box p-6 rounded-xl text-center text-xs text-gray-400">
+          Google AdSense Sidebar Banner (300x250)
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Quick Reference Table -->
+    <div class="mt-8 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+      <h3 class="text-sm font-bold text-gray-800 mb-4">Bodo vs English 12 Months (Quick Reference)</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-gray-50 border-b text-gray-600">
+              <th class="p-2">No.</th>
+              <th class="p-2">Bodo Month</th>
+              <th class="p-2">Gregorian Range</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr><td class="p-2">1</td><td class="p-2 font-semibold">Magh (माघ)</td><td class="p-2">16 Jan – 15 Feb</td></tr>
+            <tr><td class="p-2">2</td><td class="p-2 font-semibold">Fagun (फागुन)</td><td class="p-2">16 Feb – 15 Mar</td></tr>
+            <tr><td class="p-2">3</td><td class="p-2 font-semibold">Chaitra (चैत्र)</td><td class="p-2">16 Mar – 14 Apr</td></tr>
+            <tr><td class="p-2">4</td><td class="p-2 font-semibold">Bwisag (बैसाग)</td><td class="p-2">15 Apr – 15 May</td></tr>
+            <tr><td class="p-2">5</td><td class="p-2 font-semibold">Jeth (जेथो)</td><td class="p-2">16 May – 15 Jun</td></tr>
+            <tr><td class="p-2">6</td><td class="p-2 font-semibold">Aasar (आसार)</td><td class="p-2">16 Jun – 15 Jul</td></tr>
+            <tr><td class="p-2">7</td><td class="p-2 font-semibold">Sawan (सावन)</td><td class="p-2">16 Jul – 15 Aug</td></tr>
+            <tr><td class="p-2">8</td><td class="p-2 font-semibold">Bhadra (भाद्र)</td><td class="p-2">16 Aug – 15 Sep</td></tr>
+            <tr><td class="p-2">9</td><td class="p-2 font-semibold">Aasin (आसिन)</td><td class="p-2">16 Sep – 15 Oct</td></tr>
+            <tr><td class="p-2">10</td><td class="p-2 font-semibold">Kati (खाथि)</td><td class="p-2">16 Oct – 15 Nov</td></tr>
+            <tr><td class="p-2">11</td><td class="p-2 font-semibold">Aghon (आघन)</td><td class="p-2">16 Nov – 15 Dec</td></tr>
+            <tr><td class="p-2">12</td><td class="p-2 font-semibold">Push (फुष)</td><td class="p-2">16 Dec – 15 Jan</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- User Notes Modal -->
+  <div id="noteModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-custom flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+      <h3 id="noteModalTitle" class="text-base font-bold text-gray-900 mb-4">Add Personal Note</h3>
+      
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">Category</label>
+          <select id="noteCategory" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2 text-xs font-medium">
+            <option value="Exam">Exam</option>
+            <option value="Birthday">Birthday</option>
+            <option value="Pension">Pension</option>
+            <option value="Important">Important Event</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">Details / Title</label>
+          <input id="noteTitleInput" type="text" placeholder="e.g. Maths Final Exam or Sister's Birthday" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2 text-xs outline-none focus:ring-2 focus:ring-emerald-500">
+        </div>
+
+        <button id="saveNoteBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs py-2.5 rounded-lg transition">
+          Save Note
+        </button>
+      </div>
+
+      <div class="mt-5 border-t pt-3">
+        <h4 class="text-xs font-bold text-gray-700 mb-2">Saved Notes on this day:</h4>
+        <div id="savedNotesList" class="space-y-2 max-h-36 overflow-y-auto"></div>
+      </div>
+
+      <button onclick="closeNoteModal()" class="mt-4 w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs py-2 rounded-lg">
+        Close
+      </button>
+    </div>
+  </div>
+
+  <!-- VIP Subscription Modal -->
+  <div id="vipModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-custom flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center relative">
+      <div class="text-3xl mb-2">👑</div>
+      <h3 class="text-lg font-extrabold text-gray-900">Upgrade to VIP Pass</h3>
+      <p class="text-xs text-gray-500 mt-1">Enjoy ad-free browsing and clean calendar experience.</p>
+
+      <div class="my-5 space-y-3">
+        <div onclick="triggerVIPPayment('monthly')" class="p-3 border-2 border-emerald-500 rounded-xl bg-emerald-50 cursor-pointer hover:bg-emerald-100 transition">
+          <div class="font-bold text-sm text-emerald-950">Monthly Pass</div>
+          <div class="text-xl font-extrabold text-emerald-800">₹59 <span class="text-xs font-normal">/ month</span></div>
+        </div>
+
+        <div onclick="triggerVIPPayment('yearly')" class="p-3 border-2 border-amber-400 rounded-xl bg-amber-50 cursor-pointer hover:bg-amber-100 transition">
+          <div class="font-bold text-sm text-amber-950">Yearly Pass (Best Value)</div>
+          <div class="text-xl font-extrabold text-amber-800">₹500 <span class="text-xs font-normal">/ year</span></div>
+        </div>
+      </div>
+
+      <button onclick="closeVipModal()" class="w-full text-xs text-gray-500 hover:underline">
+        Maybe Later
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-emerald-950 text-emerald-300 text-xs py-4 border-t border-emerald-900">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p>© 2026 Bodo Calendar App. Developed by Swrang Swargiary.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="./js/calendar-data.js"></script>
+  <script src="./js/events.js"></script>
+  <script src="./js/notes.js"></script>
+  <script src="./js/vip.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
