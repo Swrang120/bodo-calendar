@@ -77,17 +77,17 @@ const bodoMonthsData = [
     season: "Late Monsoon",
     startGregMonth: 7, // Aug
     startGregDay: 17,
-    daysCount: 32
+    daysCount: 33
   },
   {
     id: 8,
-    name: "Aasin (आसिन)",
+    name: "Aasin (आसिन / আহিন)",
     englishName: "Aasin",
     dateRange: "19 Sep – 18 Oct",
     season: "Sirri / Autumn",
     startGregMonth: 8, // Sep
-    startGregDay: 19, // 19 Sep = 1 Aasin, 20 Sep = 2 Aasin
-    daysCount: 30
+    startGregDay: 19, // 19 Sep = 1 Aasin
+    daysCount: 30 // Total 30 Days in Aasin
   },
   {
     id: 9,
