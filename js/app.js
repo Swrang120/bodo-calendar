@@ -1,1534 +1,3510 @@
 /* =========================================================
    BODO CALENDAR — MAIN APPLICATION
-   Version: 6.1 (Enhanced & Fixed Date Calculation)
-
-   Connects:
-   - calendar-data.js
-   - events.js
-   - notes.js
-   - vip.js
+   Version 6.2
    ========================================================= */
 
-(function () {
-  "use strict";
+(function(){
 
-  /* =======================================================
-     CONFIG
-     ======================================================= */
+"use strict";
 
-  const APP_VERSION = "6.1";
 
-  const NOTIFICATION_URL = "./notifications.json?v=" + Date.now();
+/* =========================================================
+   CONFIG
+   ========================================================= */
 
-  const WELCOME_STORAGE_KEY = "bodo_calendar_welcome_closed_v1";
+const APP_VERSION = "6.2";
 
-  const NOTIFICATION_STORAGE_KEY = "bodo_calendar_notification_closed_v1";
+const NOTIFICATION_URL =
+  "./notifications.json?v=" + Date.now();
 
-  /* =======================================================
-     APP STATE
-     ======================================================= */
+const WELCOME_STORAGE_KEY =
+  "bodo_calendar_welcome_closed_v1";
 
-  const state = {
-    selectedMonthId: null,
-    selectedDate: null,
-    today: null,
-    tomorrow: null,
-    dayAfterTomorrow: null,
-    notifications: [],
-    deferredInstallPrompt: null,
-    initialized: false
-  };
 
-  /* =======================================================
-     DOM HELPER
-     ======================================================= */
+/* =========================================================
+   STATE
+   ========================================================= */
 
-  function $(id) {
-    return document.getElementById(id);
+const state = {
+
+  selectedMonthId:null,
+
+  selectedDate:null,
+
+  today:null,
+
+  tomorrow:null,
+
+  dayAfterTomorrow:null,
+
+  notifications:[],
+
+  deferredInstallPrompt:null,
+
+  initialized:false
+
+};
+
+
+/* =========================================================
+   DOM
+   ========================================================= */
+
+function $(id){
+
+  return document.getElementById(id);
+
+}
+
+
+function safeText(value){
+
+  if(
+    value === null ||
+    value === undefined
+  ){
+
+    return "";
+
   }
 
-  function safeText(value) {
-    if (value === null || value === undefined) {
-      return "";
+  return String(value);
+
+}
+
+
+function escapeHTML(value){
+
+  return safeText(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
+   DATE
+   ========================================================= */
+
+function normalizeDate(date){
+
+  if(
+    window.BodoCalendarData &&
+    typeof window.BodoCalendarData.normalizeDate === "function"
+  ){
+
+    const result =
+      window.BodoCalendarData.normalizeDate(date);
+
+    if(
+      result &&
+      !Number.isNaN(result.getTime())
+    ){
+
+      return result;
+
     }
-    return String(value);
+
   }
 
-  function escapeHTML(value) {
-    return safeText(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+  const d =
+    date instanceof Date
+      ? new Date(date)
+      : new Date(date);
+
+  if(Number.isNaN(d.getTime())){
+
+    const now = new Date();
+
+    return new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      12
+    );
+
   }
 
-  /* =======================================================
-     DATE HELPERS
-     ======================================================= */
+  return new Date(
+    d.getFullYear(),
+    d.getMonth(),
+    d.getDate(),
+    12
+  );
 
-  function normalizeDate(date) {
-    if (
-      window.BodoCalendarData &&
-      typeof window.BodoCalendarData.normalizeDate === "function"
-    ) {
-      const norm = window.BodoCalendarData.normalizeDate(date);
-      if (norm && !isNaN(norm.getTime())) {
-        const dNorm = new Date(norm.getTime());
-        dNorm.setHours(0, 0, 0, 0);
-        return dNorm;
-      }
-    }
+}
 
-    if (!date) {
-      const d = new Date();
-      d.setHours(0, 0, 0, 0);
-      return d;
-    }
 
-    if (date instanceof Date) {
-      const d = new Date(date.getTime());
-      d.setHours(0, 0, 0, 0);
-      return d;
-    }
+function createDateKey(date){
 
-    // String handling to prevent UTC offset shifts (e.g., "YYYY-MM-DD")
-    if (typeof date === "string") {
-      const match = date.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
-      if (match) {
-        return new Date(
-          parseInt(match[1], 10),
-          parseInt(match[2], 10) - 1,
-          parseInt(match[3], 10),
-          0,
-          0,
-          0,
-          0
-        );
-      }
-    }
+  if(
+    window.BodoCalendarData &&
+    typeof window.BodoCalendarData.getDateKey === "function"
+  ){
 
-    const d = new Date(date);
-    if (isNaN(d.getTime())) {
-      const now = new Date();
-      now.setHours(0, 0, 0, 0);
-      return now;
-    }
+    return window.BodoCalendarData.getDateKey(date);
 
-    d.setHours(0, 0, 0, 0);
-    return d;
   }
 
-  function createDateKey(date) {
-    const d = normalizeDate(date);
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${y}-${m}-${day}`;
+  const d =
+    normalizeDate(date);
+
+  return (
+    d.getFullYear() +
+    "-" +
+    String(d.getMonth()+1).padStart(2,"0") +
+    "-" +
+    String(d.getDate()).padStart(2,"0")
+  );
+
+}
+
+
+function addDays(date,amount){
+
+  const d =
+    normalizeDate(date);
+
+  d.setDate(
+    d.getDate()+amount
+  );
+
+  return d;
+
+}
+
+
+function getToday(){
+
+  return normalizeDate(
+    new Date()
+  );
+
+}
+
+
+/* =========================================================
+   DATA
+   ========================================================= */
+
+function getMonths(){
+
+  if(
+    window.BodoCalendarData &&
+    Array.isArray(
+      window.BodoCalendarData.months
+    )
+  ){
+
+    return window.BodoCalendarData.months;
+
   }
 
-  function addDays(date, amount) {
-    const d = normalizeDate(date);
-    d.setDate(d.getDate() + amount);
-    return d;
+  if(
+    window.BodoCalendarData &&
+    Array.isArray(
+      window.BodoCalendarData.bodoMonthsData
+    )
+  ){
+
+    return window.BodoCalendarData.bodoMonthsData;
+
   }
 
-  function getToday() {
-    return normalizeDate(new Date());
+  if(
+    Array.isArray(
+      window.bodoMonthsData
+    )
+  ){
+
+    return window.bodoMonthsData;
+
   }
 
-  /* =======================================================
-     DATA ACCESS & FALLBACKS
-     ======================================================= */
+  return [];
 
-  function getMonths() {
-    if (
-      window.BodoCalendarData &&
-      Array.isArray(window.BodoCalendarData.bodoMonthsData) &&
-      window.BodoCalendarData.bodoMonthsData.length > 0
-    ) {
-      return window.BodoCalendarData.bodoMonthsData;
-    }
+}
 
-    if (Array.isArray(window.bodoMonthsData) && window.bodoMonthsData.length > 0) {
-      return window.bodoMonthsData;
-    }
 
-    return [];
+function getWeekdays(){
+
+  if(
+    window.BodoCalendarData &&
+    Array.isArray(
+      window.BodoCalendarData.weekdays
+    )
+  ){
+
+    return window.BodoCalendarData.weekdays;
+
   }
 
-  function getWeekdays() {
-    if (
-      window.BodoCalendarData &&
-      Array.isArray(window.BodoCalendarData.bodoWeekdays) &&
-      window.BodoCalendarData.bodoWeekdays.length > 0
-    ) {
-      return window.BodoCalendarData.bodoWeekdays;
-    }
+  if(
+    Array.isArray(
+      window.bodoWeekdays
+    )
+  ){
 
-    if (Array.isArray(window.bodoWeekdays) && window.bodoWeekdays.length > 0) {
-      return window.bodoWeekdays;
-    }
+    return window.bodoWeekdays;
 
-    return [];
   }
 
-  function getMonthStartDateHelper(month) {
-    if (!month) return null;
+  return [];
 
-    if (
-      window.BodoCalendarData &&
-      typeof window.BodoCalendarData.getBodoMonthStartDate === "function"
-    ) {
-      const d = window.BodoCalendarData.getBodoMonthStartDate(month);
-      if (d && !isNaN(new Date(d).getTime())) return normalizeDate(d);
+}
+
+
+/* =========================================================
+   MONTH YEAR
+   ========================================================= */
+
+function getSelectedBodoYear(month){
+
+  const today =
+    state.today ||
+    getToday();
+
+  /*
+   * Push has a special Gregorian year.
+   *
+   * Jan 1–14:
+   * Push belongs to previous year.
+   *
+   * Dec 19 onward:
+   * Push belongs to current year.
+   */
+
+  if(
+    month &&
+    Number(month.id) === 11
+  ){
+
+    if(
+      today.getMonth() === 0 &&
+      today.getDate() <= 14
+    ){
+
+      return today.getFullYear() - 1;
+
     }
 
-    const possible = month.startDate || month.start || month.fromDate || month.gregorianStart;
-    if (possible) {
-      return normalizeDate(possible);
-    }
+    return today.getFullYear();
 
+  }
+
+  return today.getFullYear();
+
+}
+
+
+/* =========================================================
+   MONTH START
+   ========================================================= */
+
+function getMonthStartDateHelper(month){
+
+  if(!month){
     return null;
   }
 
-  function getMonthForDate(date) {
-    if (
-      window.BodoCalendarData &&
-      typeof window.BodoCalendarData.getBodoMonthForDate === "function"
-    ) {
-      const m = window.BodoCalendarData.getBodoMonthForDate(date);
-      if (m) return m;
+  const year =
+    getSelectedBodoYear(month);
+
+  if(
+    window.BodoCalendarData &&
+    typeof window.BodoCalendarData.getBodoMonthStartDate === "function"
+  ){
+
+    const date =
+      window.BodoCalendarData.getBodoMonthStartDate(
+        month.id,
+        year
+      );
+
+    if(
+      date &&
+      !Number.isNaN(
+        new Date(date).getTime()
+      )
+    ){
+
+      return normalizeDate(date);
+
     }
 
-    const target = normalizeDate(date);
-    const months = getMonths();
-
-    for (const month of months) {
-      const start = getMonthStartDateHelper(month);
-      let days = typeof month.days === "number" ? month.days : 30;
-      if (start) {
-        const end = addDays(start, days - 1);
-        if (target >= start && target <= end) {
-          return month;
-        }
-      }
-    }
-
-    return months.length ? months[0] : null;
   }
 
-  function getBodoDateInfo(date) {
-    if (
-      window.BodoCalendarData &&
-      typeof window.BodoCalendarData.getBodoDateInfo === "function"
-    ) {
-      const info = window.BodoCalendarData.getBodoDateInfo(date);
-      if (info) return info;
+  return null;
+
+}
+
+
+/* =========================================================
+   MONTH FOR DATE
+   ========================================================= */
+
+function getMonthForDate(date){
+
+  if(
+    window.BodoCalendarData &&
+    typeof window.BodoCalendarData.getBodoMonthForDate === "function"
+  ){
+
+    const result =
+      window.BodoCalendarData.getBodoMonthForDate(
+        date
+      );
+
+    /*
+     * IMPORTANT FIX:
+     *
+     * getBodoMonthForDate()
+     * returns:
+     *
+     * {
+     *   month: {...},
+     *   bodoYear: ...
+     * }
+     *
+     * NOT the month directly.
+     */
+
+    if(
+      result &&
+      result.month
+    ){
+
+      return result.month;
+
     }
 
-    const normDate = normalizeDate(date);
-    const month = getMonthForDate(normDate);
-
-    if (month) {
-      const start = getMonthStartDateHelper(month);
-      if (start) {
-        const diffTime = normDate.getTime() - start.getTime();
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
-        if (diffDays > 0) {
-          return {
-            bodoDate: diffDays,
-            month: month
-          };
-        }
-      }
-    }
-
-    return null;
   }
 
-  function getMonthById(id) {
-    const months = getMonths();
-    if (!months.length) return null;
+  return null;
+
+}
+
+
+/* =========================================================
+   BODO DATE INFO
+   ========================================================= */
+
+function getBodoDateInfo(date){
+
+  if(
+    window.BodoCalendarData &&
+    typeof window.BodoCalendarData.getBodoDateInfo === "function"
+  ){
 
     return (
-      months.find(
-        (month) =>
-          String(month.id).toLowerCase() === String(id).toLowerCase() ||
-          String(month.name).toLowerCase() === String(id).toLowerCase()
-      ) || months[0]
+      window.BodoCalendarData.getBodoDateInfo(
+        date
+      ) || null
     );
+
   }
 
-  /* =======================================================
-     EVENT DATA ACCESS
-     ======================================================= */
+  return null;
 
-  function getEventsForDate(date) {
-    const events = window.BodoCalendarEvents;
+}
 
-    if (events && typeof events.getEventsForDate === "function") {
-      return events.getEventsForDate(date) || [];
-    }
 
-    if (events && typeof events.getEventsByDate === "function") {
-      return events.getEventsByDate(date) || [];
-    }
+/* =========================================================
+   MONTH LOOKUP
+   ========================================================= */
 
-    return [];
+function getMonthById(id){
+
+  const months =
+    getMonths();
+
+  return (
+    months.find(
+      month =>
+        String(month.id) === String(id)
+    ) || null
+  );
+
+}
+
+
+/* =========================================================
+   MONTH NAME
+   ========================================================= */
+
+function getBodoMonthName(month){
+
+  if(!month){
+    return "Bodo Month";
   }
 
-  function getEventsForMonth(monthId) {
-    const events = window.BodoCalendarEvents;
+  return (
+    month.englishName ||
+    month.name ||
+    month.title ||
+    "Bodo Month"
+  );
 
-    if (events && typeof events.getEventsForMonth === "function") {
-      return events.getEventsForMonth(monthId) || [];
-    }
+}
 
-    if (events && typeof events.getMonthEvents === "function") {
-      return events.getMonthEvents(monthId) || [];
-    }
 
-    return [];
+function getBodoNativeName(month){
+
+  if(!month){
+    return "";
   }
 
-  /* =======================================================
-     NOTES DATA ACCESS
-     ======================================================= */
+  return (
+    month.nativeName ||
+    month.bodoName ||
+    month.native ||
+    ""
+  );
 
-  function getNotesForDate(date) {
-    const notes = window.BodoCalendarNotes;
+}
 
-    if (notes && typeof notes.getNotesForDate === "function") {
-      return notes.getNotesForDate(createDateKey(date)) || [];
-    }
 
-    return [];
+/* =========================================================
+   EVENTS
+   ========================================================= */
+
+function getEventsForDate(date){
+
+  const api =
+    window.BodoCalendarEvents;
+
+  if(
+    api &&
+    typeof api.getEventsForDate === "function"
+  ){
+
+    return (
+      api.getEventsForDate(date) || []
+    );
+
   }
 
-  function getAllNotes() {
-    const notes = window.BodoCalendarNotes;
+  if(
+    api &&
+    typeof api.getEventsByDate === "function"
+  ){
 
-    if (notes && typeof notes.getAllNotes === "function") {
-      return notes.getAllNotes() || [];
-    }
+    return (
+      api.getEventsByDate(date) || []
+    );
 
-    return [];
   }
 
-  /* =======================================================
-     FORMATTERS
-     ======================================================= */
+  return [];
 
-  function formatEnglishDate(date, options) {
-    const d = normalizeDate(date);
-    return d.toLocaleDateString(
+}
+
+
+function getEventsForMonth(monthId){
+
+  const api =
+    window.BodoCalendarEvents;
+
+  if(
+    api &&
+    typeof api.getEventsForMonth === "function"
+  ){
+
+    return (
+      api.getEventsForMonth(monthId) || []
+    );
+
+  }
+
+  if(
+    api &&
+    typeof api.getEventsForBodoMonth === "function"
+  ){
+
+    return (
+      api.getEventsForBodoMonth(monthId) || []
+    );
+
+  }
+
+  if(
+    api &&
+    typeof api.getEventsForBodoMonth === "function"
+  ){
+
+    return (
+      api.getEventsForBodoMonth(monthId) || []
+    );
+
+  }
+
+  if(
+    typeof window.getEventsForBodoMonth === "function"
+  ){
+
+    return (
+      window.getEventsForBodoMonth(monthId) || []
+    );
+
+  }
+
+  return [];
+
+}
+
+
+/* =========================================================
+   NOTES
+   ========================================================= */
+
+function getNotesForDate(date){
+
+  const api =
+    window.BodoCalendarNotes;
+
+  if(
+    api &&
+    typeof api.getNotesForDate === "function"
+  ){
+
+    return (
+      api.getNotesForDate(
+        createDateKey(date)
+      ) || []
+    );
+
+  }
+
+  return [];
+
+}
+
+
+function getAllNotes(){
+
+  const api =
+    window.BodoCalendarNotes;
+
+  if(
+    api &&
+    typeof api.getAllNotes === "function"
+  ){
+
+    return (
+      api.getAllNotes() || []
+    );
+
+  }
+
+  return [];
+
+}
+
+
+/* =========================================================
+   FORMATTERS
+   ========================================================= */
+
+function formatEnglishDate(
+  date,
+  options
+){
+
+  return normalizeDate(date)
+    .toLocaleDateString(
       "en-IN",
       options || {
-        day: "numeric",
-        month: "long",
-        year: "numeric"
+        day:"numeric",
+        month:"long",
+        year:"numeric"
       }
     );
-  }
 
-  function formatShortEnglishDate(date) {
-    return formatEnglishDate(date, {
-      day: "numeric",
-      month: "short",
-      year: "numeric"
-    });
-  }
+}
 
-  function getBodoDateNumberFromInfo(info) {
-    if (!info) return null;
-    return (
-      info.bodoDate ??
-      info.dateNumber ??
-      info.day ??
-      info.dayNumber ??
-      null
-    );
-  }
 
-  function getBodoMonthName(month) {
-    if (!month) return "Bodo Month";
-    return month.name || month.englishName || month.title || "Bodo Month";
-  }
+function formatShortEnglishDate(date){
 
-  function getBodoNativeName(month) {
-    if (!month) return "";
-    return (
-      month.nativeName ||
-      month.bodoName ||
-      month.native ||
-      month.devanagari ||
-      ""
-    );
-  }
-
-  /* =======================================================
-     INITIAL MONTH
-     ======================================================= */
-
-  function detectCurrentMonth() {
-    const today = state.today;
-    const month = getMonthForDate(today);
-
-    if (month) {
-      state.selectedMonthId = month.id;
-      return month;
+  return formatEnglishDate(
+    date,
+    {
+      day:"numeric",
+      month:"short",
+      year:"numeric"
     }
+  );
 
-    const months = getMonths();
-    if (months.length) {
-      state.selectedMonthId = months[0].id;
-      return months[0];
-    }
+}
 
+
+function getBodoDateNumberFromInfo(info){
+
+  if(!info){
     return null;
   }
 
-  /* =======================================================
-     MONTH SELECTOR
-     ======================================================= */
+  /*
+   * PRIMARY FIX:
+   * Current data stores the day at info.bodo.day.
+   */
 
-  function renderMonthSelector() {
-    const select = $("monthSelect");
-    if (!select) return;
+  if(
+    info.bodo &&
+    info.bodo.day !== undefined
+  ){
 
-    const months = getMonths();
-    select.innerHTML = "";
+    return info.bodo.day;
 
-    months.forEach((month) => {
-      const option = document.createElement("option");
-      option.value = String(month.id);
-
-      const name = getBodoMonthName(month);
-      const native = getBodoNativeName(month);
-
-      option.textContent = native ? `${name} — ${native}` : name;
-
-      if (String(month.id) === String(state.selectedMonthId)) {
-        option.selected = true;
-      }
-
-      select.appendChild(option);
-    });
   }
 
-  /* =======================================================
-     WEEKDAY HEADER
-     ======================================================= */
+  return (
+    info.bodoDate ??
+    info.dateNumber ??
+    info.day ??
+    info.dayNumber ??
+    null
+  );
 
-  function renderWeekdayHeader() {
-    const container = $("weekdayHeader");
-    if (!container) return;
+}
 
-    const weekdays = getWeekdays();
-    container.innerHTML = "";
 
-    const defaultWeekdays = [
-      { bodo: "रबिबार", english: "Sunday" },
-      { bodo: "समबार", english: "Monday" },
-      { bodo: "मंगलबार", english: "Tuesday" },
-      { bodo: "बुदबार", english: "Wednesday" },
-      { bodo: "बिसथिबार", english: "Thursday" },
-      { bodo: "सुखुरबार", english: "Friday" },
-      { bodo: "सुनिबार", english: "Saturday" }
-    ];
+/* =========================================================
+   CURRENT MONTH
+   ========================================================= */
 
-    const listToRender = weekdays.length ? weekdays : defaultWeekdays;
+function detectCurrentMonth(){
 
-    listToRender.forEach((weekday) => {
-      const item = document.createElement("div");
-      item.className = "weekday-item";
+  const month =
+    getMonthForDate(
+      state.today
+    );
 
-      if (typeof weekday === "string") {
-        item.textContent = weekday;
-      } else {
-        const english = weekday.english || weekday.name || weekday.label || "";
-        const bodo = weekday.bodo || weekday.nativeName || weekday.native || "";
+  if(month){
+
+    state.selectedMonthId =
+      month.id;
+
+    return month;
+
+  }
+
+  const months =
+    getMonths();
+
+  if(months.length){
+
+    state.selectedMonthId =
+      months[0].id;
+
+    return months[0];
+
+  }
+
+  return null;
+
+}
+
+
+/* =========================================================
+   MONTH SELECT
+   ========================================================= */
+
+function renderMonthSelector(){
+
+  const select =
+    $("monthSelect");
+
+  if(!select){
+    return;
+  }
+
+  const months =
+    getMonths();
+
+  select.innerHTML = "";
+
+  months.forEach(
+    month => {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        String(month.id);
+
+      const name =
+        getBodoMonthName(month);
+
+      const native =
+        getBodoNativeName(month);
+
+      option.textContent =
+        native
+          ? `${name} — ${native}`
+          : name;
+
+      if(
+        String(month.id) ===
+        String(state.selectedMonthId)
+      ){
+
+        option.selected = true;
+
+      }
+
+      select.appendChild(
+        option
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   WEEKDAY HEADER
+   ========================================================= */
+
+function renderWeekdayHeader(){
+
+  const container =
+    $("weekdayHeader");
+
+  if(!container){
+    return;
+  }
+
+  const weekdays =
+    getWeekdays();
+
+  container.innerHTML = "";
+
+  weekdays.forEach(
+    weekday => {
+
+      const item =
+        document.createElement("div");
+
+      item.className =
+        "weekday-item";
+
+      if(
+        typeof weekday === "string"
+      ){
+
+        item.textContent =
+          weekday;
+
+      }else{
+
+        const english =
+          weekday.en ||
+          weekday.english ||
+          weekday.name ||
+          "";
+
+        const bodo =
+          weekday.bodo ||
+          weekday.nativeName ||
+          "";
 
         item.innerHTML =
-          `<span>${escapeHTML(bodo || english)}</span>` +
-          (bodo && english
-            ? `<small>${escapeHTML(english)}</small>`
-            : "");
+          `<span>${escapeHTML(
+            bodo || english
+          )}</span>` +
+          (
+            bodo && english
+              ? `<small>${escapeHTML(
+                  english
+                )}</small>`
+              : ""
+          );
+
       }
 
-      container.appendChild(item);
-    });
-  }
+      container.appendChild(
+        item
+      );
 
-  /* =======================================================
-     MONTH BANNER
-     ======================================================= */
-
-  function renderMonthBanner() {
-    const month = getMonthById(state.selectedMonthId);
-    if (!month) return;
-
-    const name = getBodoMonthName(month);
-    const native = getBodoNativeName(month);
-
-    if ($("currentMonthName")) {
-      $("currentMonthName").textContent = name;
     }
+  );
 
-    if ($("currentMonthNativeName")) {
-      $("currentMonthNativeName").textContent = native;
-    }
+}
 
-    let startDate = getMonthStartDateHelper(month);
-    let endDate = null;
 
-    if (
-      window.BodoCalendarData &&
-      typeof window.BodoCalendarData.getBodoMonthEndDate === "function"
-    ) {
-      endDate = window.BodoCalendarData.getBodoMonthEndDate(month);
-    }
+/* =========================================================
+   MONTH BANNER
+   ========================================================= */
 
-    if (!endDate && startDate) {
-      const days = typeof month.days === "number" ? month.days : 30;
-      endDate = addDays(startDate, days - 1);
-    }
+function renderMonthBanner(){
 
-    if ($("currentMonthDateRange")) {
-      if (startDate && endDate) {
-        $("currentMonthDateRange").textContent = `${formatShortEnglishDate(
-          startDate
-        )} — ${formatShortEnglishDate(endDate)}`;
-      } else if (month.dateRange || month.gregorianRange) {
-        $("currentMonthDateRange").textContent =
-          month.dateRange || month.gregorianRange;
-      } else {
-        $("currentMonthDateRange").textContent = "Bodo Solar Calendar Month";
-      }
-    }
-
-    if ($("monthSeasonLabel")) {
-      const season = month.season || month.seasonName || "BODO SOLAR MONTH";
-      $("monthSeasonLabel").textContent = season;
-    }
-
-    updateSeason(month);
-  }
-
-  /* =======================================================
-     CALENDAR GRID
-     ======================================================= */
-
-  function renderCalendar() {
-    const grid = $("calendarGrid");
-    if (!grid) return;
-
-    const month = getMonthById(state.selectedMonthId);
-
-    if (!month) {
-      grid.innerHTML = createEmptyState("Calendar month unavailable.");
-      return;
-    }
-
-    let dates = [];
-
-    if (
-      window.BodoCalendarData &&
-      typeof window.BodoCalendarData.generateMonthDates === "function"
-    ) {
-      dates = window.BodoCalendarData.generateMonthDates(month.id) || [];
-    } else if (
-      window.BodoCalendarData &&
-      typeof window.BodoCalendarData.generateCalendarDates === "function"
-    ) {
-      dates = window.BodoCalendarData.generateCalendarDates(month.id) || [];
-    }
-
-    /* Robust Fallback Generation */
-    if (!dates.length) {
-      let startDate = getMonthStartDateHelper(month);
-      let days = typeof month.days === "number" ? month.days : 30;
-
-      if (!startDate) {
-        startDate = new Date();
-        startDate.setDate(1);
-      }
-
-      for (let i = 0; i < days; i++) {
-        dates.push({
-          date: addDays(startDate, i),
-          bodoDate: i + 1,
-          monthId: month.id
-        });
-      }
-    }
-
-    grid.innerHTML = "";
-
-    if (!dates.length) {
-      grid.innerHTML = createEmptyState("No calendar dates available.");
-      return;
-    }
-
-    /* Add empty weekday spaces before month start */
-    const firstDate = extractGregorianDate(dates[0]);
-
-    if (firstDate) {
-      const dayOfWeek = firstDate.getDay();
-      for (let i = 0; i < dayOfWeek; i++) {
-        const blank = document.createElement("div");
-        blank.className = "calendar-date blank-date";
-        blank.setAttribute("aria-hidden", "true");
-        grid.appendChild(blank);
-      }
-    }
-
-    dates.forEach((entry) => {
-      const date = extractGregorianDate(entry);
-      if (!date) return;
-
-      const card = createDateCard(date, entry, month);
-      grid.appendChild(card);
-    });
-  }
-
-  /* =======================================================
-     EXTRACT DATE FROM CALENDAR ENTRY
-     ======================================================= */
-
-  function extractGregorianDate(entry) {
-    if (!entry) return null;
-
-    if (entry instanceof Date) {
-      return normalizeDate(entry);
-    }
-
-    const possible =
-      entry.date ||
-      entry.gregorianDate ||
-      entry.fullDate ||
-      entry.calendarDate;
-
-    if (possible) {
-      return normalizeDate(possible);
-    }
-
-    return null;
-  }
-
-  /* =======================================================
-     CREATE DATE CARD
-     ======================================================= */
-
-  function createDateCard(date, entry, month) {
-    const card = document.createElement("button");
-    card.type = "button";
-    card.className = "calendar-date";
-
-    const dateKey = createDateKey(date);
-    const isToday = dateKey === createDateKey(state.today);
-    const isSelected =
-      state.selectedDate && dateKey === createDateKey(state.selectedDate);
-
-    const events = getEventsForDate(date);
-    const notes = getNotesForDate(date);
-
-    if (isToday) {
-      card.classList.add("today", "is-today");
-    }
-
-    if (isSelected) {
-      card.classList.add("selected");
-    }
-
-    if (events.length) {
-      card.classList.add("has-event", "event-date");
-    }
-
-    if (notes.length) {
-      card.classList.add("has-note", "note-date");
-    }
-
-    const info = getBodoDateInfo(date);
-    let bodoNumber = getBodoDateNumberFromInfo(info);
-
-    if (bodoNumber === null || bodoNumber === undefined) {
-      bodoNumber = entry.bodoDate ?? entry.day ?? entry.dayNumber ?? "";
-    }
-
-    const englishDay = date.getDate();
-    const weekday = date.toLocaleDateString("en-IN", { weekday: "short" });
-
-    card.innerHTML = `
-      <span class="date-weekday">${escapeHTML(weekday)}</span>
-      <strong class="bodo-date-number">${escapeHTML(bodoNumber)}</strong>
-      <span class="gregorian-date">${escapeHTML(englishDay)}</span>
-      ${events.length ? `<span class="date-event-dot" aria-label="Event"></span>` : ""}
-      ${notes.length ? `<span class="date-note-dot" aria-label="Personal note"></span>` : ""}
-    `;
-
-    card.setAttribute(
-      "aria-label",
-      `${getBodoMonthName(month)} ${bodoNumber}, ${formatEnglishDate(date)}`
+  const month =
+    getMonthById(
+      state.selectedMonthId
     );
 
-    card.addEventListener("click", function () {
-      selectDate(date);
-    });
-
-    return card;
+  if(!month){
+    return;
   }
 
-  /* =======================================================
-     EMPTY STATE
-     ======================================================= */
+  const name =
+    getBodoMonthName(month);
 
-  function createEmptyState(message) {
-    return `
-      <div class="empty-state">
-        <span>📅</span>
-        <p>${escapeHTML(message)}</p>
-      </div>
-    `;
+  const native =
+    getBodoNativeName(month);
+
+  if($("currentMonthName")){
+
+    $("currentMonthName")
+      .textContent = name;
+
   }
 
-  /* =======================================================
-     SELECT DATE
-     ======================================================= */
+  if($("currentMonthNativeName")){
 
-  function selectDate(date, openModal = true) {
-    state.selectedDate = normalizeDate(date);
+    $("currentMonthNativeName")
+      .textContent = native;
 
-    renderCalendar();
-    renderSelectedDate();
-
-    if (openModal) {
-      openDateModal(state.selectedDate);
-    }
   }
 
-  /* =======================================================
-     SELECTED DATE SIDEBAR
-     ======================================================= */
+  const start =
+    getMonthStartDateHelper(
+      month
+    );
 
-  function renderSelectedDate() {
-    const date = state.selectedDate || state.today;
-    if (!date) return;
+  let end = null;
 
-    const info = getBodoDateInfo(date);
-    const month = getMonthForDate(date);
-    const bodoNumber = getBodoDateNumberFromInfo(info);
+  const year =
+    getSelectedBodoYear(month);
 
-    if ($("selectedDateTitle")) {
-      $("selectedDateTitle").textContent = month
-        ? `${getBodoMonthName(month)} ${bodoNumber || ""}`
-        : formatShortEnglishDate(date);
-    }
+  if(
+    window.BodoCalendarData &&
+    typeof window.BodoCalendarData.getBodoMonthEndDate === "function"
+  ){
 
-    const details = $("selectedDateDetails");
-    if (!details) return;
+    end =
+      window.BodoCalendarData.getBodoMonthEndDate(
+        month.id,
+        year
+      );
 
-    const events = getEventsForDate(date);
-    const notes = getNotesForDate(date);
-
-    let html = `
-      <div class="selected-date-main">
-        <strong>${escapeHTML(formatEnglishDate(date))}</strong>
-      </div>
-    `;
-
-    if (month) {
-      html += `
-        <div class="selected-date-bodo">
-          Bodo Date:
-          <strong>${escapeHTML(getBodoMonthName(month))} ${escapeHTML(bodoNumber || "")}</strong>
-        </div>
-      `;
-    }
-
-    if (events.length) {
-      html += `
-        <div class="selected-date-events">
-          <strong>🎉 Events</strong>
-          <ul>
-      `;
-      events.forEach((event) => {
-        html += `<li>${escapeHTML(event.title || event.name || "Event")}</li>`;
-      });
-      html += `</ul></div>`;
-    }
-
-    if (notes.length) {
-      html += `
-        <div class="selected-date-notes">
-          <strong>📝 My Notes</strong>
-          <ul>
-      `;
-      notes.forEach((note) => {
-        html += `<li>${escapeHTML(note.title || "Personal note")}</li>`;
-      });
-      html += `</ul></div>`;
-    }
-
-    if (!events.length && !notes.length) {
-      html += `<p class="selected-date-empty">No event or personal note for this date.</p>`;
-    }
-
-    details.innerHTML = html;
   }
 
-  /* =======================================================
-     DATE MODAL
-     ======================================================= */
+  if($("currentMonthDateRange")){
 
-  function openDateModal(date) {
-    const modal = $("dateModal");
-    if (!modal) return;
+    if(start && end){
 
-    const info = getBodoDateInfo(date);
-    const month = getMonthForDate(date);
-    const bodoNumber = getBodoDateNumberFromInfo(info);
+      $("currentMonthDateRange")
+        .textContent =
+          `${formatShortEnglishDate(
+            start
+          )} — ${formatShortEnglishDate(
+            end
+          )}`;
 
-    if ($("dateModalTitle")) {
-      $("dateModalTitle").textContent = month
-        ? `${getBodoMonthName(month)} ${bodoNumber || ""}`
-        : formatShortEnglishDate(date);
+    }else{
+
+      $("currentMonthDateRange")
+        .textContent =
+          month.dateRange ||
+          "Bodo Solar Calendar Month";
+
     }
 
-    const body = $("dateModalBody");
-    if (!body) return;
+  }
 
-    const events = getEventsForDate(date);
-    const notes = getNotesForDate(date);
+  if($("monthSeasonLabel")){
 
-    let html = `
-      <div class="date-detail-block">
-        <span class="detail-label">GREGORIAN DATE</span>
-        <strong>${escapeHTML(formatEnglishDate(date))}</strong>
-      </div>
-    `;
+    $("monthSeasonLabel")
+      .textContent =
+        month.season ||
+        "BODO SOLAR MONTH";
 
-    if (month) {
-      html += `
-        <div class="date-detail-block">
-          <span class="detail-label">BODO DATE</span>
-          <strong>${escapeHTML(getBodoMonthName(month))} ${escapeHTML(bodoNumber || "")}</strong>
-          ${getBodoNativeName(month) ? `<small>${escapeHTML(getBodoNativeName(month))}</small>` : ""}
-        </div>
-      `;
+  }
+
+  updateSeason(month);
+
+}
+
+
+/* =========================================================
+   CALENDAR
+   ========================================================= */
+
+function renderCalendar(){
+
+  const grid =
+    $("calendarGrid");
+
+  if(!grid){
+    return;
+  }
+
+  const month =
+    getMonthById(
+      state.selectedMonthId
+    );
+
+  if(!month){
+
+    grid.innerHTML =
+      createEmptyState(
+        "Calendar month unavailable."
+      );
+
+    return;
+
+  }
+
+  const year =
+    getSelectedBodoYear(month);
+
+  let dates = [];
+
+  if(
+    window.BodoCalendarData &&
+    typeof window.BodoCalendarData.getBodoMonthDates === "function"
+  ){
+
+    dates =
+      window.BodoCalendarData.getBodoMonthDates(
+        month.id,
+        year
+      ) || [];
+
+  }
+
+  grid.innerHTML = "";
+
+  if(!dates.length){
+
+    grid.innerHTML =
+      createEmptyState(
+        "No calendar dates available."
+      );
+
+    return;
+
+  }
+
+  const firstDate =
+    dates[0] &&
+    dates[0].date
+      ? normalizeDate(
+          dates[0].date
+        )
+      : null;
+
+  if(firstDate){
+
+    const weekday =
+      firstDate.getDay();
+
+    for(
+      let i=0;
+      i<weekday;
+      i++
+    ){
+
+      const blank =
+        document.createElement(
+          "div"
+        );
+
+      blank.className =
+        "calendar-date blank-date";
+
+      blank.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+      grid.appendChild(
+        blank
+      );
+
     }
+
+  }
+
+  dates.forEach(
+    entry => {
+
+      if(
+        !entry ||
+        !entry.date
+      ){
+
+        return;
+
+      }
+
+      const date =
+        normalizeDate(
+          entry.date
+        );
+
+      grid.appendChild(
+        createDateCard(
+          date,
+          entry,
+          month
+        )
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   DATE CARD
+   ========================================================= */
+
+function createDateCard(
+  date,
+  entry,
+  month
+){
+
+  const card =
+    document.createElement(
+      "button"
+    );
+
+  card.type =
+    "button";
+
+  card.className =
+    "calendar-date";
+
+  const dateKey =
+    createDateKey(date);
+
+  const isToday =
+    dateKey ===
+    createDateKey(
+      state.today
+    );
+
+  const isSelected =
+    state.selectedDate &&
+    dateKey ===
+    createDateKey(
+      state.selectedDate
+    );
+
+  const events =
+    getEventsForDate(date);
+
+  const notes =
+    getNotesForDate(date);
+
+  if(isToday){
+
+    card.classList.add(
+      "today",
+      "is-today"
+    );
+
+  }
+
+  if(isSelected){
+
+    card.classList.add(
+      "selected"
+    );
+
+  }
+
+  if(events.length){
+
+    card.classList.add(
+      "has-event",
+      "event-date"
+    );
+
+  }
+
+  if(notes.length){
+
+    card.classList.add(
+      "has-note",
+      "note-date"
+    );
+
+  }
+
+  const info =
+    getBodoDateInfo(date);
+
+  const bodoNumber =
+    getBodoDateNumberFromInfo(
+      info
+    );
+
+  const weekday =
+    date.toLocaleDateString(
+      "en-IN",
+      {
+        weekday:"short"
+      }
+    );
+
+  card.innerHTML = `
+
+    <span class="date-weekday">
+      ${escapeHTML(weekday)}
+    </span>
+
+    <strong class="bodo-date-number">
+      ${escapeHTML(bodoNumber)}
+    </strong>
+
+    <span class="gregorian-date">
+      ${escapeHTML(date.getDate())}
+    </span>
+
+    ${
+      events.length
+        ? `<span class="date-event-dot"></span>`
+        : ""
+    }
+
+    ${
+      notes.length
+        ? `<span class="date-note-dot"></span>`
+        : ""
+    }
+
+  `;
+
+  card.setAttribute(
+    "aria-label",
+    `${getBodoMonthName(month)} ` +
+    `${bodoNumber}, ` +
+    `${formatEnglishDate(date)}`
+  );
+
+  card.addEventListener(
+    "click",
+    function(){
+
+      selectDate(
+        date,
+        true
+      );
+
+    }
+  );
+
+  return card;
+
+}
+
+
+/* =========================================================
+   EMPTY
+   ========================================================= */
+
+function createEmptyState(message){
+
+  return `
+    <div class="empty-state">
+      <span>📅</span>
+      <p>${escapeHTML(message)}</p>
+    </div>
+  `;
+
+}
+
+
+/* =========================================================
+   SELECT DATE
+   ========================================================= */
+
+function selectDate(
+  date,
+  openModal=true
+){
+
+  state.selectedDate =
+    normalizeDate(date);
+
+  /*
+   * Make sure selected date's month
+   * becomes active.
+   */
+
+  const month =
+    getMonthForDate(
+      state.selectedDate
+    );
+
+  if(month){
+
+    state.selectedMonthId =
+      month.id;
+
+  }
+
+  updateCalendarView();
+
+  if(openModal){
+
+    openDateModal(
+      state.selectedDate
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   SELECTED DATE
+   ========================================================= */
+
+function renderSelectedDate(){
+
+  const date =
+    state.selectedDate ||
+    state.today;
+
+  if(!date){
+    return;
+  }
+
+  const info =
+    getBodoDateInfo(date);
+
+  const month =
+    getMonthForDate(date);
+
+  const bodoNumber =
+    getBodoDateNumberFromInfo(
+      info
+    );
+
+  if($("selectedDateTitle")){
+
+    $("selectedDateTitle")
+      .textContent =
+        month
+          ? `${getBodoMonthName(
+              month
+            )} ${bodoNumber || ""}`
+          : formatShortEnglishDate(
+              date
+            );
+
+  }
+
+  const details =
+    $("selectedDateDetails");
+
+  if(!details){
+    return;
+  }
+
+  const events =
+    getEventsForDate(date);
+
+  const notes =
+    getNotesForDate(date);
+
+  let html = `
+
+    <div class="selected-date-main">
+      <strong>
+        ${escapeHTML(
+          formatEnglishDate(date)
+        )}
+      </strong>
+    </div>
+
+  `;
+
+  if(month){
 
     html += `
-      <div class="date-detail-block">
-        <span class="detail-label">WEEKDAY</span>
-        <strong>${escapeHTML(date.toLocaleDateString("en-IN", { weekday: "long" }))}</strong>
+
+      <div class="selected-date-bodo">
+        Bodo Date:
+        <strong>
+          ${escapeHTML(
+            getBodoMonthName(month)
+          )}
+          ${escapeHTML(
+            bodoNumber || ""
+          )}
+        </strong>
+      </div>
+
+    `;
+
+  }
+
+  if(events.length){
+
+    html += `
+      <div class="selected-date-events">
+        <strong>🎉 Events</strong>
+        <ul>
+    `;
+
+    events.forEach(
+      event => {
+
+        html += `
+          <li>
+            ${escapeHTML(
+              event.title ||
+              event.name ||
+              "Event"
+            )}
+          </li>
+        `;
+
+      }
+    );
+
+    html += `
+        </ul>
       </div>
     `;
 
-    if (events.length) {
-      html += `<div class="date-detail-events"><h3>🎉 Events</h3>`;
-      events.forEach((event) => {
-        const type = event.type || event.category || "Cultural Event";
-        const description = event.description || event.details || "";
+  }
+
+  if(notes.length){
+
+    html += `
+      <div class="selected-date-notes">
+        <strong>📝 My Notes</strong>
+        <ul>
+    `;
+
+    notes.forEach(
+      note => {
+
         html += `
+          <li>
+            ${escapeHTML(
+              note.title ||
+              "Personal Note"
+            )}
+          </li>
+        `;
+
+      }
+    );
+
+    html += `
+        </ul>
+      </div>
+    `;
+
+  }
+
+  if(
+    !events.length &&
+    !notes.length
+  ){
+
+    html += `
+      <p class="selected-date-empty">
+        No event or personal note for this date.
+      </p>
+    `;
+
+  }
+
+  details.innerHTML =
+    html;
+
+}
+
+
+/* =========================================================
+   DATE MODAL
+   ========================================================= */
+
+function openDateModal(date){
+
+  const modal =
+    $("dateModal");
+
+  if(!modal){
+    return;
+  }
+
+  const info =
+    getBodoDateInfo(date);
+
+  const month =
+    getMonthForDate(date);
+
+  const bodoNumber =
+    getBodoDateNumberFromInfo(
+      info
+    );
+
+  if($("dateModalTitle")){
+
+    $("dateModalTitle")
+      .textContent =
+        month
+          ? `${getBodoMonthName(
+              month
+            )} ${bodoNumber || ""}`
+          : formatShortEnglishDate(
+              date
+            );
+
+  }
+
+  const body =
+    $("dateModalBody");
+
+  if(!body){
+    return;
+  }
+
+  const events =
+    getEventsForDate(date);
+
+  const notes =
+    getNotesForDate(date);
+
+  let html = `
+
+    <div class="date-detail-block">
+      <span class="detail-label">
+        GREGORIAN DATE
+      </span>
+
+      <strong>
+        ${escapeHTML(
+          formatEnglishDate(date)
+        )}
+      </strong>
+    </div>
+
+  `;
+
+  if(month){
+
+    html += `
+
+      <div class="date-detail-block">
+
+        <span class="detail-label">
+          BODO DATE
+        </span>
+
+        <strong>
+          ${escapeHTML(
+            getBodoMonthName(month)
+          )}
+          ${escapeHTML(
+            bodoNumber || ""
+          )}
+        </strong>
+
+        <small>
+          ${escapeHTML(
+            getBodoNativeName(month)
+          )}
+        </small>
+
+      </div>
+
+    `;
+
+  }
+
+  html += `
+
+    <div class="date-detail-block">
+
+      <span class="detail-label">
+        WEEKDAY
+      </span>
+
+      <strong>
+        ${escapeHTML(
+          date.toLocaleDateString(
+            "en-IN",
+            {
+              weekday:"long"
+            }
+          )
+        )}
+      </strong>
+
+    </div>
+
+  `;
+
+  if(events.length){
+
+    html += `
+      <div class="date-detail-events">
+        <h3>🎉 Events</h3>
+    `;
+
+    events.forEach(
+      event => {
+
+        html += `
+
           <article class="date-event-item">
-            <strong>${escapeHTML(event.title || event.name || "Event")}</strong>
-            <span>${escapeHTML(type)}</span>
-            ${description ? `<p>${escapeHTML(description)}</p>` : ""}
-          </article>
-        `;
-      });
-      html += `</div>`;
-    }
 
-    if (notes.length) {
-      html += `<div class="date-detail-notes"><h3>📝 My Notes</h3>`;
-      notes.forEach((note) => {
+            <strong>
+              ${escapeHTML(
+                event.title ||
+                event.name ||
+                "Event"
+              )}
+            </strong>
+
+            <span>
+              ${escapeHTML(
+                event.type ||
+                event.category ||
+                "Cultural Event"
+              )}
+            </span>
+
+            ${
+              event.description ||
+              event.desc ||
+              event.details
+                ? `
+                  <p>
+                    ${escapeHTML(
+                      event.description ||
+                      event.desc ||
+                      event.details
+                    )}
+                  </p>
+                `
+                : ""
+            }
+
+          </article>
+
+        `;
+
+      }
+    );
+
+    html += `
+      </div>
+    `;
+
+  }
+
+  if(notes.length){
+
+    html += `
+      <div class="date-detail-notes">
+        <h3>📝 My Notes</h3>
+    `;
+
+    notes.forEach(
+      note => {
+
         html += `
+
           <article class="date-note-item">
-            <strong>${escapeHTML(note.title || "Personal Note")}</strong>
-            ${note.category ? `<span>${escapeHTML(note.category)}</span>` : ""}
-            ${note.description ? `<p>${escapeHTML(note.description)}</p>` : ""}
+
+            <strong>
+              ${escapeHTML(
+                note.title ||
+                "Personal Note"
+              )}
+            </strong>
+
+            ${
+              note.category
+                ? `
+                  <span>
+                    ${escapeHTML(
+                      note.category
+                    )}
+                  </span>
+                `
+                : ""
+            }
+
+            ${
+              note.description
+                ? `
+                  <p>
+                    ${escapeHTML(
+                      note.description
+                    )}
+                  </p>
+                `
+                : ""
+            }
+
           </article>
+
         `;
-      });
-      html += `</div>`;
-    }
 
-    if (!events.length && !notes.length) {
-      html += `
-        <div class="empty-state">
-          <span>🌿</span>
-          <p>No event or personal note for this date.</p>
-        </div>
-      `;
-    }
+      }
+    );
 
-    body.innerHTML = html;
+    html += `
+      </div>
+    `;
 
-    const noteDate = $("noteDate");
-    if (noteDate) {
-      noteDate.value = createDateKey(date);
-    }
-
-    modal.classList.remove("hidden");
-    document.body.classList.add("modal-open");
   }
 
-  function closeDateModal() {
-    const modal = $("dateModal");
-    if (modal) {
-      modal.classList.add("hidden");
-    }
-    document.body.classList.remove("modal-open");
+  if(
+    !events.length &&
+    !notes.length
+  ){
+
+    html += `
+      <div class="empty-state">
+        <span>🌿</span>
+        <p>
+          No event or personal note for this date.
+        </p>
+      </div>
+    `;
+
   }
 
-  /* =======================================================
-     EVENTS SIDEBAR
-     ======================================================= */
+  body.innerHTML =
+    html;
 
-  function renderEvents() {
-    const container = $("eventsList");
-    if (!container) return;
+  if($("noteDate")){
 
-    const events = getEventsForMonth(state.selectedMonthId);
-    container.innerHTML = "";
+    $("noteDate").value =
+      createDateKey(date);
 
-    if (!events.length) {
-      container.innerHTML = createEmptyState("No events listed for this month.");
-      return;
-    }
-
-    events.forEach((event) => {
-      const item = document.createElement("article");
-      item.className = "event-list-item";
-
-      const eventDate = event.date || event.gregorianDate || null;
-      const dateText = eventDate
-        ? formatShortEnglishDate(normalizeDate(eventDate))
-        : event.bodoDate
-        ? `Bodo Date ${event.bodoDate}`
-        : "";
-
-      item.innerHTML = `
-        <div class="event-list-icon">${escapeHTML(event.icon || "🎉")}</div>
-        <div class="event-list-content">
-          <strong>${escapeHTML(event.title || event.name || "Event")}</strong>
-          ${dateText ? `<small>${escapeHTML(dateText)}</small>` : ""}
-          ${
-            event.description || event.details
-              ? `<p>${escapeHTML(event.description || event.details)}</p>`
-              : ""
-          }
-        </div>
-      `;
-
-      container.appendChild(item);
-    });
   }
 
-  /* =======================================================
-     HISTORY / TODAY EVENTS
-     ======================================================= */
+  modal.classList.remove(
+    "hidden"
+  );
 
-  function renderHistory() {
-    const container = $("historyList");
-    if (!container) return;
+  document.body.classList.add(
+    "modal-open"
+  );
 
-    const events = getEventsForDate(state.today);
-    const historical = events.filter((event) => {
-      const type = String(event.type || event.category || "").toLowerCase();
-      return (
-        type.includes("history") ||
-        type.includes("birth") ||
-        type.includes("death") ||
-        type.includes("anniversary") ||
-        type.includes("remembrance")
+}
+
+
+function closeDateModal(){
+
+  const modal =
+    $("dateModal");
+
+  if(modal){
+
+    modal.classList.add(
+      "hidden"
+    );
+
+  }
+
+  document.body.classList.remove(
+    "modal-open"
+  );
+
+}
+
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+
+function renderEvents(){
+
+  const container =
+    $("eventsList");
+
+  if(!container){
+    return;
+  }
+
+  const events =
+    getEventsForMonth(
+      state.selectedMonthId
+    );
+
+  container.innerHTML = "";
+
+  if(!events.length){
+
+    container.innerHTML =
+      createEmptyState(
+        "No events listed for this month."
       );
-    });
 
-    container.innerHTML = "";
+    return;
 
-    if (!historical.length) {
-      container.innerHTML = createEmptyState("No historical entry for today.");
-      return;
-    }
-
-    historical.forEach((event) => {
-      const item = document.createElement("article");
-      item.className = "history-list-item";
-
-      item.innerHTML = `
-        <div class="history-icon">📜</div>
-        <div>
-          <strong>${escapeHTML(event.title || event.name || "Historical Event")}</strong>
-          ${
-            event.description || event.details
-              ? `<p>${escapeHTML(event.description || event.details)}</p>`
-              : ""
-          }
-        </div>
-      `;
-
-      container.appendChild(item);
-    });
   }
 
-  /* =======================================================
-     SEASON
-     ======================================================= */
+  events.forEach(
+    event => {
 
-  function updateSeason(month) {
-    if (!month) return;
+      const item =
+        document.createElement(
+          "article"
+        );
 
-    const title = $("seasonTitle");
-    const description = $("seasonDescription");
+      item.className =
+        "event-list-item";
 
-    const season = month.season || month.seasonName || "Bodo Seasonal Cycle";
-    const seasonDescription =
+      const dateText =
+        event.date
+          ? formatShortEnglishDate(
+              event.date
+            )
+          : event.bodoDay
+            ? `Bodo Date ${event.bodoDay}`
+            : "";
+
+      item.innerHTML = `
+
+        <div class="event-list-icon">
+          ${escapeHTML(
+            event.icon || "🎉"
+          )}
+        </div>
+
+        <div class="event-list-content">
+
+          <strong>
+            ${escapeHTML(
+              event.title ||
+              event.name ||
+              "Event"
+            )}
+          </strong>
+
+          ${
+            dateText
+              ? `
+                <small>
+                  ${escapeHTML(dateText)}
+                </small>
+              `
+              : ""
+          }
+
+          ${
+            event.description ||
+            event.desc ||
+            event.details
+              ? `
+                <p>
+                  ${escapeHTML(
+                    event.description ||
+                    event.desc ||
+                    event.details
+                  )}
+                </p>
+              `
+              : ""
+          }
+
+        </div>
+
+      `;
+
+      container.appendChild(
+        item
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   HISTORY
+   ========================================================= */
+
+function renderHistory(){
+
+  const container =
+    $("historyList");
+
+  if(!container){
+    return;
+  }
+
+  const events =
+    getEventsForDate(
+      state.today
+    );
+
+  const historical =
+    events.filter(
+      event => {
+
+        const type =
+          String(
+            event.type ||
+            event.category ||
+            ""
+          ).toLowerCase();
+
+        return (
+          type.includes("history") ||
+          type.includes("birth") ||
+          type.includes("death") ||
+          type.includes("anniversary") ||
+          type.includes("remembrance")
+        );
+
+      }
+    );
+
+  container.innerHTML = "";
+
+  if(!historical.length){
+
+    container.innerHTML =
+      createEmptyState(
+        "No historical entry for today."
+      );
+
+    return;
+
+  }
+
+  historical.forEach(
+    event => {
+
+      const item =
+        document.createElement(
+          "article"
+        );
+
+      item.className =
+        "history-list-item";
+
+      item.innerHTML = `
+
+        <div class="history-icon">
+          📜
+        </div>
+
+        <div>
+
+          <strong>
+            ${escapeHTML(
+              event.title ||
+              event.name ||
+              "Historical Event"
+            )}
+          </strong>
+
+          ${
+            event.description ||
+            event.desc ||
+            event.details
+              ? `
+                <p>
+                  ${escapeHTML(
+                    event.description ||
+                    event.desc ||
+                    event.details
+                  )}
+                </p>
+              `
+              : ""
+          }
+
+        </div>
+
+      `;
+
+      container.appendChild(
+        item
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   SEASON
+   ========================================================= */
+
+function updateSeason(month){
+
+  if(!month){
+    return;
+  }
+
+  const title =
+    $("seasonTitle");
+
+  const description =
+    $("seasonDescription");
+
+  if(title){
+
+    title.textContent =
+      month.season ||
+      "Bodo Seasonal Cycle";
+
+  }
+
+  if(description){
+
+    description.textContent =
       month.seasonDescription ||
-      month.description ||
       "This month is part of the traditional Bodo solar calendar cycle.";
 
-    if (title) title.textContent = season;
-    if (description) description.textContent = seasonDescription;
   }
 
-  /* =======================================================
-     LIVE TODAY / TOMORROW / DAY AFTER TOMORROW
-     ======================================================= */
+}
 
-  function renderLiveStatus() {
-    const dates = [
-      { date: state.today, target: "todayAlertText", card: "todayStatusCard" },
-      { date: state.tomorrow, target: "tomorrowAlertText", card: "tomorrowStatusCard" },
-      { date: state.dayAfterTomorrow, target: "dayAfterTomorrowAlertText", card: "dayAfterTomorrowStatusCard" }
-    ];
 
-    dates.forEach((item) => {
-      const target = $(item.target);
-      const card = $(item.card);
-      if (!target) return;
+/* =========================================================
+   LIVE STATUS
+   ========================================================= */
 
-      const info = getBodoDateInfo(item.date);
-      const month = getMonthForDate(item.date);
-      const bodoNumber = getBodoDateNumberFromInfo(info);
-      const events = getEventsForDate(item.date);
-      const notes = getNotesForDate(item.date);
+function renderLiveStatus(){
+
+  const items = [
+
+    {
+      date:state.today,
+      target:"todayAlertText",
+      card:"todayStatusCard"
+    },
+
+    {
+      date:state.tomorrow,
+      target:"tomorrowAlertText",
+      card:"tomorrowStatusCard"
+    },
+
+    {
+      date:state.dayAfterTomorrow,
+      target:"dayAfterTomorrowAlertText",
+      card:"dayAfterTomorrowStatusCard"
+    }
+
+  ];
+
+  items.forEach(
+    item => {
+
+      const target =
+        $(item.target);
+
+      const card =
+        $(item.card);
+
+      if(!target){
+        return;
+      }
+
+      const info =
+        getBodoDateInfo(
+          item.date
+        );
+
+      const month =
+        getMonthForDate(
+          item.date
+        );
+
+      const bodoNumber =
+        getBodoDateNumberFromInfo(
+          info
+        );
+
+      const events =
+        getEventsForDate(
+          item.date
+        );
+
+      const notes =
+        getNotesForDate(
+          item.date
+        );
 
       let html = "";
-      if (month) {
-        html += `<div class="live-bodo-date">${escapeHTML(getBodoMonthName(month))} ${escapeHTML(bodoNumber || "")}</div>`;
+
+      if(month){
+
+        html += `
+
+          <div class="live-bodo-date">
+            ${escapeHTML(
+              getBodoMonthName(
+                month
+              )
+            )}
+            ${escapeHTML(
+              bodoNumber || ""
+            )}
+          </div>
+
+        `;
+
       }
 
-      html += `<div class="live-gregorian-date">${escapeHTML(formatShortEnglishDate(item.date))}</div>`;
+      html += `
 
-      if (events.length) {
+        <div class="live-gregorian-date">
+          ${escapeHTML(
+            formatShortEnglishDate(
+              item.date
+            )
+          )}
+        </div>
+
+      `;
+
+      if(events.length){
+
         html += `
+
           <div class="live-event-summary">
-            🎉 ${events.length === 1 ? escapeHTML(events[0].title || events[0].name || "Event") : `${events.length} events`}
+
+            🎉
+
+            ${
+              events.length === 1
+                ? escapeHTML(
+                    events[0].title ||
+                    events[0].name ||
+                    "Event"
+                  )
+                : `${events.length} events`
+            }
+
+          </div>
+
+        `;
+
+      }else{
+
+        html += `
+          <div class="live-no-event">
+            No major event listed
           </div>
         `;
-      } else {
-        html += `<div class="live-no-event">No major event listed</div>`;
+
       }
 
-      if (notes.length) {
-        html += `<div class="live-note-summary">📝 ${notes.length} personal note${notes.length > 1 ? "s" : ""}</div>`;
+      if(notes.length){
+
+        html += `
+
+          <div class="live-note-summary">
+            📝 ${notes.length}
+            personal note${notes.length > 1 ? "s" : ""}
+          </div>
+
+        `;
+
       }
 
-      target.innerHTML = html;
+      target.innerHTML =
+        html;
 
-      if (card) {
-        card.classList.toggle("has-event", events.length > 0);
-        card.classList.toggle("has-note", notes.length > 0);
+      if(card){
+
+        card.classList.toggle(
+          "has-event",
+          events.length > 0
+        );
+
+        card.classList.toggle(
+          "has-note",
+          notes.length > 0
+        );
+
       }
-    });
 
-    if ($("liveStatusUpdated")) {
-      $("liveStatusUpdated").textContent = `Updated ${formatEnglishDate(new Date(), {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-        hour: "numeric",
-        minute: "2-digit"
-      })}`;
     }
+  );
 
-    renderCalendarSystemStatus();
+  if($("liveStatusUpdated")){
+
+    $("liveStatusUpdated")
+      .textContent =
+        `Updated ${formatEnglishDate(
+          new Date(),
+          {
+            day:"numeric",
+            month:"short",
+            year:"numeric",
+            hour:"numeric",
+            minute:"2-digit"
+          }
+        )}`;
+
   }
 
-  function renderCalendarSystemStatus() {
-    if ($("englishTodayStatus")) {
-      $("englishTodayStatus").textContent = formatEnglishDate(state.today);
-    }
+  renderCalendarSystemStatus();
 
-    const info = getBodoDateInfo(state.today);
-    const month = getMonthForDate(state.today);
-    const bodoNumber = getBodoDateNumberFromInfo(info);
+}
 
-    if ($("bodoTodayStatus")) {
-      $("bodoTodayStatus").textContent = month
-        ? `${getBodoMonthName(month)} ${bodoNumber || ""}`
-        : "Bodo date available";
-    }
 
-    if ($("assameseTodayStatus")) {
-      $("assameseTodayStatus").textContent = getAssameseReferenceText(state.today);
-    }
+/* =========================================================
+   CALENDAR SYSTEM STATUS
+   ========================================================= */
+
+function renderCalendarSystemStatus(){
+
+  if($("englishTodayStatus")){
+
+    $("englishTodayStatus")
+      .textContent =
+        formatEnglishDate(
+          state.today
+        );
+
   }
 
-  function getAssameseReferenceText(date) {
-    if (
-      window.BodoCalendarAssamese &&
-      typeof window.BodoCalendarAssamese.getTodayReference === "function"
-    ) {
-      return (
-        window.BodoCalendarAssamese.getTodayReference(date) ||
-        "Reference available"
-      );
-    }
-    return "Reference layer";
+  const info =
+    getBodoDateInfo(
+      state.today
+    );
+
+  const month =
+    getMonthForDate(
+      state.today
+    );
+
+  const bodoNumber =
+    getBodoDateNumberFromInfo(
+      info
+    );
+
+  if($("bodoTodayStatus")){
+
+    $("bodoTodayStatus")
+      .textContent =
+        month
+          ? `${getBodoMonthName(
+              month
+            )} ${bodoNumber || ""}`
+          : "Bodo date available";
+
   }
 
-  /* =======================================================
-     MONTH REFERENCE TABLE
-     ======================================================= */
+  if($("assameseTodayStatus")){
 
-  function renderMonthReference() {
-    const tbody = $("monthReferenceBody");
-    if (!tbody) return;
+    $("assameseTodayStatus")
+      .textContent =
+        getAssameseReferenceText(
+          state.today
+        );
 
-    const months = getMonths();
-    tbody.innerHTML = "";
-    if (!months.length) return;
+  }
 
-    months.forEach((month, index) => {
-      const row = document.createElement("tr");
-      let range = month.dateRange || month.gregorianRange || "";
+}
 
-      if (!range) {
-        let start = getMonthStartDateHelper(month);
-        if (start) {
-          let end = addDays(start, (month.days || 30) - 1);
-          range = `${formatShortEnglishDate(start)} — ${formatShortEnglishDate(end)}`;
-        }
+
+function getAssameseReferenceText(date){
+
+  if(
+    window.BodoCalendarAssamese &&
+    typeof window.BodoCalendarAssamese.getTodayReference === "function"
+  ){
+
+    return (
+      window.BodoCalendarAssamese.getTodayReference(
+        date
+      ) ||
+      "Reference available"
+    );
+
+  }
+
+  return "Reference layer";
+
+}
+
+
+/* =========================================================
+   MONTH REFERENCE
+   ========================================================= */
+
+function renderMonthReference(){
+
+  const tbody =
+    $("monthReferenceBody");
+
+  if(!tbody){
+    return;
+  }
+
+  const months =
+    getMonths();
+
+  tbody.innerHTML = "";
+
+  months.forEach(
+    (month,index) => {
+
+      const row =
+        document.createElement(
+          "tr"
+        );
+
+      let range =
+        month.dateRange ||
+        "";
+
+      const year =
+        getSelectedBodoYear(
+          month
+        );
+
+      const start =
+        getMonthStartDateHelper(
+          month
+        );
+
+      let end = null;
+
+      if(
+        window.BodoCalendarData &&
+        typeof window.BodoCalendarData.getBodoMonthEndDate === "function"
+      ){
+
+        end =
+          window.BodoCalendarData.getBodoMonthEndDate(
+            month.id,
+            year
+          );
+
+      }
+
+      if(
+        start &&
+        end
+      ){
+
+        range =
+          `${formatShortEnglishDate(
+            start
+          )} — ${formatShortEnglishDate(
+            end
+          )}`;
+
       }
 
       row.innerHTML = `
-        <td>${index + 1}</td>
-        <td><strong>${escapeHTML(getBodoMonthName(month))}</strong></td>
-        <td>${escapeHTML(getBodoNativeName(month))}</td>
-        <td>${escapeHTML(range || "Approximate reference")}</td>
+
+        <td>
+          ${index + 1}
+        </td>
+
+        <td>
+          <strong>
+            ${escapeHTML(
+              getBodoMonthName(
+                month
+              )
+            )}
+          </strong>
+        </td>
+
+        <td>
+          ${escapeHTML(
+            getBodoNativeName(
+              month
+            )
+          )}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            range
+          )}
+        </td>
+
       `;
 
-      tbody.appendChild(row);
-    });
+      tbody.appendChild(
+        row
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   MONTH NAVIGATION
+   ========================================================= */
+
+function changeMonth(direction){
+
+  const months =
+    getMonths();
+
+  if(!months.length){
+    return;
   }
 
-  /* =======================================================
-     NAVIGATE MONTH
-     ======================================================= */
-
-  function changeMonth(direction) {
-    const months = getMonths();
-    if (!months.length) return;
-
-    let currentIndex = months.findIndex(
-      (month) => String(month.id) === String(state.selectedMonthId)
+  let index =
+    months.findIndex(
+      month =>
+        String(month.id) ===
+        String(state.selectedMonthId)
     );
 
-    if (currentIndex < 0) currentIndex = 0;
-
-    currentIndex += direction;
-    if (currentIndex < 0) currentIndex = months.length - 1;
-    if (currentIndex >= months.length) currentIndex = 0;
-
-    state.selectedMonthId = months[currentIndex].id;
-    state.selectedDate = null;
-
-    updateCalendarView();
+  if(index < 0){
+    index = 0;
   }
 
-  function goToToday() {
-    state.today = getToday();
-    state.tomorrow = addDays(state.today, 1);
-    state.dayAfterTomorrow = addDays(state.today, 2);
+  index += direction;
 
-    const month = getMonthForDate(state.today);
-    if (month) {
-      state.selectedMonthId = month.id;
+  if(index < 0){
+
+    index =
+      months.length - 1;
+
+  }
+
+  if(index >= months.length){
+
+    index = 0;
+
+  }
+
+  state.selectedMonthId =
+    months[index].id;
+
+  state.selectedDate =
+    null;
+
+  updateCalendarView();
+
+}
+
+
+function goToToday(){
+
+  state.today =
+    getToday();
+
+  state.tomorrow =
+    addDays(
+      state.today,
+      1
+    );
+
+  state.dayAfterTomorrow =
+    addDays(
+      state.today,
+      2
+    );
+
+  const month =
+    getMonthForDate(
+      state.today
+    );
+
+  if(month){
+
+    state.selectedMonthId =
+      month.id;
+
+  }
+
+  state.selectedDate =
+    state.today;
+
+  updateCalendarView();
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+/* =========================================================
+   UPDATE VIEW
+   ========================================================= */
+
+function updateCalendarView(){
+
+  renderMonthSelector();
+
+  renderMonthBanner();
+
+  renderWeekdayHeader();
+
+  renderCalendar();
+
+  renderEvents();
+
+  renderHistory();
+
+  renderMonthReference();
+
+  renderSelectedDate();
+
+}
+
+
+/* =========================================================
+   WELCOME
+   ========================================================= */
+
+function setupWelcomeCard(){
+
+  const card =
+    $("welcomeCard");
+
+  const close =
+    $("closeWelcomeBtn");
+
+  if(!card){
+    return;
+  }
+
+  try{
+
+    if(
+      localStorage.getItem(
+        WELCOME_STORAGE_KEY
+      ) === "true"
+    ){
+
+      card.classList.add(
+        "hidden"
+      );
+
     }
 
-    state.selectedDate = state.today;
+  }catch(error){}
 
-    updateCalendarView();
-    renderSelectedDate();
+  if(close){
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+    close.addEventListener(
+      "click",
+      function(){
 
-  function updateCalendarView() {
-    renderMonthSelector();
-    renderMonthBanner();
-    renderWeekdayHeader();
-    renderCalendar();
-    renderEvents();
-    renderHistory();
-    renderMonthReference();
-    renderSelectedDate();
-  }
+        card.classList.add(
+          "hidden"
+        );
 
-  /* =======================================================
-     WELCOME & NOTIFICATIONS & INSTALL PROMPT
-     ======================================================= */
+        try{
 
-  function setupWelcomeCard() {
-    const card = $("welcomeCard");
-    const close = $("closeWelcomeBtn");
-    if (!card) return;
+          localStorage.setItem(
+            WELCOME_STORAGE_KEY,
+            "true"
+          );
 
-    try {
-      if (localStorage.getItem(WELCOME_STORAGE_KEY) === "true") {
-        card.classList.add("hidden");
+        }catch(error){}
+
       }
-    } catch (e) {}
+    );
 
-    if (close) {
-      close.addEventListener("click", function () {
-        card.classList.add("hidden");
-        try {
-          localStorage.setItem(WELCOME_STORAGE_KEY, "true");
-        } catch (e) {}
-      });
-    }
   }
 
-  async function loadNotifications() {
-    const panel = $("notificationPanel");
-    if (!panel) return;
+}
 
-    try {
-      const response = await fetch(NOTIFICATION_URL, { cache: "no-store" });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-      const data = await response.json();
-      const notifications = Array.isArray(data)
+/* =========================================================
+   NOTIFICATIONS
+   ========================================================= */
+
+async function loadNotifications(){
+
+  const panel =
+    $("notificationPanel");
+
+  if(!panel){
+    return;
+  }
+
+  try{
+
+    const response =
+      await fetch(
+        NOTIFICATION_URL,
+        {
+          cache:"no-store"
+        }
+      );
+
+    if(!response.ok){
+
+      throw new Error(
+        `HTTP ${response.status}`
+      );
+
+    }
+
+    const data =
+      await response.json();
+
+    const notifications =
+      Array.isArray(data)
         ? data
-        : data.notifications || [data.notification || {}];
+        : (
+            data.notifications ||
+            [data.notification || {}]
+          );
 
-      state.notifications = notifications;
+    state.notifications =
+      notifications;
 
-      const active = notifications.find((n) => n.enabled !== false && n.active !== false);
-      if (active) {
-        if ($("notificationTitle")) $("notificationTitle").textContent = active.title || "Update";
-        if ($("notificationBadge")) $("notificationBadge").textContent = active.badge || "UPDATE";
-        if ($("notificationMessage")) $("notificationMessage").textContent = active.message || "";
-        panel.classList.remove("hidden");
-      } else {
-        panel.classList.add("hidden");
+    const active =
+      notifications.find(
+        notification =>
+          notification.enabled !== false &&
+          notification.active !== false
+      );
+
+    if(active){
+
+      if($("notificationTitle")){
+
+        $("notificationTitle")
+          .textContent =
+            active.title ||
+            "Update";
+
       }
-    } catch (error) {
-      panel.classList.add("hidden");
+
+      if($("notificationBadge")){
+
+        $("notificationBadge")
+          .textContent =
+            active.badge ||
+            "UPDATE";
+
+      }
+
+      if($("notificationMessage")){
+
+        $("notificationMessage")
+          .textContent =
+            active.message ||
+            "";
+
+      }
+
+      if($("notificationDate")){
+
+        $("notificationDate")
+          .textContent =
+            active.date ||
+            "";
+
+      }
+
+      panel.classList.remove(
+        "hidden"
+      );
+
+    }else{
+
+      panel.classList.add(
+        "hidden"
+      );
+
     }
+
+  }catch(error){
+
+    panel.classList.add(
+      "hidden"
+    );
+
   }
 
-  function setupNotificationClose() {
-    const button = $("closeNotificationBtn");
-    const panel = $("notificationPanel");
-    if (button && panel) {
-      button.addEventListener("click", () => panel.classList.add("hidden"));
-    }
+}
+
+
+function setupNotificationClose(){
+
+  const button =
+    $("closeNotificationBtn");
+
+  const panel =
+    $("notificationPanel");
+
+  if(
+    button &&
+    panel
+  ){
+
+    button.addEventListener(
+      "click",
+      () =>
+        panel.classList.add(
+          "hidden"
+        )
+    );
+
   }
 
-  /* =======================================================
-     NOTES UI & FORMS
-     ======================================================= */
+}
 
-  function openNoteModal(date = null) {
-    const modal = $("noteModal");
-    if (!modal) return;
 
-    const selected = date || state.selectedDate || state.today;
-    if ($("noteDate")) $("noteDate").value = createDateKey(selected);
-    if ($("noteForm")) {
-      $("noteForm").reset();
-      if ($("noteDate")) $("noteDate").value = createDateKey(selected);
-    }
+/* =========================================================
+   NOTE MODAL
+   ========================================================= */
 
-    modal.classList.remove("hidden");
-    document.body.classList.add("modal-open");
+function openNoteModal(date=null){
+
+  const modal =
+    $("noteModal");
+
+  if(!modal){
+    return;
   }
 
-  function closeNoteModal() {
-    const modal = $("noteModal");
-    if (modal) modal.classList.add("hidden");
-    document.body.classList.remove("modal-open");
+  const selected =
+    date ||
+    state.selectedDate ||
+    state.today;
+
+  const form =
+    $("noteForm");
+
+  if(form){
+
+    form.reset();
+
   }
 
-  function openNotesList() {
-    const modal = $("notesListModal");
-    if (!modal) return;
+  if($("noteDate")){
 
-    const container = $("notesListContainer");
-    if (container) {
-      const notes = getAllNotes();
-      container.innerHTML = "";
+    $("noteDate").value =
+      createDateKey(
+        selected
+      );
 
-      if (!notes.length) {
-        container.innerHTML = createEmptyState("You have no personal notes yet.");
-      } else {
-        notes.forEach((note) => {
-          const item = document.createElement("article");
-          item.className = "note-list-item";
+  }
+
+  modal.classList.remove(
+    "hidden"
+  );
+
+  document.body.classList.add(
+    "modal-open"
+  );
+
+}
+
+
+function closeNoteModal(){
+
+  const modal =
+    $("noteModal");
+
+  if(modal){
+
+    modal.classList.add(
+      "hidden"
+    );
+
+  }
+
+  document.body.classList.remove(
+    "modal-open"
+  );
+
+}
+
+
+function openNotesList(){
+
+  const modal =
+    $("notesListModal");
+
+  if(!modal){
+    return;
+  }
+
+  const container =
+    $("notesListContainer");
+
+  if(container){
+
+    const notes =
+      getAllNotes();
+
+    container.innerHTML = "";
+
+    if(!notes.length){
+
+      container.innerHTML =
+        createEmptyState(
+          "You have no personal notes yet."
+        );
+
+    }else{
+
+      notes.forEach(
+        note => {
+
+          const item =
+            document.createElement(
+              "article"
+            );
+
+          item.className =
+            "note-list-item";
+
           item.innerHTML = `
-            <div class="note-list-icon">📝</div>
-            <div class="note-list-content">
-              <strong>${escapeHTML(note.title || "Personal Note")}</strong>
-              <small>${escapeHTML(note.date || "")}</small>
-              ${note.description ? `<p>${escapeHTML(note.description)}</p>` : ""}
+
+            <div class="note-list-icon">
+              📝
             </div>
+
+            <div class="note-list-content">
+
+              <strong>
+                ${escapeHTML(
+                  note.title ||
+                  "Personal Note"
+                )}
+              </strong>
+
+              <small>
+                ${escapeHTML(
+                  note.date || ""
+                )}
+              </small>
+
+              ${
+                note.description
+                  ? `
+                    <p>
+                      ${escapeHTML(
+                        note.description
+                      )}
+                    </p>
+                  `
+                  : ""
+              }
+
+            </div>
+
           `;
-          container.appendChild(item);
-        });
-      }
+
+          container.appendChild(
+            item
+          );
+
+        }
+      );
+
     }
 
-    modal.classList.remove("hidden");
-    document.body.classList.add("modal-open");
   }
 
-  function closeNotesList() {
-    const modal = $("notesListModal");
-    if (modal) modal.classList.add("hidden");
-    document.body.classList.remove("modal-open");
+  modal.classList.remove(
+    "hidden"
+  );
+
+  document.body.classList.add(
+    "modal-open"
+  );
+
+}
+
+
+function closeNotesList(){
+
+  const modal =
+    $("notesListModal");
+
+  if(modal){
+
+    modal.classList.add(
+      "hidden"
+    );
+
   }
 
-  function setupNoteForm() {
-    const form = $("noteForm");
-    if (!form) return;
+  document.body.classList.remove(
+    "modal-open"
+  );
 
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
+}
 
-      if (!window.BodoCalendarNotes || typeof window.BodoCalendarNotes.saveNote !== "function") {
-        showToast("Notes system is not available.", "error");
+
+/* =========================================================
+   NOTE FORM
+   ========================================================= */
+
+function setupNoteForm(){
+
+  const form =
+    $("noteForm");
+
+  if(!form){
+    return;
+  }
+
+  form.addEventListener(
+    "submit",
+    function(event){
+
+      event.preventDefault();
+
+      if(
+        !window.BodoCalendarNotes ||
+        typeof window.BodoCalendarNotes.saveNote !== "function"
+      ){
+
+        showToast(
+          "Notes system is not available.",
+          "error"
+        );
+
         return;
+
       }
 
-      const date = $("noteDate") ? $("noteDate").value : createDateKey(state.today);
-      const category = $("noteCategory") ? $("noteCategory").value : "Other";
-      const title = $("noteTitle") ? $("noteTitle").value.trim() : "";
-      const description = $("noteDescription") ? $("noteDescription").value.trim() : "";
+      const date =
+        $("noteDate")
+          ? $("noteDate").value
+          : createDateKey(
+              state.today
+            );
 
-      if (!title) {
-        showToast("Please enter a note title.", "error");
+      const category =
+        $("noteCategory")
+          ? $("noteCategory").value
+          : "Other";
+
+      const title =
+        $("noteTitle")
+          ? $("noteTitle").value.trim()
+          : "";
+
+      const description =
+        $("noteDescription")
+          ? $("noteDescription").value.trim()
+          : "";
+
+      const reminder =
+        $("noteReminder")
+          ? $("noteReminder").checked
+          : false;
+
+      if(!title){
+
+        showToast(
+          "Please enter a note title.",
+          "error"
+        );
+
         return;
+
       }
 
       window.BodoCalendarNotes.saveNote({
-        id: "note-" + Date.now(),
+
+        id:
+          "note-" +
+          Date.now(),
+
         date,
+
         category,
+
         title,
+
         description,
-        createdAt: new Date().toISOString()
+
+        reminder,
+
+        createdAt:
+          new Date().toISOString()
+
       });
 
       closeNoteModal();
+
       updateCalendarView();
+
       renderLiveStatus();
-      showToast("Personal note saved successfully.", "success");
-    });
+
+      showToast(
+        "Personal note saved successfully.",
+        "success"
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   MODALS
+   ========================================================= */
+
+function setupModalButtons(){
+
+  if($("closeDateModalBtn")){
+
+    $("closeDateModalBtn")
+      .addEventListener(
+        "click",
+        closeDateModal
+      );
+
   }
 
-  /* =======================================================
-     MODAL BUTTONS & NAVIGATION SETUP
-     ======================================================= */
+  if($("closeDateModalBottomBtn")){
 
-  function setupModalButtons() {
-    if ($("closeDateModalBtn")) $("closeDateModalBtn").addEventListener("click", closeDateModal);
-    if ($("closeDateModalBottomBtn")) $("closeDateModalBottomBtn").addEventListener("click", closeDateModal);
-    if ($("closeNoteModalBtn")) $("closeNoteModalBtn").addEventListener("click", closeNoteModal);
-    if ($("cancelNoteBtn")) $("cancelNoteBtn").addEventListener("click", closeNoteModal);
-    if ($("closeNotesListBtn")) $("closeNotesListBtn").addEventListener("click", closeNotesList);
+    $("closeDateModalBottomBtn")
+      .addEventListener(
+        "click",
+        closeDateModal
+      );
 
-    if ($("addNoteFromDateBtn")) {
-      $("addNoteFromDateBtn").addEventListener("click", function () {
+  }
+
+  if($("closeNoteModalBtn")){
+
+    $("closeNoteModalBtn")
+      .addEventListener(
+        "click",
+        closeNoteModal
+      );
+
+  }
+
+  if($("cancelNoteBtn")){
+
+    $("cancelNoteBtn")
+      .addEventListener(
+        "click",
+        closeNoteModal
+      );
+
+  }
+
+  if($("closeNotesListBtn")){
+
+    $("closeNotesListBtn")
+      .addEventListener(
+        "click",
+        closeNotesList
+      );
+
+  }
+
+  if($("addNoteFromDateBtn")){
+
+    $("addNoteFromDateBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          closeDateModal();
+
+          openNoteModal(
+            state.selectedDate ||
+            state.today
+          );
+
+        }
+      );
+
+  }
+
+  document.addEventListener(
+    "keydown",
+    function(event){
+
+      if(event.key === "Escape"){
+
         closeDateModal();
-        openNoteModal(state.selectedDate || state.today);
-      });
-    }
 
-    /* Modal Backdrop / Overlay Clicks */
-    ["dateModal", "noteModal", "notesListModal"].forEach((modalId) => {
-      const modal = $(modalId);
-      if (modal) {
-        modal.addEventListener("click", function (e) {
-          if (e.target === modal) {
-            closeDateModal();
-            closeNoteModal();
-            closeNotesList();
-          }
-        });
-      }
-    });
-
-    /* Keyboard Navigation & Escape Key */
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") {
-        closeDateModal();
         closeNoteModal();
+
         closeNotesList();
+
       }
 
-      // Arrow Key Month Navigation when no modal is active
-      if (!document.body.classList.contains("modal-open")) {
-        if (e.key === "ArrowLeft") {
-          changeMonth(-1);
-        } else if (e.key === "ArrowRight") {
-          changeMonth(1);
-        }
-      }
-    });
+    }
+  );
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+function setupNavigation(){
+
+  if($("prevMonthBtn")){
+
+    $("prevMonthBtn")
+      .addEventListener(
+        "click",
+        () => changeMonth(-1)
+      );
+
   }
 
-  function setupNavigation() {
-    if ($("prevMonthBtn")) $("prevMonthBtn").addEventListener("click", () => changeMonth(-1));
-    if ($("nextMonthBtn")) $("nextMonthBtn").addEventListener("click", () => changeMonth(1));
-    if ($("todayBtn")) $("todayBtn").addEventListener("click", goToToday);
+  if($("nextMonthBtn")){
 
-    const select = $("monthSelect");
-    if (select) {
-      select.addEventListener("change", function () {
-        state.selectedMonthId = select.value;
-        state.selectedDate = null;
+    $("nextMonthBtn")
+      .addEventListener(
+        "click",
+        () => changeMonth(1)
+      );
+
+  }
+
+  if($("todayBtn")){
+
+    $("todayBtn")
+      .addEventListener(
+        "click",
+        goToToday
+      );
+
+  }
+
+  const select =
+    $("monthSelect");
+
+  if(select){
+
+    select.addEventListener(
+      "change",
+      function(){
+
+        state.selectedMonthId =
+          Number(select.value);
+
+        state.selectedDate =
+          null;
+
         updateCalendarView();
-      });
-    }
+
+      }
+    );
+
   }
 
-  function setupFooterButtons() {
-    if ($("footerNotesBtn")) $("footerNotesBtn").addEventListener("click", openNotesList);
-    if ($("openNotesBtn")) $("openNotesBtn").addEventListener("click", openNotesList);
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+function setupFooterButtons(){
+
+  if($("footerNotesBtn")){
+
+    $("footerNotesBtn")
+      .addEventListener(
+        "click",
+        openNotesList
+      );
+
   }
 
-  function setupInstallPrompt() {
-    const installButton = $("installAppBtn");
+  if($("openNotesBtn")){
 
-    window.addEventListener("beforeinstallprompt", (e) => {
-      e.preventDefault();
-      state.deferredInstallPrompt = e;
-      if (installButton) installButton.classList.remove("hidden");
-    });
+    $("openNotesBtn")
+      .addEventListener(
+        "click",
+        openNotesList
+      );
 
-    if (installButton) {
-      installButton.addEventListener("click", async () => {
-        if (!state.deferredInstallPrompt) return;
-        state.deferredInstallPrompt.prompt();
-        const { outcome } = await state.deferredInstallPrompt.userChoice;
-        if (outcome === "accepted") {
-          showToast("Thank you for installing Bodo Calendar!", "success");
+  }
+
+  if($("footerAboutBtn")){
+
+    $("footerAboutBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          const section =
+            document.querySelector(
+              ".about-calendar-card"
+            );
+
+          if(section){
+
+            section.scrollIntoView({
+              behavior:"smooth",
+              block:"start"
+            });
+
+          }
+
         }
-        state.deferredInstallPrompt = null;
-        installButton.classList.add("hidden");
-      });
-    }
+      );
+
   }
 
-  function showToast(message, type = "info") {
-    const container = $("toastContainer");
-    if (!container) return;
+}
 
-    const toast = document.createElement("div");
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-    container.appendChild(toast);
 
-    requestAnimationFrame(() => toast.classList.add("show"));
-    setTimeout(() => {
-      toast.classList.remove("show");
-      setTimeout(() => toast.remove(), 300);
-    }, 3500);
-  }
+/* =========================================================
+   INSTALL
+   ========================================================= */
 
-  window.showToast = showToast;
+function setupInstallPrompt(){
 
-  function hideLoadingScreen() {
-    const screen = $("loadingScreen");
-    if (screen) {
-      screen.classList.add("hidden");
-      setTimeout(() => {
-        if (screen.parentNode) screen.style.display = "none";
-      }, 500);
-    }
-  }
+  const button =
+    $("installAppBtn");
 
-  /* =======================================================
-     INITIALIZE APP
-     ======================================================= */
+  window.addEventListener(
+    "beforeinstallprompt",
+    function(event){
 
-  async function initApp() {
-    if (state.initialized) return;
-    state.initialized = true;
+      event.preventDefault();
 
-    try {
-      state.today = getToday();
-      state.tomorrow = addDays(state.today, 1);
-      state.dayAfterTomorrow = addDays(state.today, 2);
+      state.deferredInstallPrompt =
+        event;
 
-      detectCurrentMonth();
+      if(button){
 
-      renderMonthSelector();
-      renderWeekdayHeader();
-      renderMonthBanner();
-      renderCalendar();
-      renderSelectedDate();
-      renderEvents();
-      renderHistory();
-      renderMonthReference();
-      renderLiveStatus();
+        button.classList.remove(
+          "hidden"
+        );
 
-      setupNavigation();
-      setupWelcomeCard();
-      setupNotificationClose();
-      setupModalButtons();
-      setupNoteForm();
-      setupFooterButtons();
-      setupInstallPrompt();
-
-      if (window.BodoCalendarVIP && typeof window.BodoCalendarVIP.initVIP === "function") {
-        window.BodoCalendarVIP.initVIP();
       }
 
-      loadNotifications();
+    }
+  );
 
-      if ($("copyrightYear")) {
-        $("copyrightYear").textContent = new Date().getFullYear();
+  if(button){
+
+    button.addEventListener(
+      "click",
+      async function(){
+
+        if(
+          !state.deferredInstallPrompt
+        ){
+
+          return;
+
+        }
+
+        try{
+
+          await state.deferredInstallPrompt.prompt();
+
+          await state.deferredInstallPrompt.userChoice;
+
+        }catch(error){}
+
+        state.deferredInstallPrompt =
+          null;
+
+        button.classList.add(
+          "hidden"
+        );
+
+      }
+    );
+
+  }
+
+  window.addEventListener(
+    "appinstalled",
+    function(){
+
+      state.deferredInstallPrompt =
+        null;
+
+      if(button){
+
+        button.classList.add(
+          "hidden"
+        );
+
       }
 
-      setTimeout(hideLoadingScreen, 150);
-    } catch (error) {
-      console.error("Initialization error:", error);
-      hideLoadingScreen();
     }
+  );
+
+}
+
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+function showToast(
+  message,
+  type="info"
+){
+
+  const container =
+    $("toastContainer");
+
+  if(!container){
+    return;
   }
 
-  window.BodoCalendarApp = {
-    state,
-    init: initApp,
-    goToToday,
-    changeMonth,
-    selectDate,
-    updateCalendarView
-  };
+  const toast =
+    document.createElement(
+      "div"
+    );
 
-  window.BODO_APP_READY = true;
+  toast.className =
+    `toast toast-${type}`;
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initApp, { once: true });
-  } else {
-    initApp();
+  toast.textContent =
+    message;
+
+  container.appendChild(
+    toast
+  );
+
+  requestAnimationFrame(
+    () => {
+      toast.classList.add(
+        "show"
+      );
+    }
+  );
+
+  setTimeout(
+    function(){
+
+      toast.classList.remove(
+        "show"
+      );
+
+      setTimeout(
+        () => toast.remove(),
+        300
+      );
+
+    },
+    3500
+  );
+
+}
+
+window.showToast =
+  showToast;
+
+
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+function hideLoadingScreen(){
+
+  const screen =
+    $("loadingScreen");
+
+  if(!screen){
+    return;
   }
+
+  screen.classList.add(
+    "hidden"
+  );
+
+  setTimeout(
+    function(){
+
+      if(screen.parentNode){
+
+        screen.style.display =
+          "none";
+
+      }
+
+    },
+    300
+  );
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
+
+async function initApp(){
+
+  if(state.initialized){
+    return;
+  }
+
+  state.initialized =
+    true;
+
+  try{
+
+    state.today =
+      getToday();
+
+    state.tomorrow =
+      addDays(
+        state.today,
+        1
+      );
+
+    state.dayAfterTomorrow =
+      addDays(
+        state.today,
+        2
+      );
+
+    detectCurrentMonth();
+
+    renderMonthSelector();
+
+    renderWeekdayHeader();
+
+    renderMonthBanner();
+
+    renderCalendar();
+
+    renderSelectedDate();
+
+    renderEvents();
+
+    renderHistory();
+
+    renderMonthReference();
+
+    renderLiveStatus();
+
+    setupNavigation();
+
+    setupWelcomeCard();
+
+    setupNotificationClose();
+
+    setupModalButtons();
+
+    setupNoteForm();
+
+    setupFooterButtons();
+
+    setupInstallPrompt();
+
+    /*
+     * VIP module remains responsible for
+     * its own buttons/modal/payment flow.
+     */
+
+    if(
+      window.BodoCalendarVIP &&
+      typeof window.BodoCalendarVIP.initVIP === "function"
+    ){
+
+      window.BodoCalendarVIP.initVIP();
+
+    }
+
+    loadNotifications();
+
+    if($("copyrightYear")){
+
+      $("copyrightYear")
+        .textContent =
+          String(
+            new Date().getFullYear()
+          );
+
+    }
+
+    setTimeout(
+      hideLoadingScreen,
+      120
+    );
+
+  }catch(error){
+
+    console.error(
+      "Bodo Calendar initialization error:",
+      error
+    );
+
+    hideLoadingScreen();
+
+  }
+
+}
+
+
+/* =========================================================
+   PUBLIC API
+   ========================================================= */
+
+window.BodoCalendarApp = {
+
+  state,
+
+  init:initApp,
+
+  goToToday,
+
+  changeMonth,
+
+  selectDate,
+
+  updateCalendarView
+
+};
+
+window.BODO_APP_READY =
+  true;
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+if(
+  document.readyState === "loading"
+){
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    initApp,
+    {once:true}
+  );
+
+}else{
+
+  initApp();
+
+}
+
 })();
