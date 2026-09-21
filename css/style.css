@@ -2171,27 +2171,23 @@ img {
    LOADING
    ========================================================= */
 
+/* =========================================================
+   LOADING SCREEN — FAIL SAFE
+   ========================================================= */
+
 .loading-screen {
   position: fixed;
   inset: 0;
-
-  z-index: 5000;
-
-  display: grid;
-  place-items: center;
-
-  background:
-    linear-gradient(
-      135deg,
-      #033b30,
-      #075d4b
-    );
-
-  color: #fff;
-
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #075c47;
+  opacity: 1;
+  visibility: visible;
   transition:
-    opacity .3s ease,
-    visibility .3s ease;
+    opacity 0.25s ease,
+    visibility 0.25s ease;
 }
 
 .loading-screen.loaded {
@@ -2201,59 +2197,49 @@ img {
 }
 
 .loading-content {
+  width: min(90vw, 320px);
   text-align: center;
+  color: #ffffff;
 }
 
 .loading-logo {
-  width: 65px;
-  height: 65px;
-
+  width: 58px;
+  height: 58px;
   margin: 0 auto 12px;
-
-  display: grid;
-  place-items: center;
-
-  border-radius: 20px;
-
-  background: var(--gold-500);
-
-  color: #17352d;
-
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e5aa22;
+  color: #075c47;
   font-size: 30px;
+  font-weight: 900;
+  box-shadow: 0 8px 25px rgba(0,0,0,.18);
 }
 
 .loading-content h2 {
   margin: 0;
-
-  font-size: 22px;
+  font-size: 18px;
+  font-weight: 800;
 }
 
 .loading-content p {
   margin: 4px 0 14px;
-
-  color: rgba(255,255,255,0.7);
-
   font-size: 11px;
+  opacity: .75;
 }
 
 .loading-spinner {
-  width: 25px;
-  height: 25px;
-
-  margin: auto;
-
-  border:
-    3px solid rgba(255,255,255,0.2);
-
-  border-top-color: #fff;
-
+  width: 22px;
+  height: 22px;
+  margin: 0 auto;
+  border: 2px solid rgba(255,255,255,.28);
+  border-top-color: #ffffff;
   border-radius: 50%;
-
-  animation:
-    loadingSpin .8s linear infinite;
+  animation: bodoLoadingSpin .75s linear infinite;
 }
 
-@keyframes loadingSpin {
+@keyframes bodoLoadingSpin {
   to {
     transform: rotate(360deg);
   }
