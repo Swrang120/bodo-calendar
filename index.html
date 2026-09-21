@@ -13,130 +13,53 @@
     content="Bodo Calendar — Traditional Bodo Solar Calendar with Gregorian dates, Bodo cultural events, historical anniversaries and personal reminders."
   >
 
-  <meta
-    name="theme-color"
-    content="#075c47"
-  >
-
-  <meta
-    name="mobile-web-app-capable"
-    content="yes"
-  >
-
-  <meta
-    name="apple-mobile-web-app-capable"
-    content="yes"
-  >
-
-  <meta
-    name="apple-mobile-web-app-status-bar-style"
-    content="default"
-  >
-
-  <meta
-    name="apple-mobile-web-app-title"
-    content="Bodo Calendar"
-  >
+  <meta name="theme-color" content="#075c47">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Bodo Calendar">
 
   <title>Bodo Calendar — बर' दान</title>
 
-  <!-- PWA Manifest -->
   <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" href="./assets/favicon.png">
 
-  <!-- Favicon -->
-  <link
-    rel="icon"
-    type="image/png"
-    href="./assets/favicon.png"
-  >
+  <!-- IMPORTANT: v6.2 prevents old cached CSS/JS -->
+  <link rel="stylesheet" href="./css/style.css?v=6.2">
 
-  <!-- Main CSS -->
-  <link
-    rel="stylesheet"
-    href="./css/style.css?v=6.2"
-  >
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossorigin
-  >
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <link
     href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet"
   >
-
-  <style>
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .sr-only {
-      position: absolute !important;
-      width: 1px !important;
-      height: 1px !important;
-      padding: 0 !important;
-      margin: -1px !important;
-      overflow: hidden !important;
-      clip: rect(0, 0, 0, 0) !important;
-      white-space: nowrap !important;
-      border: 0 !important;
-    }
-
-    #loadingScreen {
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-    }
-  </style>
 </head>
 
 <body>
 
 <div id="app" class="app-shell">
 
-  <!-- =====================================================
-       HEADER
-       ===================================================== -->
-
+  <!-- HEADER -->
   <header class="site-header">
 
     <div class="header-inner">
 
-      <a
-        href="./"
-        class="brand-area"
-        aria-label="Bodo Calendar Home"
-      >
+      <a href="./" class="brand-area" aria-label="Bodo Calendar Home">
 
         <div class="brand-logo" aria-hidden="true">
           B
         </div>
 
         <div class="brand-text">
-
           <h1>
             Bodo Calendar
-            <span class="brand-bodo">
-              (बर' दान)
-            </span>
+            <span class="brand-bodo">(बर' दान)</span>
           </h1>
 
           <p>
             Traditional Bodo Solar Calendar with Gregorian Dates
           </p>
-
         </div>
 
       </a>
@@ -159,8 +82,7 @@
           class="vip-button"
           aria-label="Open Bodo Calendar VIP"
         >
-          👑
-          <span>Go VIP</span>
+          👑 <span>Go VIP</span>
         </button>
 
       </div>
@@ -170,28 +92,21 @@
   </header>
 
 
-  <!-- =====================================================
-       MAIN
-       ===================================================== -->
-
+  <!-- MAIN -->
   <main class="main-container">
 
-    <!-- Welcome -->
+    <!-- WELCOME -->
     <section
       id="welcomeCard"
       class="welcome-card"
       aria-label="Welcome to Bodo Calendar"
     >
 
-      <div class="welcome-icon" aria-hidden="true">
-        🎉
-      </div>
+      <div class="welcome-icon">🎉</div>
 
       <div class="welcome-content">
 
-        <h2>
-          Welcome to Bodo Calendar
-        </h2>
+        <h2>Welcome to Bodo Calendar</h2>
 
         <p>
           Nwjwm Phung! Traditional Bodo Solar Calendar is now live.
@@ -213,19 +128,14 @@
     </section>
 
 
-    <!-- =====================================================
-         NOTIFICATION
-         ===================================================== -->
-
+    <!-- NOTIFICATION -->
     <section
       id="notificationPanel"
       class="notification-panel hidden"
       aria-live="polite"
     >
 
-      <div class="notification-icon" aria-hidden="true">
-        📢
-      </div>
+      <div class="notification-icon">📢</div>
 
       <div class="notification-content">
 
@@ -235,10 +145,7 @@
             Latest Update
           </h2>
 
-          <span
-            id="notificationBadge"
-            class="notification-badge"
-          >
+          <span id="notificationBadge" class="notification-badge">
             UPDATE
           </span>
 
@@ -264,10 +171,7 @@
     </section>
 
 
-    <!-- =====================================================
-         LIVE CALENDAR
-         ===================================================== -->
-
+    <!-- LIVE CALENDAR -->
     <section
       id="todayAlertBox"
       class="live-calendar-panel"
@@ -282,17 +186,15 @@
             LIVE CALENDAR
           </span>
 
-          <h2>
-            Today &amp; Upcoming
-          </h2>
+          <h2>Today &amp; Upcoming</h2>
 
           <p id="liveStatusUpdated">
-            Automatically updated every day at midnight
+            Automatically updated every day
           </p>
 
         </div>
 
-        <div class="live-indicator" aria-label="Live">
+        <div class="live-indicator">
           <span class="live-dot"></span>
           LIVE
         </div>
@@ -303,96 +205,66 @@
       <div class="live-date-grid">
 
         <!-- TODAY -->
-
         <article
           id="todayStatusCard"
-          class="live-date-card today-card"
+          class="live-date-card"
         >
 
           <div class="live-card-top">
-
-            <span class="live-card-label">
-              TODAY
-            </span>
-
-            <span
-              class="live-card-icon"
-              aria-hidden="true"
-            >
-              📅
-            </span>
-
+            <span class="live-card-label">TODAY</span>
+            <span class="live-card-icon">📅</span>
           </div>
 
           <div
             id="todayAlertText"
             class="live-date-content"
           >
-            Loading today's calendar...
+            Loading...
           </div>
 
         </article>
 
 
         <!-- TOMORROW -->
-
         <article
           id="tomorrowStatusCard"
           class="live-date-card"
         >
 
           <div class="live-card-top">
-
-            <span class="live-card-label">
-              TOMORROW
-            </span>
-
-            <span
-              class="live-card-icon"
-              aria-hidden="true"
-            >
-              ➡️
-            </span>
-
+            <span class="live-card-label">TOMORROW</span>
+            <span class="live-card-icon">➡️</span>
           </div>
 
           <div
             id="tomorrowAlertText"
             class="live-date-content"
           >
-            Loading tomorrow's calendar...
+            Loading...
           </div>
 
         </article>
 
 
-        <!-- DAY AFTER TOMORROW -->
-
+        <!-- DAY AFTER -->
         <article
           id="dayAfterTomorrowStatusCard"
           class="live-date-card"
         >
 
           <div class="live-card-top">
-
             <span class="live-card-label">
               DAY AFTER TOMORROW
             </span>
 
-            <span
-              class="live-card-icon"
-              aria-hidden="true"
-            >
-              🔮
-            </span>
-
+            <span class="live-card-icon">🔮</span>
           </div>
 
           <div
             id="dayAfterTomorrowAlertText"
             class="live-date-content"
           >
-            Loading upcoming calendar...
+            Loading...
           </div>
 
         </article>
@@ -400,8 +272,7 @@
       </div>
 
 
-      <!-- Calendar systems -->
-
+      <!-- CALENDAR SYSTEM STATUS -->
       <div
         id="calendarSystemStatus"
         class="calendar-system-status"
@@ -413,17 +284,11 @@
 
         <div class="calendar-system-grid">
 
-          <div class="system-card gregorian-system">
+          <div class="system-card">
 
-            <span
-              class="system-icon"
-              aria-hidden="true"
-            >
-              🇬🇧
-            </span>
+            <span class="system-icon">🇬🇧</span>
 
             <div>
-
               <span class="system-label">
                 English Calendar
               </span>
@@ -431,23 +296,16 @@
               <strong id="englishTodayStatus">
                 Loading...
               </strong>
-
             </div>
 
           </div>
 
 
-          <div class="system-card bodo-system">
+          <div class="system-card">
 
-            <span
-              class="system-icon"
-              aria-hidden="true"
-            >
-              🟢
-            </span>
+            <span class="system-icon">🟢</span>
 
             <div>
-
               <span class="system-label">
                 Bodo Calendar
               </span>
@@ -455,23 +313,16 @@
               <strong id="bodoTodayStatus">
                 Loading...
               </strong>
-
             </div>
 
           </div>
 
 
-          <div class="system-card assamese-system">
+          <div class="system-card">
 
-            <span
-              class="system-icon"
-              aria-hidden="true"
-            >
-              🟠
-            </span>
+            <span class="system-icon">🟠</span>
 
             <div>
-
               <span class="system-label">
                 Assamese Calendar Reference
               </span>
@@ -479,7 +330,6 @@
               <strong id="assameseTodayStatus">
                 Loading...
               </strong>
-
             </div>
 
           </div>
@@ -491,10 +341,7 @@
     </section>
 
 
-    <!-- =====================================================
-         NAVIGATION
-         ===================================================== -->
-
+    <!-- NAVIGATION -->
     <section
       class="calendar-navigation-card"
       aria-label="Calendar navigation"
@@ -506,17 +353,13 @@
         class="nav-button"
         aria-label="Previous Bodo month"
       >
-        <span aria-hidden="true">‹</span>
-        <span>Prev</span>
+        ‹ <span>Prev</span>
       </button>
 
 
       <div class="month-selector-wrapper">
 
-        <label
-          for="monthSelect"
-          class="sr-only"
-        >
+        <label for="monthSelect" class="sr-only">
           Select Bodo month
         </label>
 
@@ -524,13 +367,7 @@
           id="monthSelect"
           class="month-selector"
           aria-label="Select Bodo month"
-        >
-
-          <option value="">
-            Select Bodo Month
-          </option>
-
-        </select>
+        ></select>
 
       </div>
 
@@ -541,8 +378,7 @@
         class="nav-button"
         aria-label="Next Bodo month"
       >
-        <span>Next</span>
-        <span aria-hidden="true">›</span>
+        <span>Next</span> ›
       </button>
 
 
@@ -557,10 +393,7 @@
     </section>
 
 
-    <!-- =====================================================
-         MONTH BANNER
-         ===================================================== -->
-
+    <!-- MONTH BANNER -->
     <section
       id="monthBanner"
       class="month-banner"
@@ -588,11 +421,9 @@
         </p>
 
         <div class="month-date-range">
-
           <span id="currentMonthDateRange">
-            Loading date range...
+            Loading...
           </span>
-
         </div>
 
       </div>
@@ -609,12 +440,10 @@
     </section>
 
 
-    <!-- =====================================================
-         CALENDAR + SIDEBAR
-         ===================================================== -->
-
+    <!-- CALENDAR + SIDEBAR -->
     <div class="calendar-layout">
 
+      <!-- CALENDAR -->
       <section
         class="calendar-main-section"
         aria-label="Bodo calendar"
@@ -625,47 +454,27 @@
           class="weekday-header"
         ></div>
 
-
         <div
           id="calendarGrid"
           class="calendar-grid"
           aria-label="Bodo calendar dates"
         ></div>
 
-
         <div class="calendar-legend">
 
           <div class="legend-item">
-
-            <span
-              class="legend-dot today-legend"
-              aria-hidden="true"
-            ></span>
-
+            <span class="legend-dot today-legend"></span>
             <span>Today</span>
-
           </div>
 
           <div class="legend-item">
-
-            <span
-              class="legend-dot event-legend"
-              aria-hidden="true"
-            ></span>
-
+            <span class="legend-dot event-legend"></span>
             <span>Event</span>
-
           </div>
 
           <div class="legend-item">
-
-            <span
-              class="legend-dot note-legend"
-              aria-hidden="true"
-            ></span>
-
+            <span class="legend-dot note-legend"></span>
             <span>My Note</span>
-
           </div>
 
         </div>
@@ -674,30 +483,22 @@
 
 
       <!-- SIDEBAR -->
-
       <aside
         class="events-sidebar"
         aria-label="Events and information"
       >
 
         <!-- SELECTED DATE -->
-
         <section
           id="selectedDatePanel"
-          class="sidebar-card selected-date-card"
+          class="sidebar-card"
         >
 
           <div class="sidebar-card-heading">
 
-            <span
-              class="sidebar-icon"
-              aria-hidden="true"
-            >
-              📅
-            </span>
+            <span class="sidebar-icon">📅</span>
 
             <div>
-
               <span class="sidebar-overline">
                 SELECTED DATE
               </span>
@@ -705,7 +506,6 @@
               <h3 id="selectedDateTitle">
                 Select a date
               </h3>
-
             </div>
 
           </div>
@@ -721,31 +521,21 @@
 
 
         <!-- EVENTS -->
-
         <section
           id="eventsPanel"
-          class="sidebar-card events-card"
+          class="sidebar-card"
         >
 
           <div class="sidebar-card-heading">
 
-            <span
-              class="sidebar-icon"
-              aria-hidden="true"
-            >
-              🎉
-            </span>
+            <span class="sidebar-icon">🎉</span>
 
             <div>
-
               <span class="sidebar-overline">
                 MONTHLY EVENTS
               </span>
 
-              <h3>
-                Festivals &amp; Events
-              </h3>
-
+              <h3>Festivals &amp; Events</h3>
             </div>
 
           </div>
@@ -753,51 +543,27 @@
           <div
             id="eventsList"
             class="events-list"
-          >
-
-            <div class="empty-state">
-
-              <span aria-hidden="true">
-                📅
-              </span>
-
-              <p>
-                Loading events...
-              </p>
-
-            </div>
-
-          </div>
+          ></div>
 
         </section>
 
 
         <!-- HISTORY -->
-
         <section
           id="historyPanel"
-          class="sidebar-card history-card"
+          class="sidebar-card"
         >
 
           <div class="sidebar-card-heading">
 
-            <span
-              class="sidebar-icon"
-              aria-hidden="true"
-            >
-              📜
-            </span>
+            <span class="sidebar-icon">📜</span>
 
             <div>
-
               <span class="sidebar-overline">
                 TODAY IN HISTORY
               </span>
 
-              <h3>
-                Bodo History
-              </h3>
-
+              <h3>Bodo History</h3>
             </div>
 
           </div>
@@ -805,43 +571,22 @@
           <div
             id="historyList"
             class="history-list"
-          >
-
-            <div class="empty-state">
-
-              <span aria-hidden="true">
-                🌿
-              </span>
-
-              <p>
-                No historical entry loaded.
-              </p>
-
-            </div>
-
-          </div>
+          ></div>
 
         </section>
 
 
         <!-- SEASON -->
-
         <section
           id="seasonPanel"
-          class="sidebar-card season-card"
+          class="sidebar-card"
         >
 
           <div class="sidebar-card-heading">
 
-            <span
-              class="sidebar-icon"
-              aria-hidden="true"
-            >
-              🌿
-            </span>
+            <span class="sidebar-icon">🌿</span>
 
             <div>
-
               <span class="sidebar-overline">
                 SEASON
               </span>
@@ -849,7 +594,6 @@
               <h3 id="seasonTitle">
                 Current Season
               </h3>
-
             </div>
 
           </div>
@@ -862,28 +606,18 @@
 
 
         <!-- NOTES -->
-
-        <section class="sidebar-card notes-quick-card">
+        <section class="sidebar-card">
 
           <div class="sidebar-card-heading">
 
-            <span
-              class="sidebar-icon"
-              aria-hidden="true"
-            >
-              📝
-            </span>
+            <span class="sidebar-icon">📝</span>
 
             <div>
-
               <span class="sidebar-overline">
                 PERSONAL NOTES
               </span>
 
-              <h3>
-                My Reminders
-              </h3>
-
+              <h3>My Reminders</h3>
             </div>
 
           </div>
@@ -908,10 +642,7 @@
     </div>
 
 
-    <!-- =====================================================
-         QUICK REFERENCE
-         ===================================================== -->
-
+    <!-- QUICK REFERENCE -->
     <section
       class="reference-section"
       aria-label="Bodo solar month reference"
@@ -919,52 +650,30 @@
 
       <div class="section-heading">
 
-        <div>
+        <span class="section-overline">
+          QUICK REFERENCE
+        </span>
 
-          <span class="section-overline">
-            QUICK REFERENCE
-          </span>
+        <h2>Bodo Solar Months</h2>
 
-          <h2>
-            Bodo Solar Months
-          </h2>
-
-          <p>
-            Bodo month names and their approximate Gregorian date ranges.
-          </p>
-
-        </div>
+        <p>
+          Bodo month names and their Gregorian date ranges.
+        </p>
 
       </div>
 
 
-      <div
-        id="monthReferenceTable"
-        class="reference-table-wrapper"
-      >
+      <div class="reference-table-wrapper">
 
         <table class="reference-table">
 
           <thead>
-
             <tr>
-
-              <th scope="col">#</th>
-
-              <th scope="col">
-                Bodo Month
-              </th>
-
-              <th scope="col">
-                Native Name
-              </th>
-
-              <th scope="col">
-                Gregorian Period
-              </th>
-
+              <th>#</th>
+              <th>Bodo Month</th>
+              <th>Native Name</th>
+              <th>Gregorian Period</th>
             </tr>
-
           </thead>
 
           <tbody id="monthReferenceBody"></tbody>
@@ -976,18 +685,10 @@
     </section>
 
 
-    <!-- =====================================================
-         ABOUT
-         ===================================================== -->
-
+    <!-- ABOUT -->
     <section class="about-calendar-card">
 
-      <div
-        class="about-icon"
-        aria-hidden="true"
-      >
-        🌿
-      </div>
+      <div class="about-icon">🌿</div>
 
       <div>
 
@@ -995,22 +696,18 @@
           ABOUT BODO CALENDAR
         </span>
 
-        <h2>
-          Traditional Bodo Solar Calendar
-        </h2>
+        <h2>Traditional Bodo Solar Calendar</h2>
 
         <p>
-          Bodo Calendar is designed to provide a simple digital
-          reference for Bodo solar dates alongside Gregorian dates.
-          The website also brings festivals, cultural events,
-          historical anniversaries and personal reminders together
-          in one place.
+          Bodo Calendar provides a digital reference for Bodo
+          solar dates alongside Gregorian dates. It also brings
+          festivals, cultural events, historical anniversaries
+          and personal reminders together in one place.
         </p>
 
         <p class="about-note">
-          Assamese calendar information is used only as a calendar
-          reference and cross-check layer. The website interface
-          displays information in English and Bodo.
+          Assamese calendar information is used only as a
+          reference layer.
         </p>
 
       </div>
@@ -1019,49 +716,31 @@
 
 
     <!-- AD -->
-
     <section
       id="adContainer"
       class="ad-container"
       aria-label="Advertisement"
     >
-
       <div class="ad-placeholder">
-        <span>Advertisement</span>
+        Advertisement
       </div>
-
     </section>
 
   </main>
 
 
-  <!-- =====================================================
-       FOOTER
-       ===================================================== -->
-
+  <!-- FOOTER -->
   <footer class="site-footer">
 
     <div class="footer-inner">
 
       <div class="footer-brand">
 
-        <div
-          class="footer-logo"
-          aria-hidden="true"
-        >
-          B
-        </div>
+        <div class="footer-logo">B</div>
 
         <div>
-
-          <h3>
-            Bodo Calendar
-          </h3>
-
-          <p>
-            Traditional Bodo Solar Calendar
-          </p>
-
+          <h3>Bodo Calendar</h3>
+          <p>Traditional Bodo Solar Calendar</p>
         </div>
 
       </div>
@@ -1069,24 +748,15 @@
 
       <div class="footer-links">
 
-        <button
-          type="button"
-          id="footerAboutBtn"
-        >
+        <button type="button" id="footerAboutBtn">
           About
         </button>
 
-        <button
-          type="button"
-          id="footerNotesBtn"
-        >
+        <button type="button" id="footerNotesBtn">
           My Notes
         </button>
 
-        <button
-          type="button"
-          id="footerVipBtn"
-        >
+        <button type="button" id="footerVipBtn">
           VIP
         </button>
 
@@ -1096,10 +766,7 @@
       <div class="footer-bottom">
 
         <p>
-          ©
-          <span id="copyrightYear">
-            2026
-          </span>
+          © <span id="copyrightYear">2026</span>
           Bodo Calendar. All rights reserved.
         </p>
 
@@ -1116,10 +783,7 @@
 </div>
 
 
-<!-- =========================================================
-     DATE MODAL
-     ========================================================= -->
-
+<!-- DATE MODAL -->
 <div
   id="dateModal"
   class="modal-overlay hidden"
@@ -1133,7 +797,6 @@
     <div class="modal-header">
 
       <div>
-
         <span class="modal-overline">
           CALENDAR DATE
         </span>
@@ -1141,7 +804,6 @@
         <h2 id="dateModalTitle">
           Date Details
         </h2>
-
       </div>
 
       <button
@@ -1185,10 +847,7 @@
 </div>
 
 
-<!-- =========================================================
-     NOTE MODAL
-     ========================================================= -->
-
+<!-- NOTE MODAL -->
 <div
   id="noteModal"
   class="modal-overlay hidden"
@@ -1202,7 +861,6 @@
     <div class="modal-header">
 
       <div>
-
         <span class="modal-overline">
           PERSONAL REMINDER
         </span>
@@ -1210,14 +868,12 @@
         <h2 id="noteModalTitle">
           Add a Note
         </h2>
-
       </div>
 
       <button
         type="button"
         id="closeNoteModalBtn"
         class="modal-close-btn"
-        aria-label="Close note form"
       >
         ×
       </button>
@@ -1225,10 +881,7 @@
     </div>
 
 
-    <form
-      id="noteForm"
-      class="note-form"
-    >
+    <form id="noteForm" class="note-form">
 
       <input
         type="hidden"
@@ -1247,27 +900,11 @@
           name="category"
           required
         >
-
-          <option value="Exam">
-            📚 Exam
-          </option>
-
-          <option value="Birthday">
-            🎂 Birthday
-          </option>
-
-          <option value="Pension">
-            💰 Pension
-          </option>
-
-          <option value="Important Event">
-            ⭐ Important Event
-          </option>
-
-          <option value="Other">
-            📝 Other
-          </option>
-
+          <option value="Exam">📚 Exam</option>
+          <option value="Birthday">🎂 Birthday</option>
+          <option value="Pension">💰 Pension</option>
+          <option value="Important Event">⭐ Important Event</option>
+          <option value="Other">📝 Other</option>
         </select>
 
       </div>
@@ -1312,7 +949,6 @@
       <div class="form-group checkbox-group">
 
         <label>
-
           <input
             type="checkbox"
             id="noteReminder"
@@ -1322,7 +958,6 @@
           <span>
             Show this as an important reminder
           </span>
-
         </label>
 
       </div>
@@ -1354,10 +989,7 @@
 </div>
 
 
-<!-- =========================================================
-     NOTES LIST
-     ========================================================= -->
-
+<!-- NOTES LIST -->
 <div
   id="notesListModal"
   class="modal-overlay hidden"
@@ -1371,7 +1003,6 @@
     <div class="modal-header">
 
       <div>
-
         <span class="modal-overline">
           LOCAL STORAGE
         </span>
@@ -1379,14 +1010,12 @@
         <h2 id="notesListModalTitle">
           My Notes
         </h2>
-
       </div>
 
       <button
         type="button"
         id="closeNotesListBtn"
         class="modal-close-btn"
-        aria-label="Close my notes"
       >
         ×
       </button>
@@ -1396,31 +1025,14 @@
     <div
       id="notesListContainer"
       class="notes-list-container"
-    >
-
-      <div class="empty-state">
-
-        <span aria-hidden="true">
-          📝
-        </span>
-
-        <p>
-          You have no personal notes yet.
-        </p>
-
-      </div>
-
-    </div>
+    ></div>
 
   </div>
 
 </div>
 
 
-<!-- =========================================================
-     VIP
-     ========================================================= -->
-
+<!-- VIP -->
 <div
   id="vipModal"
   class="modal-overlay hidden"
@@ -1433,12 +1045,7 @@
 
     <div class="vip-modal-top">
 
-      <div
-        class="vip-crown"
-        aria-hidden="true"
-      >
-        👑
-      </div>
+      <div class="vip-crown">👑</div>
 
       <button
         type="button"
@@ -1450,7 +1057,6 @@
       </button>
 
     </div>
-
 
     <span class="modal-overline">
       BODO CALENDAR VIP
@@ -1464,27 +1070,12 @@
       Enjoy a cleaner calendar experience with VIP features.
     </p>
 
-
     <div class="vip-benefits">
-
-      <div>
-        ✓ Remove advertisements
-      </div>
-
-      <div>
-        ✓ VIP member badge
-      </div>
-
-      <div>
-        ✓ Premium calendar experience
-      </div>
-
-      <div>
-        ✓ Support Bodo Calendar development
-      </div>
-
+      <div>✓ Remove advertisements</div>
+      <div>✓ VIP member badge</div>
+      <div>✓ Premium calendar experience</div>
+      <div>✓ Support Bodo Calendar development</div>
     </div>
-
 
     <div class="vip-plans">
 
@@ -1493,48 +1084,23 @@
         class="vip-plan"
         data-vip-plan="monthly"
       >
-
-        <span class="vip-plan-name">
-          Monthly
-        </span>
-
-        <strong>
-          ₹59
-        </strong>
-
-        <small>
-          per month
-        </small>
-
+        <span class="vip-plan-name">Monthly</span>
+        <strong>₹59</strong>
+        <small>per month</small>
       </button>
-
 
       <button
         type="button"
         class="vip-plan vip-plan-featured"
         data-vip-plan="yearly"
       >
-
-        <span class="vip-plan-tag">
-          POPULAR
-        </span>
-
-        <span class="vip-plan-name">
-          Yearly
-        </span>
-
-        <strong>
-          ₹500
-        </strong>
-
-        <small>
-          per year
-        </small>
-
+        <span class="vip-plan-tag">POPULAR</span>
+        <span class="vip-plan-name">Yearly</span>
+        <strong>₹500</strong>
+        <small>per year</small>
       </button>
 
     </div>
-
 
     <p class="payment-note">
       Payment verification will be handled securely before VIP
@@ -1546,10 +1112,7 @@
 </div>
 
 
-<!-- =========================================================
-     TOAST
-     ========================================================= -->
-
+<!-- TOAST -->
 <div
   id="toastContainer"
   class="toast-container"
@@ -1558,110 +1121,34 @@
 ></div>
 
 
-<!-- =========================================================
-     LOADING SCREEN
-     ========================================================= -->
-
+<!-- LOADING -->
 <div
   id="loadingScreen"
   class="loading-screen"
   aria-live="polite"
-  aria-label="Loading Bodo Calendar"
 >
 
   <div class="loading-content">
 
-    <div
-      class="loading-logo"
-      aria-hidden="true"
-    >
-      B
-    </div>
+    <div class="loading-logo">B</div>
 
-    <h2>
-      Bodo Calendar
-    </h2>
+    <h2>Bodo Calendar</h2>
 
-    <p>
-      Loading calendar...
-    </p>
+    <p>Loading calendar...</p>
 
-    <div
-      class="loading-spinner"
-      aria-hidden="true"
-    ></div>
+    <div class="loading-spinner"></div>
 
   </div>
 
 </div>
 
 
-<!-- =========================================================
-     JAVASCRIPT
-     CRITICAL: Execution order must be preserved
-     ========================================================= -->
-
+<!-- JAVASCRIPT -->
 <script src="./js/calendar-data.js?v=6.2"></script>
 <script src="./js/events.js?v=6.2"></script>
 <script src="./js/notes.js?v=6.2"></script>
 <script src="./js/vip.js?v=6.2"></script>
 <script src="./js/app.js?v=6.2"></script>
-
-
-<!-- =========================================================
-     SMALL PAGE SETUP
-     ========================================================= -->
-
-<script>
-(function () {
-  "use strict";
-
-  // Copyright Year
-  const yearElement = document.getElementById("copyrightYear");
-  if (yearElement) {
-    yearElement.textContent = String(new Date().getFullYear());
-  }
-
-  // PWA Install Prompt
-  let deferredInstallPrompt = null;
-  const installButton = document.getElementById("installAppBtn");
-
-  window.addEventListener("beforeinstallprompt", function (event) {
-    event.preventDefault();
-    deferredInstallPrompt = event;
-    if (installButton) {
-      installButton.classList.remove("hidden");
-    }
-  });
-
-  if (installButton) {
-    installButton.addEventListener("click", async function () {
-      if (!deferredInstallPrompt) return;
-      deferredInstallPrompt.prompt();
-      try {
-        await deferredInstallPrompt.userChoice;
-      } catch (error) {}
-      deferredInstallPrompt = null;
-      installButton.classList.add("hidden");
-    });
-  }
-
-  window.addEventListener("appinstalled", function () {
-    if (installButton) {
-      installButton.classList.add("hidden");
-    }
-    deferredInstallPrompt = null;
-  });
-
-  // Loader Safety Fallback (3s timeout)
-  window.setTimeout(function () {
-    const loading = document.getElementById("loadingScreen");
-    if (loading && !loading.classList.contains("hidden")) {
-      loading.classList.add("hidden");
-    }
-  }, 3000);
-})();
-</script>
 
 </body>
 </html>
