@@ -1,0 +1,53 @@
+/* BODO CALENDAR V10 FIX / CULTURAL OVERRIDES */
+:root{
+  --aronai-green:#075c47;--aronai-green-dark:#033b30;--aronai-red:#a92e25;
+  --aronai-gold:#d8a52b;--aronai-black:#12110f;--aronai-cream:#fff6df;
+}
+.main-container{max-width:1180px}
+.hero-card,.live-updates-section,.live-calendar-panel,.calendar-navigation-card,.month-banner,
+.calendar-main-section,.sidebar-card,.reference-section,.about-card,.culture-feature-card,.welcome-card{
+  border:1px solid rgba(7,92,71,.10);box-shadow:0 12px 35px rgba(3,59,48,.10);
+}
+.hero-card{overflow:hidden;border-radius:28px;background:#033b30}
+.hero-image{position:relative;height:390px;overflow:hidden;background:var(--aronai-green-dark)}
+.hero-image>img{width:100%;height:100%;object-fit:cover;object-position:center 45%}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,59,48,.92),rgba(3,59,48,.38),rgba(3,59,48,.05)),linear-gradient(0deg,rgba(0,0,0,.45),transparent 60%)}
+.hero-pattern{position:absolute;inset:0;opacity:.14;background:repeating-linear-gradient(135deg,transparent 0 26px,rgba(216,165,43,.55) 27px 29px)}
+.hero-content{position:absolute;z-index:2;left:30px;right:20px;bottom:30px;color:#fff;text-shadow:0 3px 14px rgba(0,0,0,.35)}
+.hero-content h2{margin:8px 0 2px;font-size:clamp(34px,6vw,62px);line-height:1;font-weight:900}
+.hero-content p{margin:8px 0 0;font-size:15px;color:rgba(255,255,255,.88)}
+.eyebrow{letter-spacing:1.2px;font-size:10px;font-weight:900}
+.aronai-strip{height:92px;position:relative;overflow:hidden;background:var(--aronai-black)}
+.aronai-strip img{width:100%;height:100%;object-fit:cover;object-position:center}
+.aronai-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 24px;color:#fff;background:linear-gradient(90deg,rgba(18,17,15,.88),rgba(18,17,15,.25),rgba(18,17,15,.72))}
+.aronai-overlay span{font-size:9px;font-weight:900;letter-spacing:1.5px;color:#f2ca62}.aronai-overlay strong{font-size:15px;letter-spacing:.7px}
+.header-action{border:0;border-radius:11px;padding:9px 12px;background:rgba(255,255,255,.12);color:#fff;text-decoration:none;font-weight:800;display:inline-flex;align-items:center;gap:5px}
+.admin-link{border:1px solid rgba(255,255,255,.16)}
+.live-updates-section{padding:22px;border-radius:22px;background:linear-gradient(145deg,#fff,#f3faf7)}
+.live-top{margin:0!important}.live-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.live-pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 11px;background:#e5f7f0;color:#075c47;font-size:10px;font-weight:900}
+.live-pill i{width:7px;height:7px;border-radius:50%;background:#10a86e;display:block;box-shadow:0 0 0 4px rgba(16,168,110,.12)}
+.small-action{border:1px solid #d9e5e1;background:#fff;color:#075c47;border-radius:10px;padding:8px 11px;font-weight:800}
+.system-info{margin:14px 0;padding:12px 14px;border-radius:14px;background:#fff8df;border:1px solid #f0d68a;display:flex;gap:8px;flex-wrap:wrap;font-size:12px}
+.live-updates-list{display:grid;gap:10px;margin-top:14px}
+.live-update{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:14px;border-radius:16px;background:#fff;border:1px solid #e1ece8}
+.live-update-icon{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:#e8f5f0;font-size:20px}
+.live-update h3{margin:0;font-size:15px;color:#14221f}.live-update p{margin:4px 0;color:#64746f;font-size:13px;line-height:1.55}.live-update time{font-size:10px;color:#8a9994}
+.dismiss-btn{border:0;background:#f1f5f3;color:#64746f;border-radius:9px;width:32px;height:32px;font-size:20px}
+.live-empty{text-align:center;padding:26px;color:#64746f}.live-empty span{font-size:28px;display:block}.live-empty strong{display:block;color:#14221f}
+.bodo-date-primary{display:block;color:#075c47;font-weight:900}.bodo-date-number{font-size:32px;line-height:1}.bodo-date-label{font-size:10px;letter-spacing:.7px}.gregorian-date-secondary{font-size:11px;color:#64746f;margin-top:5px}
+.culture-feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.culture-feature-card{position:relative;overflow:hidden;border-radius:22px;min-height:260px;background:#033b30}
+.culture-feature-card img{width:100%;height:100%;min-height:260px;object-fit:cover}
+.culture-feature-overlay{position:absolute;inset:auto 0 0;padding:22px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.84))}
+.culture-feature-overlay h2{margin:4px 0 0;font-size:28px}.culture-feature-overlay p{margin:4px 0 0;color:rgba(255,255,255,.86)}
+.aronai-feature-card{background:#12110f}
+.calendar-system-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.calendar-system-grid>div{padding:13px;border-radius:14px;background:#f7fbf9}.calendar-system-grid span{font-size:20px}.calendar-system-grid small,.calendar-system-grid strong{display:block}.calendar-system-grid small{font-size:10px;color:#64746f}.calendar-system-grid strong{font-size:12px;color:#075c47}
+.upcoming-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.upcoming-card{padding:16px;border-radius:16px;background:#f6faf9;border:1px solid #dfeae6}.upcoming-card span{font-size:9px;font-weight:900;color:#075c47}.upcoming-card div{margin-top:5px;font-weight:800}
+@media(max-width:760px){
+ .main-container{width:min(calc(100% - 18px),1180px)}.header-inner{width:calc(100% - 18px);min-height:64px}
+ .brand-text p{display:none}.brand-text h1{font-size:16px}.brand-logo{width:38px;height:38px}.header-action{padding:8px 9px;font-size:11px}
+ .hero-image{height:300px}.hero-content{left:20px;bottom:20px}.hero-content h2{font-size:38px}.aronai-strip{height:78px}
+ .culture-feature-grid,.upcoming-grid,.calendar-system-grid{grid-template-columns:1fr}.live-updates-section{padding:16px}.live-update{grid-template-columns:auto 1fr}.dismiss-btn{grid-column:3;grid-row:1}
+}
+@media(max-width:420px){.admin-link{font-size:0}.admin-link:first-letter{font-size:16px}.hero-image{height:275px}.live-top{align-items:flex-start}}
