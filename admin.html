@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bodo Calendar — System Admin</title>
+<link rel="stylesheet" href="./css/style.css?v=9.0">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<main class="main-container">
+<section class="month-banner"><span class="eyebrow">SYSTEM ADMIN</span><h2>Live Messages</h2><p>Manage messages shared with the website and future app.</p></section>
+
+<section id="setupCard" class="about-card">
+<h2>Connect backend</h2>
+<p>For secure global admin publishing, automatic research and app sharing, put your Supabase URL and anon key in <code>js/backend-config.js</code>. Never put a service-role key in browser code.</p>
+</section>
+
+<section id="loginCard" class="sidebar-card">
+<h2>Admin Login</h2>
+<form id="loginForm">
+<label>Email<input id="email" type="email" required autocomplete="email"></label>
+<label>Password<input id="password" type="password" required autocomplete="current-password"></label>
+<button class="primary-button" type="submit">Login</button>
+</form>
+<p id="loginStatus" class="muted"></p>
+</section>
+
+<section id="adminPanel" class="about-card hidden">
+<div class="section-top"><div><span class="eyebrow">CONTROL CENTER</span><h2>Publish a message</h2></div><button id="logoutBtn" class="secondary-button">Logout</button></div>
+<form id="messageForm">
+<input type="hidden" id="messageId">
+<label>Title<input id="messageTitle" maxlength="140" required></label>
+<label>Message<textarea id="messageBody" maxlength="2000" rows="5" required></textarea></label>
+<label>Icon<input id="messageIcon" maxlength="4" value="📢"></label>
+<label>Source<input id="messageSource" maxlength="120" placeholder="Bodo Calendar / source name"></label>
+<label class="check"><input id="messagePublished" type="checkbox" checked> Published</label>
+<div class="modal-actions"><button class="primary-button" type="submit">Save Message</button><button id="resetMessageBtn" class="secondary-button" type="button">Clear</button></div>
+</form>
+<hr>
+<div class="section-top"><div><h2>Messages</h2><p>Delete here = remove globally. User dismiss = only their device.</p></div><button id="researchBtn" class="small-action">🤖 Run Research</button></div>
+<div id="adminMessages"></div>
+</section>
+</main>
+<script src="./js/backend-config.js?v=1"></script>
+<script src="./js/admin.js?v=1"></script>
+</body>
+</html>
