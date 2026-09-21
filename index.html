@@ -14,6 +14,7 @@
   >
 
   <meta name="theme-color" content="#075c47">
+
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -21,11 +22,38 @@
 
   <title>Bodo Calendar — बर' दान</title>
 
-  <link rel="manifest" href="./manifest.json">
-  <link rel="icon" type="image/png" href="./assets/favicon.png">
+  <!-- =====================================================
+       PWA
+       ===================================================== -->
 
-  <!-- CACHE BUSTER -->
-  <link rel="stylesheet" href="./css/style.css?v=7.0">
+  <link
+    rel="manifest"
+    href="./manifest.json"
+  >
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="./assets/favicon.png"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    href="./assets/icon-192.png"
+  >
+
+  <!-- =====================================================
+       STYLES
+       ===================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="./css/style.css?v=9.1"
+  >
+
+  <!-- =====================================================
+       FONTS
+       ===================================================== -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,11 +62,16 @@
     href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet"
   >
+
 </head>
+
 
 <body>
 
-<div id="app" class="app-shell">
+<div
+  id="app"
+  class="app-shell"
+>
 
   <!-- =====================================================
        HEADER
@@ -48,7 +81,11 @@
 
     <div class="header-inner">
 
-      <a href="./" class="brand-area" aria-label="Bodo Calendar Home">
+      <a
+        href="./"
+        class="brand-area"
+        aria-label="Bodo Calendar Home"
+      >
 
         <div class="brand-logo">
           🌾
@@ -58,7 +95,9 @@
 
           <h1>
             Bodo Calendar
-            <span class="brand-bodo">(बर' दान)</span>
+            <span class="brand-bodo">
+              (बर' दान)
+            </span>
           </h1>
 
           <p>
@@ -69,23 +108,47 @@
 
       </a>
 
+
       <div class="header-actions">
+
+        <!-- INSTALL -->
 
         <button
           type="button"
           id="installAppBtn"
           class="header-icon-btn hidden"
           aria-label="Install Bodo Calendar"
+          title="Install Bodo Calendar"
         >
           📲
         </button>
+
+
+        <!-- LIVE SYSTEM -->
+
+        <button
+          type="button"
+          id="systemUpdatesBtn"
+          class="header-icon-btn"
+          aria-label="Live system updates"
+          title="Live System Updates"
+          onclick="document.getElementById('liveSystemSection')?.scrollIntoView({behavior:'smooth'})"
+        >
+          🔔
+        </button>
+
+
+        <!-- VIP -->
 
         <button
           type="button"
           id="vipButton"
           class="vip-button"
         >
-          👑 <span>Go VIP</span>
+          👑
+          <span>
+            Go VIP
+          </span>
         </button>
 
       </div>
@@ -101,6 +164,7 @@
 
   <main class="main-container">
 
+
     <!-- ===================================================
          BODO CULTURAL HERO
          =================================================== -->
@@ -110,15 +174,25 @@
       <div class="bodo-hero-image">
 
         <img
-          src="./assets/bodo-women.jpg"
-          alt="Traditional Bodo women in cultural dress and dance"
+          src="./assets/1735633-bagrumba.jpg"
+          alt="Traditional Bodo women performing Bagurumba cultural dance"
           loading="eager"
-          onerror="this.style.display='none';this.parentElement.classList.add('image-fallback')"
+          decoding="async"
+          onerror="
+            this.style.display='none';
+            this.parentElement.classList.add('image-fallback');
+          "
         >
 
-        <div class="bodo-hero-pattern"></div>
+        <div
+          class="bodo-hero-pattern"
+          aria-hidden="true"
+        ></div>
 
-        <div class="bodo-hero-overlay"></div>
+        <div
+          class="bodo-hero-overlay"
+          aria-hidden="true"
+        ></div>
 
         <div class="bodo-hero-content">
 
@@ -140,16 +214,20 @@
 
 
       <!-- =================================================
-           TEXTILE / ARONAI
+           ARONAI
            ================================================= -->
 
       <div class="bodo-textile-strip">
 
         <img
-          src=".1735633-bagrumba.jpg
-          alt="Traditional Bodo textile pattern"
+          src="./assets/bodo-aronai.jpg"
+          alt="Traditional Bodo Aronai textile"
           loading="lazy"
-          onerror="this.style.display='none';this.parentElement.classList.add('textile-fallback')"
+          decoding="async"
+          onerror="
+            this.style.display='none';
+            this.parentElement.classList.add('textile-fallback');
+          "
         >
 
         <div class="textile-overlay">
@@ -204,6 +282,7 @@
         type="button"
         id="closeWelcomeBtn"
         class="close-card-btn"
+        aria-label="Close welcome message"
       >
         ×
       </button>
@@ -212,7 +291,103 @@
 
 
     <!-- ===================================================
-         NOTIFICATION
+         LIVE SYSTEM / NEWS FEED
+         =================================================== -->
+
+    <section
+      id="liveSystemSection"
+      class="live-system-section"
+      aria-live="polite"
+    >
+
+      <div class="live-system-header">
+
+        <div>
+
+          <span class="section-overline">
+            LIVE SYSTEM
+          </span>
+
+          <h2>
+            What's happening today?
+          </h2>
+
+          <p>
+            Cultural updates, calendar information and
+            system announcements.
+          </p>
+
+        </div>
+
+        <div class="live-system-actions">
+
+          <span
+            id="liveUpdatesStatus"
+            class="live-system-status"
+          >
+            Connecting...
+          </span>
+
+          <button
+            type="button"
+            id="refreshLiveUpdatesBtn"
+            class="secondary-action-button"
+            onclick="window.BodoLiveSystem?.load()"
+          >
+            ↻ Refresh
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="liveUpdatesList"
+        class="live-updates-list"
+      ></div>
+
+
+      <div
+        id="liveEmpty"
+        class="live-empty hidden"
+      >
+
+        <div class="live-empty-icon">
+          🌿
+        </div>
+
+        <h3>
+          No new updates
+        </h3>
+
+        <p>
+          Everything is up to date.
+        </p>
+
+      </div>
+
+
+      <div
+        id="liveSystemInfo"
+        class="live-system-info hidden"
+      >
+
+        <span>
+          ℹ️
+        </span>
+
+        <p id="liveSystemInfoText">
+          Live system is connecting...
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         LEGACY NOTIFICATION
          =================================================== -->
 
     <section
@@ -254,6 +429,7 @@
         type="button"
         id="closeNotificationBtn"
         class="close-card-btn"
+        aria-label="Close notification"
       >
         ×
       </button>
@@ -289,14 +465,18 @@
         </div>
 
         <div class="live-indicator">
+
           <span class="live-dot"></span>
+
           LIVE
+
         </div>
 
       </div>
 
 
       <div class="live-date-grid">
+
 
         <!-- TODAY -->
 
@@ -378,7 +558,9 @@
       </div>
 
 
-      <!-- CALENDAR SYSTEM STATUS -->
+      <!-- =================================================
+           CALENDAR SYSTEM STATUS
+           ================================================= -->
 
       <div
         id="calendarSystemStatus"
@@ -390,6 +572,7 @@
         </div>
 
         <div class="calendar-system-grid">
+
 
           <div class="system-card">
 
@@ -542,9 +725,11 @@
         </p>
 
         <div class="month-date-range">
+
           <span id="currentMonthDateRange">
             Loading...
           </span>
+
         </div>
 
       </div>
@@ -611,18 +796,27 @@
         <div class="calendar-legend">
 
           <div class="legend-item">
+
             <span class="legend-dot today-legend"></span>
+
             Today
+
           </div>
 
           <div class="legend-item">
+
             <span class="legend-dot event-legend"></span>
+
             Event
+
           </div>
 
           <div class="legend-item">
+
             <span class="legend-dot note-legend"></span>
+
             My Note
+
           </div>
 
         </div>
@@ -851,15 +1045,30 @@
           <thead>
 
             <tr>
-              <th>#</th>
-              <th>Bodo Month</th>
-              <th>Native</th>
-              <th>Gregorian Period</th>
+
+              <th>
+                #
+              </th>
+
+              <th>
+                Bodo Month
+              </th>
+
+              <th>
+                Native
+              </th>
+
+              <th>
+                Gregorian Period
+              </th>
+
             </tr>
 
           </thead>
 
-          <tbody id="monthReferenceBody"></tbody>
+          <tbody
+            id="monthReferenceBody"
+          ></tbody>
 
         </table>
 
@@ -905,7 +1114,9 @@
     </section>
 
 
-    <!-- AD -->
+    <!-- ===================================================
+         AD
+         =================================================== -->
 
     <section
       id="adContainer"
@@ -979,7 +1190,8 @@
       <div class="footer-bottom">
 
         <p>
-          © <span id="copyrightYear"></span>
+          ©
+          <span id="copyrightYear"></span>
           Bodo Calendar. All rights reserved.
         </p>
 
@@ -1005,6 +1217,7 @@
   class="modal-overlay hidden"
   role="dialog"
   aria-modal="true"
+  aria-labelledby="dateModalTitle"
 >
 
   <div class="modal-box">
@@ -1027,6 +1240,7 @@
         type="button"
         id="closeDateModalBtn"
         class="modal-close-btn"
+        aria-label="Close date details"
       >
         ×
       </button>
@@ -1072,6 +1286,7 @@
   class="modal-overlay hidden"
   role="dialog"
   aria-modal="true"
+  aria-labelledby="noteModalTitle"
 >
 
   <div class="modal-box note-modal-box">
@@ -1084,7 +1299,7 @@
           PERSONAL REMINDER
         </span>
 
-        <h2>
+        <h2 id="noteModalTitle">
           Add a Note
         </h2>
 
@@ -1094,6 +1309,7 @@
         type="button"
         id="closeNoteModalBtn"
         class="modal-close-btn"
+        aria-label="Close note form"
       >
         ×
       </button>
@@ -1108,6 +1324,7 @@
         id="noteDate"
         name="date"
       >
+
 
       <div class="form-group">
 
@@ -1255,6 +1472,7 @@
         type="button"
         id="closeNotesListBtn"
         class="modal-close-btn"
+        aria-label="Close notes"
       >
         ×
       </button>
@@ -1294,6 +1512,7 @@
         type="button"
         id="closeVipModalBtn"
         class="modal-close-btn"
+        aria-label="Close VIP"
       >
         ×
       </button>
@@ -1314,12 +1533,24 @@
 
     <div class="vip-benefits">
 
-      <div>✓ Remove advertisements</div>
-      <div>✓ VIP member badge</div>
-      <div>✓ Premium calendar experience</div>
-      <div>✓ Support Bodo Calendar development</div>
+      <div>
+        ✓ Remove advertisements
+      </div>
+
+      <div>
+        ✓ VIP member badge
+      </div>
+
+      <div>
+        ✓ Premium calendar experience
+      </div>
+
+      <div>
+        ✓ Support Bodo Calendar development
+      </div>
 
     </div>
+
 
     <div class="vip-plans">
 
@@ -1382,6 +1613,7 @@
 <div
   id="toastContainer"
   class="toast-container"
+  aria-live="polite"
 ></div>
 
 
@@ -1419,11 +1651,244 @@
      JAVASCRIPT
      ======================================================= -->
 
-<script src="./js/calendar-data.js?v=7.0"></script>
-<script src="./js/events.js?v=7.0"></script>
-<script src="./js/notes.js?v=7.0"></script>
-<script src="./js/vip.js?v=7.0"></script>
-<script src="./js/app.js?v=7.0"></script>
+<!-- Calendar data -->
+
+<script
+  src="./js/calendar-data.js?v=9.1"
+></script>
+
+
+<!-- Events -->
+
+<script
+  src="./js/events.js?v=9.1"
+></script>
+
+
+<!-- Notes -->
+
+<script
+  src="./js/notes.js?v=9.1"
+></script>
+
+
+<!-- VIP -->
+
+<script
+  src="./js/vip.js?v=9.1"
+></script>
+
+
+<!-- Supabase / backend configuration -->
+
+<script
+  src="./js/backend-config.js?v=9.1"
+></script>
+
+
+<!-- Live update system -->
+
+<script
+  src="./js/live-system.js?v=9.1"
+></script>
+
+
+<!-- Main application -->
+
+<script
+  src="./js/app.js?v=9.1"
+></script>
+
+
+<!-- =======================================================
+     PWA SERVICE WORKER
+     ======================================================= -->
+
+<script>
+
+(function () {
+
+  "use strict";
+
+  if (
+    "serviceWorker" in navigator &&
+    (
+      location.protocol === "https:" ||
+      location.hostname === "localhost"
+    )
+  ) {
+
+    window.addEventListener(
+      "load",
+      function () {
+
+        navigator.serviceWorker
+          .register("./sw.js")
+          .then(function (registration) {
+
+            console.log(
+              "Bodo Calendar Service Worker registered:",
+              registration.scope
+            );
+
+          })
+          .catch(function (error) {
+
+            console.warn(
+              "Bodo Calendar Service Worker registration failed:",
+              error
+            );
+
+          });
+
+      }
+    );
+
+  }
+
+})();
+
+</script>
+
+
+<!-- =======================================================
+     INSTALL APP
+     ======================================================= -->
+
+<script>
+
+(function () {
+
+  "use strict";
+
+  let deferredPrompt = null;
+
+  const installButton =
+    document.getElementById("installAppBtn");
+
+  if (!installButton) {
+    return;
+  }
+
+
+  window.addEventListener(
+    "beforeinstallprompt",
+    function (event) {
+
+      event.preventDefault();
+
+      deferredPrompt = event;
+
+      installButton.classList.remove("hidden");
+
+    }
+  );
+
+
+  installButton.addEventListener(
+    "click",
+    async function () {
+
+      if (!deferredPrompt) {
+
+        alert(
+          "If the install option is not available, open your browser menu and choose 'Add to Home screen' or 'Install app'."
+        );
+
+        return;
+
+      }
+
+
+      deferredPrompt.prompt();
+
+      try {
+
+        await deferredPrompt.userChoice;
+
+      } catch (error) {
+
+        console.warn(
+          "Install prompt error:",
+          error
+        );
+
+      }
+
+
+      deferredPrompt = null;
+
+      installButton.classList.add("hidden");
+
+    }
+  );
+
+
+  window.addEventListener(
+    "appinstalled",
+    function () {
+
+      deferredPrompt = null;
+
+      installButton.classList.add("hidden");
+
+      console.log(
+        "Bodo Calendar installed."
+      );
+
+    }
+  );
+
+})();
+
+</script>
+
+
+<!-- =======================================================
+     SMALL GLOBAL SAFETY INIT
+     ======================================================= -->
+
+<script>
+
+(function () {
+
+  "use strict";
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+      const year =
+        document.getElementById("copyrightYear");
+
+      if (year) {
+
+        year.textContent =
+          new Date().getFullYear();
+
+      }
+
+
+      /*
+       * Make sure the live system starts even if
+       * live-system.js loads before DOM is ready.
+       */
+
+      if (
+        window.BodoLiveSystem &&
+        typeof window.BodoLiveSystem.load === "function"
+      ) {
+
+        window.BodoLiveSystem.load();
+
+      }
+
+    }
+  );
+
+})();
+
+</script>
 
 </body>
 </html>
