@@ -40,7 +40,7 @@
 
   <title>Bodo Calendar — बर' दान</title>
 
-  <!-- PWA -->
+  <!-- PWA Manifest -->
   <link rel="manifest" href="./manifest.json">
 
   <!-- Favicon -->
@@ -53,7 +53,7 @@
   <!-- Main CSS -->
   <link
     rel="stylesheet"
-    href="./css/style.css?v=6.1"
+    href="./css/style.css?v=6.2"
   >
 
   <!-- Fonts -->
@@ -1598,20 +1598,14 @@
 
 <!-- =========================================================
      JAVASCRIPT
-     
-     IMPORTANT:
-     1. calendar-data.js
-     2. events.js
-     3. notes.js
-     4. vip.js
-     5. app.js
+     CRITICAL: Execution order must be preserved
      ========================================================= -->
 
-<script src="./js/calendar-data.js?v=6.1"></script>
-<script src="./js/events.js?v=6.1"></script>
-<script src="./js/notes.js?v=6.1"></script>
-<script src="./js/vip.js?v=6.1"></script>
-<script src="./js/app.js?v=6.1"></script>
+<script src="./js/calendar-data.js?v=6.2"></script>
+<script src="./js/events.js?v=6.2"></script>
+<script src="./js/notes.js?v=6.2"></script>
+<script src="./js/vip.js?v=6.2"></script>
+<script src="./js/app.js?v=6.2"></script>
 
 
 <!-- =========================================================
@@ -1620,111 +1614,52 @@
 
 <script>
 (function () {
-
   "use strict";
 
-  /*
-   * Copyright year
-   */
-
-  const yearElement =
-    document.getElementById("copyrightYear");
-
+  // Copyright Year
+  const yearElement = document.getElementById("copyrightYear");
   if (yearElement) {
-    yearElement.textContent =
-      String(new Date().getFullYear());
+    yearElement.textContent = String(new Date().getFullYear());
   }
 
-
-  /*
-   * PWA install prompt
-   */
-
+  // PWA Install Prompt
   let deferredInstallPrompt = null;
+  const installButton = document.getElementById("installAppBtn");
 
-  const installButton =
-    document.getElementById("installAppBtn");
-
-
-  window.addEventListener(
-    "beforeinstallprompt",
-    function (event) {
-
-      event.preventDefault();
-
-      deferredInstallPrompt = event;
-
-      if (installButton) {
-        installButton.classList.remove("hidden");
-      }
-
+  window.addEventListener("beforeinstallprompt", function (event) {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    if (installButton) {
+      installButton.classList.remove("hidden");
     }
-  );
-
+  });
 
   if (installButton) {
-
-    installButton.addEventListener(
-      "click",
-      async function () {
-
-        if (!deferredInstallPrompt) {
-          return;
-        }
-
-        deferredInstallPrompt.prompt();
-
-        try {
-          await deferredInstallPrompt.userChoice;
-        } catch (error) {
-          /* User cancelled */
-        }
-
-        deferredInstallPrompt = null;
-
-        installButton.classList.add("hidden");
-
-      }
-    );
-
+    installButton.addEventListener("click", async function () {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      try {
+        await deferredInstallPrompt.userChoice;
+      } catch (error) {}
+      deferredInstallPrompt = null;
+      installButton.classList.add("hidden");
+    });
   }
 
-
-  window.addEventListener(
-    "appinstalled",
-    function () {
-
-      if (installButton) {
-        installButton.classList.add("hidden");
-      }
-
-      deferredInstallPrompt = null;
-
+  window.addEventListener("appinstalled", function () {
+    if (installButton) {
+      installButton.classList.add("hidden");
     }
-  );
+    deferredInstallPrompt = null;
+  });
 
-
-  /*
-   * Loading fallback.
-   *
-   * Only hides the loader.
-   * It does NOT modify calendar content.
-   */
-
-  window.setTimeout(
-    function () {
-
-      const loading =
-        document.getElementById("loadingScreen");
-
-      if (loading) {
-        loading.classList.add("hidden");
-      }
-
-    },
-    8000
-  );
-
+  // Loader Safety Fallback (3s timeout)
+  window.setTimeout(function () {
+    const loading = document.getElementById("loadingScreen");
+    if (loading && !loading.classList.contains("hidden")) {
+      loading.classList.add("hidden");
+    }
+  }, 3000);
 })();
 </script>
 
