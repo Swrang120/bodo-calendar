@@ -1,6 +1,6 @@
 /* =========================================================
    BODO CALENDAR — MAIN APPLICATION
-   Version: 6.0 (Fixed & Robust Date Calculation)
+   Version: 6.1 (Enhanced & Fixed Date Calculation)
 
    Connects:
    - calendar-data.js
@@ -16,17 +16,13 @@
      CONFIG
      ======================================================= */
 
-  const APP_VERSION = "6.0";
+  const APP_VERSION = "6.1";
 
-  const NOTIFICATION_URL =
-    "./notifications.json?v=" + Date.now();
+  const NOTIFICATION_URL = "./notifications.json?v=" + Date.now();
 
-  const WELCOME_STORAGE_KEY =
-    "bodo_calendar_welcome_closed_v1";
+  const WELCOME_STORAGE_KEY = "bodo_calendar_welcome_closed_v1";
 
-  const NOTIFICATION_STORAGE_KEY =
-    "bodo_calendar_notification_closed_v1";
-
+  const NOTIFICATION_STORAGE_KEY = "bodo_calendar_notification_closed_v1";
 
   /* =======================================================
      APP STATE
@@ -43,7 +39,6 @@
     initialized: false
   };
 
-
   /* =======================================================
      DOM HELPER
      ======================================================= */
@@ -52,7 +47,6 @@
     return document.getElementById(id);
   }
 
-
   function safeText(value) {
     if (value === null || value === undefined) {
       return "";
@@ -60,6 +54,14 @@
     return String(value);
   }
 
+  function escapeHTML(value) {
+    return safeText(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
 
   /* =======================================================
      DATE HELPERS
@@ -71,18 +73,51 @@
       typeof window.BodoCalendarData.normalizeDate === "function"
     ) {
       const norm = window.BodoCalendarData.normalizeDate(date);
-      if (norm && !isNaN(norm.getTime())) return norm;
+      if (norm && !isNaN(norm.getTime())) {
+        const dNorm = new Date(norm.getTime());
+        dNorm.setHours(0, 0, 0, 0);
+        return dNorm;
+      }
     }
 
-    if (!date) return new Date();
+    if (!date) {
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
 
-    const d = date instanceof Date ? new Date(date.getTime()) : new Date(date);
-    if (isNaN(d.getTime())) return new Date();
+    if (date instanceof Date) {
+      const d = new Date(date.getTime());
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
+    // String handling to prevent UTC offset shifts (e.g., "YYYY-MM-DD")
+    if (typeof date === "string") {
+      const match = date.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+      if (match) {
+        return new Date(
+          parseInt(match[1], 10),
+          parseInt(match[2], 10) - 1,
+          parseInt(match[3], 10),
+          0,
+          0,
+          0,
+          0
+        );
+      }
+    }
+
+    const d = new Date(date);
+    if (isNaN(d.getTime())) {
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      return now;
+    }
 
     d.setHours(0, 0, 0, 0);
     return d;
   }
-
 
   function createDateKey(date) {
     const d = normalizeDate(date);
@@ -92,18 +127,15 @@
     return `${y}-${m}-${day}`;
   }
 
-
   function addDays(date, amount) {
     const d = normalizeDate(date);
     d.setDate(d.getDate() + amount);
     return d;
   }
 
-
   function getToday() {
     return normalizeDate(new Date());
   }
-
 
   /* =======================================================
      DATA ACCESS & FALLBACKS
@@ -125,7 +157,6 @@
     return [];
   }
 
-
   function getWeekdays() {
     if (
       window.BodoCalendarData &&
@@ -142,7 +173,6 @@
     return [];
   }
 
-
   function getMonthStartDateHelper(month) {
     if (!month) return null;
 
@@ -156,13 +186,11 @@
 
     const possible = month.startDate || month.start || month.fromDate || month.gregorianStart;
     if (possible) {
-      const parsed = new Date(possible);
-      if (!isNaN(parsed.getTime())) return normalizeDate(parsed);
+      return normalizeDate(possible);
     }
 
     return null;
   }
-
 
   function getMonthForDate(date) {
     if (
@@ -189,7 +217,6 @@
 
     return months.length ? months[0] : null;
   }
-
 
   function getBodoDateInfo(date) {
     if (
@@ -220,7 +247,6 @@
     return null;
   }
 
-
   function getMonthById(id) {
     const months = getMonths();
     if (!months.length) return null;
@@ -233,7 +259,6 @@
       ) || months[0]
     );
   }
-
 
   /* =======================================================
      EVENT DATA ACCESS
@@ -253,7 +278,6 @@
     return [];
   }
 
-
   function getEventsForMonth(monthId) {
     const events = window.BodoCalendarEvents;
 
@@ -267,7 +291,6 @@
 
     return [];
   }
-
 
   /* =======================================================
      NOTES DATA ACCESS
@@ -283,7 +306,6 @@
     return [];
   }
 
-
   function getAllNotes() {
     const notes = window.BodoCalendarNotes;
 
@@ -293,7 +315,6 @@
 
     return [];
   }
-
 
   /* =======================================================
      FORMATTERS
@@ -311,7 +332,6 @@
     );
   }
 
-
   function formatShortEnglishDate(date) {
     return formatEnglishDate(date, {
       day: "numeric",
@@ -319,7 +339,6 @@
       year: "numeric"
     });
   }
-
 
   function getBodoDateNumberFromInfo(info) {
     if (!info) return null;
@@ -332,12 +351,10 @@
     );
   }
 
-
   function getBodoMonthName(month) {
     if (!month) return "Bodo Month";
     return month.name || month.englishName || month.title || "Bodo Month";
   }
-
 
   function getBodoNativeName(month) {
     if (!month) return "";
@@ -349,7 +366,6 @@
       ""
     );
   }
-
 
   /* =======================================================
      INITIAL MONTH
@@ -372,7 +388,6 @@
 
     return null;
   }
-
 
   /* =======================================================
      MONTH SELECTOR
@@ -401,7 +416,6 @@
       select.appendChild(option);
     });
   }
-
 
   /* =======================================================
      WEEKDAY HEADER
@@ -447,21 +461,6 @@
     });
   }
 
-
-  /* =======================================================
-     HTML ESCAPE
-     ======================================================= */
-
-  function escapeHTML(value) {
-    return safeText(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
-
   /* =======================================================
      MONTH BANNER
      ======================================================= */
@@ -505,20 +504,17 @@
         $("currentMonthDateRange").textContent =
           month.dateRange || month.gregorianRange;
       } else {
-        $("currentMonthDateRange").textContent =
-          "Bodo Solar Calendar Month";
+        $("currentMonthDateRange").textContent = "Bodo Solar Calendar Month";
       }
     }
 
     if ($("monthSeasonLabel")) {
-      const season =
-        month.season || month.seasonName || "BODO SOLAR MONTH";
+      const season = month.season || month.seasonName || "BODO SOLAR MONTH";
       $("monthSeasonLabel").textContent = season;
     }
 
     updateSeason(month);
   }
-
 
   /* =======================================================
      CALENDAR GRID
@@ -555,7 +551,6 @@
       let days = typeof month.days === "number" ? month.days : 30;
 
       if (!startDate) {
-        // Default reference if completely missing
         startDate = new Date();
         startDate.setDate(1);
       }
@@ -598,7 +593,6 @@
     });
   }
 
-
   /* =======================================================
      EXTRACT DATE FROM CALENDAR ENTRY
      ======================================================= */
@@ -616,20 +610,12 @@
       entry.fullDate ||
       entry.calendarDate;
 
-    if (possible instanceof Date) {
-      return normalizeDate(possible);
-    }
-
     if (possible) {
-      const parsed = new Date(possible);
-      if (!isNaN(parsed.getTime())) {
-        return normalizeDate(parsed);
-      }
+      return normalizeDate(possible);
     }
 
     return null;
   }
-
 
   /* =======================================================
      CREATE DATE CARD
@@ -694,7 +680,6 @@
     return card;
   }
 
-
   /* =======================================================
      EMPTY STATE
      ======================================================= */
@@ -707,7 +692,6 @@
       </div>
     `;
   }
-
 
   /* =======================================================
      SELECT DATE
@@ -723,7 +707,6 @@
       openDateModal(state.selectedDate);
     }
   }
-
 
   /* =======================================================
      SELECTED DATE SIDEBAR
@@ -794,7 +777,6 @@
 
     details.innerHTML = html;
   }
-
 
   /* =======================================================
      DATE MODAL
@@ -894,7 +876,6 @@
     document.body.classList.add("modal-open");
   }
 
-
   function closeDateModal() {
     const modal = $("dateModal");
     if (modal) {
@@ -902,7 +883,6 @@
     }
     document.body.classList.remove("modal-open");
   }
-
 
   /* =======================================================
      EVENTS SIDEBAR
@@ -926,7 +906,7 @@
 
       const eventDate = event.date || event.gregorianDate || null;
       const dateText = eventDate
-        ? formatShortEnglishDate(new Date(eventDate))
+        ? formatShortEnglishDate(normalizeDate(eventDate))
         : event.bodoDate
         ? `Bodo Date ${event.bodoDate}`
         : "";
@@ -947,7 +927,6 @@
       container.appendChild(item);
     });
   }
-
 
   /* =======================================================
      HISTORY / TODAY EVENTS
@@ -996,7 +975,6 @@
     });
   }
 
-
   /* =======================================================
      SEASON
      ======================================================= */
@@ -1016,7 +994,6 @@
     if (title) title.textContent = season;
     if (description) description.textContent = seasonDescription;
   }
-
 
   /* =======================================================
      LIVE TODAY / TOMORROW / DAY AFTER TOMORROW
@@ -1082,7 +1059,6 @@
     renderCalendarSystemStatus();
   }
 
-
   function renderCalendarSystemStatus() {
     if ($("englishTodayStatus")) {
       $("englishTodayStatus").textContent = formatEnglishDate(state.today);
@@ -1103,7 +1079,6 @@
     }
   }
 
-
   function getAssameseReferenceText(date) {
     if (
       window.BodoCalendarAssamese &&
@@ -1116,7 +1091,6 @@
     }
     return "Reference layer";
   }
-
 
   /* =======================================================
      MONTH REFERENCE TABLE
@@ -1153,7 +1127,6 @@
     });
   }
 
-
   /* =======================================================
      NAVIGATE MONTH
      ======================================================= */
@@ -1178,7 +1151,6 @@
     updateCalendarView();
   }
 
-
   function goToToday() {
     state.today = getToday();
     state.tomorrow = addDays(state.today, 1);
@@ -1197,7 +1169,6 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-
   function updateCalendarView() {
     renderMonthSelector();
     renderMonthBanner();
@@ -1208,7 +1179,6 @@
     renderMonthReference();
     renderSelectedDate();
   }
-
 
   /* =======================================================
      WELCOME & NOTIFICATIONS & INSTALL PROMPT
@@ -1234,7 +1204,6 @@
       });
     }
   }
-
 
   async function loadNotifications() {
     const panel = $("notificationPanel");
@@ -1265,7 +1234,6 @@
     }
   }
 
-
   function setupNotificationClose() {
     const button = $("closeNotificationBtn");
     const panel = $("notificationPanel");
@@ -1273,7 +1241,6 @@
       button.addEventListener("click", () => panel.classList.add("hidden"));
     }
   }
-
 
   /* =======================================================
      NOTES UI & FORMS
@@ -1294,13 +1261,11 @@
     document.body.classList.add("modal-open");
   }
 
-
   function closeNoteModal() {
     const modal = $("noteModal");
     if (modal) modal.classList.add("hidden");
     document.body.classList.remove("modal-open");
   }
-
 
   function openNotesList() {
     const modal = $("notesListModal");
@@ -1334,13 +1299,11 @@
     document.body.classList.add("modal-open");
   }
 
-
   function closeNotesList() {
     const modal = $("notesListModal");
     if (modal) modal.classList.add("hidden");
     document.body.classList.remove("modal-open");
   }
-
 
   function setupNoteForm() {
     const form = $("noteForm");
@@ -1380,7 +1343,6 @@
     });
   }
 
-
   /* =======================================================
      MODAL BUTTONS & NAVIGATION SETUP
      ======================================================= */
@@ -1399,15 +1361,38 @@
       });
     }
 
+    /* Modal Backdrop / Overlay Clicks */
+    ["dateModal", "noteModal", "notesListModal"].forEach((modalId) => {
+      const modal = $(modalId);
+      if (modal) {
+        modal.addEventListener("click", function (e) {
+          if (e.target === modal) {
+            closeDateModal();
+            closeNoteModal();
+            closeNotesList();
+          }
+        });
+      }
+    });
+
+    /* Keyboard Navigation & Escape Key */
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") {
         closeDateModal();
         closeNoteModal();
         closeNotesList();
       }
+
+      // Arrow Key Month Navigation when no modal is active
+      if (!document.body.classList.contains("modal-open")) {
+        if (e.key === "ArrowLeft") {
+          changeMonth(-1);
+        } else if (e.key === "ArrowRight") {
+          changeMonth(1);
+        }
+      }
     });
   }
-
 
   function setupNavigation() {
     if ($("prevMonthBtn")) $("prevMonthBtn").addEventListener("click", () => changeMonth(-1));
@@ -1424,22 +1409,33 @@
     }
   }
 
-
   function setupFooterButtons() {
     if ($("footerNotesBtn")) $("footerNotesBtn").addEventListener("click", openNotesList);
     if ($("openNotesBtn")) $("openNotesBtn").addEventListener("click", openNotesList);
   }
 
-
   function setupInstallPrompt() {
     const installButton = $("installAppBtn");
+
     window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
       state.deferredInstallPrompt = e;
       if (installButton) installButton.classList.remove("hidden");
     });
-  }
 
+    if (installButton) {
+      installButton.addEventListener("click", async () => {
+        if (!state.deferredInstallPrompt) return;
+        state.deferredInstallPrompt.prompt();
+        const { outcome } = await state.deferredInstallPrompt.userChoice;
+        if (outcome === "accepted") {
+          showToast("Thank you for installing Bodo Calendar!", "success");
+        }
+        state.deferredInstallPrompt = null;
+        installButton.classList.add("hidden");
+      });
+    }
+  }
 
   function showToast(message, type = "info") {
     const container = $("toastContainer");
@@ -1459,7 +1455,6 @@
 
   window.showToast = showToast;
 
-
   function hideLoadingScreen() {
     const screen = $("loadingScreen");
     if (screen) {
@@ -1469,7 +1464,6 @@
       }, 500);
     }
   }
-
 
   /* =======================================================
      INITIALIZE APP
@@ -1520,7 +1514,6 @@
       hideLoadingScreen();
     }
   }
-
 
   window.BodoCalendarApp = {
     state,
