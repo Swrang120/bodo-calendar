@@ -1409,3 +1409,287 @@ textarea:focus-visible,
     animation: none !important;
   }
 }
+/* =========================================================
+   BODO CULTURAL HERO
+   ========================================================= */
+
+.bodo-culture-hero {
+  width: 100%;
+  margin: 18px 0 0;
+
+  overflow: hidden;
+
+  border-radius: 24px;
+
+  background: #075d4b;
+
+  border: 1px solid rgba(0, 0, 0, 0.08);
+
+  box-shadow:
+    0 8px 28px rgba(5, 73, 59, 0.14);
+}
+
+/* Main cultural image */
+
+.bodo-hero-image {
+  position: relative;
+
+  width: 100%;
+  height: 330px;
+
+  overflow: hidden;
+}
+
+.bodo-hero-image img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+  object-position: center 45%;
+
+  transform: scale(1.01);
+}
+
+/* Green cinematic overlay */
+
+.bodo-hero-overlay {
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(3, 67, 53, 0.78) 0%,
+      rgba(3, 67, 53, 0.38) 45%,
+      rgba(3, 67, 53, 0.08) 100%
+    ),
+
+    linear-gradient(
+      0deg,
+      rgba(3, 67, 53, 0.45),
+      transparent 55%
+    );
+}
+
+/* Hero text */
+
+.bodo-hero-content {
+  position: absolute;
+
+  left: 30px;
+  bottom: 28px;
+
+  z-index: 2;
+
+  color: white;
+
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.28);
+}
+
+.bodo-hero-label {
+  display: inline-block;
+
+  margin-bottom: 8px;
+  padding: 5px 10px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.15);
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  backdrop-filter: blur(8px);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  letter-spacing: 1.5px;
+}
+
+.bodo-hero-content h2 {
+  margin: 0;
+
+  font-size: clamp(30px, 5vw, 48px);
+
+  line-height: 1.05;
+
+  font-weight: 900;
+}
+
+.bodo-hero-content p {
+  margin: 7px 0 0;
+
+  font-size: 15px;
+
+  color: rgba(255, 255, 255, 0.88);
+
+  letter-spacing: 0.5px;
+}
+
+/* =========================================================
+   TRADITIONAL TEXTILE STRIP
+   ========================================================= */
+
+.bodo-textile-strip {
+  position: relative;
+
+  width: 100%;
+  height: 62px;
+
+  overflow: hidden;
+
+  background: #111;
+}
+
+.bodo-textile-strip::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.15),
+      transparent 30%,
+      transparent 70%,
+      rgba(0, 0, 0, 0.18)
+    );
+}
+
+.bodo-textile-strip img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  object-position: center 45%;
+
+  filter: saturate(1.08) contrast(1.05);
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .bodo-culture-hero {
+    border-radius: 20px;
+  }
+
+  .bodo-hero-image {
+    height: 260px;
+  }
+
+  .bodo-hero-content {
+    left: 24px;
+    bottom: 22px;
+  }
+
+  .bodo-textile-strip {
+    height: 54px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .bodo-culture-hero {
+    margin-top: 12px;
+
+    border-radius: 18px;
+  }
+
+  .bodo-hero-image {
+    height: 205px;
+  }
+
+  .bodo-hero-image img {
+    object-position: center center;
+  }
+
+  .bodo-hero-overlay {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(3, 67, 53, 0.72),
+        rgba(3, 67, 53, 0.20)
+      ),
+      linear-gradient(
+        0deg,
+        rgba(3, 67, 53, 0.48),
+        transparent 65%
+      );
+  }
+
+  .bodo-hero-content {
+    left: 17px;
+    bottom: 17px;
+  }
+
+  .bodo-hero-label {
+    margin-bottom: 5px;
+
+    padding: 4px 8px;
+
+    font-size: 9px;
+
+    letter-spacing: 1.2px;
+  }
+
+  .bodo-hero-content h2 {
+    font-size: 28px;
+  }
+
+  .bodo-hero-content p {
+    margin-top: 4px;
+
+    font-size: 12px;
+  }
+
+  .bodo-textile-strip {
+    height: 43px;
+  }
+}
+
+
+/* =========================================================
+   SMALL ANDROID PHONES
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+  .bodo-hero-image {
+    height: 185px;
+  }
+
+  .bodo-hero-content {
+    left: 14px;
+    bottom: 14px;
+  }
+
+  .bodo-hero-content h2 {
+    font-size: 25px;
+  }
+
+  .bodo-hero-content p {
+    font-size: 11px;
+  }
+
+  .bodo-textile-strip {
+    height: 38px;
+  }
+}
