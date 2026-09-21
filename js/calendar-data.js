@@ -1,239 +1,248 @@
 /* =========================================================
    BODO CALENDAR — CALENDAR DATA
-   Version: 6.0
-   =========================================================
-
-   PURPOSE:
-   - Bodo month definitions
-   - Gregorian ↔ Bodo date conversion
-   - Weekday data
-   - Month/date helper functions
-   - Leap-year handling
-   - Calendar grid support
-
-   IMPORTANT:
-   This file contains calendar calculation/data only.
-   UI rendering is handled by app.js.
+   Version 6.2
    ========================================================= */
+
+"use strict";
 
 
 /* =========================================================
-   1. BODO MONTH DATA
+   BODO MONTH DATA
    ========================================================= */
 
 const bodoMonthsData = [
+
   {
-    id: 0,
-    name: "Magh / Maghw (माघ)",
-    englishName: "Magh",
-    dateRange: "15 Jan – 14 Feb",
-    season: "Gozon / Winter",
-    startGregMonth: 0,
-    startGregDay: 15,
-    daysCount: 31
+    id:0,
+    englishName:"Magh",
+    nativeName:"माघ",
+    name:"Magh / Maghw (माघ)",
+    dateRange:"15 Jan – 14 Feb",
+    season:"Gozon / Winter",
+    startGregMonth:0,
+    startGregDay:15,
+    daysCount:31
   },
 
   {
-    id: 1,
-    name: "Fagun (फागुन)",
-    englishName: "Fagun",
-    dateRange: "15 Feb – 14 Mar",
-    season: "Gozon / Late Winter",
-    startGregMonth: 1,
-    startGregDay: 15,
-    daysCount: 28
+    id:1,
+    englishName:"Fagun",
+    nativeName:"फागुन",
+    name:"Fagun (फागुन)",
+    dateRange:"15 Feb – 14 Mar",
+    season:"Gozon / Late Winter",
+    startGregMonth:1,
+    startGregDay:15,
+    daysCount:28
   },
 
   {
-    id: 2,
-    name: "Chaitra (चैत्र)",
-    englishName: "Chaitra",
-    dateRange: "15 Mar – 13 Apr",
-    season: "Bwisagu / Early Spring",
-    startGregMonth: 2,
-    startGregDay: 15,
-    daysCount: 30
+    id:2,
+    englishName:"Chaitra",
+    nativeName:"चैत्र",
+    name:"Chaitra (चैत्र)",
+    dateRange:"15 Mar – 13 Apr",
+    season:"Bwisagu / Early Spring",
+    startGregMonth:2,
+    startGregDay:15,
+    daysCount:30
   },
 
   {
-    id: 3,
-    name: "Bwisag (बैसागो / बैसाग)",
-    englishName: "Bwisag",
-    dateRange: "14 Apr – 14 May",
-    season: "Bwisag Ritu (Spring Season)",
-    startGregMonth: 3,
-    startGregDay: 14,
-    daysCount: 31
+    id:3,
+    englishName:"Bwisag",
+    nativeName:"बैसाग",
+    name:"Bwisag (बैसागो / बैसाग)",
+    dateRange:"14 Apr – 14 May",
+    season:"Bwisag Ritu / Spring",
+    startGregMonth:3,
+    startGregDay:14,
+    daysCount:31
   },
 
   {
-    id: 4,
-    name: "Jeth (जेथो)",
-    englishName: "Jeth",
-    dateRange: "15 May – 14 Jun",
-    season: "Dungfu / Early Summer",
-    startGregMonth: 4,
-    startGregDay: 15,
-    daysCount: 31
+    id:4,
+    englishName:"Jeth",
+    nativeName:"जेथो",
+    name:"Jeth (जेथो)",
+    dateRange:"15 May – 14 Jun",
+    season:"Dungfu / Early Summer",
+    startGregMonth:4,
+    startGregDay:15,
+    daysCount:31
   },
 
   {
-    id: 5,
-    name: "Aasar (आसार)",
-    englishName: "Aasar",
-    dateRange: "15 Jun – 15 Jul",
-    season: "Akhra / Monsoon",
-    startGregMonth: 5,
-    startGregDay: 15,
-    daysCount: 31
+    id:5,
+    englishName:"Aasar",
+    nativeName:"आसार",
+    name:"Aasar (आसार)",
+    dateRange:"15 Jun – 15 Jul",
+    season:"Akhra / Monsoon",
+    startGregMonth:5,
+    startGregDay:15,
+    daysCount:31
   },
 
   {
-    id: 6,
-    name: "Sawan (सावन)",
-    englishName: "Sawan",
-    dateRange: "16 Jul – 16 Aug",
-    season: "Akhra / Rainy Season",
-    startGregMonth: 6,
-    startGregDay: 16,
-    daysCount: 32
+    id:6,
+    englishName:"Sawan",
+    nativeName:"सावन",
+    name:"Sawan (सावन)",
+    dateRange:"16 Jul – 16 Aug",
+    season:"Akhra / Rainy Season",
+    startGregMonth:6,
+    startGregDay:16,
+    daysCount:32
   },
 
   {
-    id: 7,
-    name: "Bhadra (भाद्र)",
-    englishName: "Bhadra",
-    dateRange: "17 Aug – 18 Sep",
-    season: "Late Monsoon",
-    startGregMonth: 7,
-    startGregDay: 17,
-    daysCount: 33
+    id:7,
+    englishName:"Bhadra",
+    nativeName:"भाद्र",
+    name:"Bhadra (भाद्र)",
+    dateRange:"17 Aug – 18 Sep",
+    season:"Late Monsoon",
+    startGregMonth:7,
+    startGregDay:17,
+    daysCount:33
   },
 
   {
-    id: 8,
-    name: "Aasin (आसिन)",
-    englishName: "Aasin",
-    dateRange: "19 Sep – 18 Oct",
-    season: "Sirri / Autumn",
-    startGregMonth: 8,
-    startGregDay: 19,
-    daysCount: 30
+    id:8,
+    englishName:"Aasin",
+    nativeName:"आसिन",
+    name:"Aasin (आसिन)",
+    dateRange:"19 Sep – 18 Oct",
+    season:"Sirri / Autumn",
+    startGregMonth:8,
+    startGregDay:19,
+    daysCount:30
   },
 
   {
-    id: 9,
-    name: "Kati (खाथि)",
-    englishName: "Kati",
-    dateRange: "19 Oct – 18 Nov",
-    season: "Sirri / Late Autumn",
-    startGregMonth: 9,
-    startGregDay: 19,
-    daysCount: 31
+    id:9,
+    englishName:"Kati",
+    nativeName:"खाथि",
+    name:"Kati (खाथि)",
+    dateRange:"19 Oct – 18 Nov",
+    season:"Sirri / Late Autumn",
+    startGregMonth:9,
+    startGregDay:19,
+    daysCount:31
   },
 
   {
-    id: 10,
-    name: "Aghon (आघन)",
-    englishName: "Aghon",
-    dateRange: "19 Nov – 18 Dec",
-    season: "Gozon / Pre-Winter",
-    startGregMonth: 10,
-    startGregDay: 19,
-    daysCount: 30
+    id:10,
+    englishName:"Aghon",
+    nativeName:"आघन",
+    name:"Aghon (आघन)",
+    dateRange:"19 Nov – 18 Dec",
+    season:"Gozon / Pre-Winter",
+    startGregMonth:10,
+    startGregDay:19,
+    daysCount:30
   },
 
   {
-    id: 11,
-    name: "Push (फुष)",
-    englishName: "Push",
-    dateRange: "19 Dec – 14 Jan",
-    season: "Gozon / Peak Winter",
-    startGregMonth: 11,
-    startGregDay: 19,
-    daysCount: 27
+    id:11,
+    englishName:"Push",
+    nativeName:"फुष",
+    name:"Push (फुष)",
+    dateRange:"19 Dec – 14 Jan",
+    season:"Gozon / Peak Winter",
+    startGregMonth:11,
+    startGregDay:19,
+    daysCount:27
   }
+
 ];
 
 
 /* =========================================================
-   2. BODO WEEKDAYS
+   WEEKDAYS
    ========================================================= */
 
 const bodoWeekdays = [
+
   {
-    en: "Sunday",
-    bodo: "Rabibar (रबिबार)"
+    en:"Sunday",
+    bodo:"Rabibar (रबिबार)"
   },
 
   {
-    en: "Monday",
-    bodo: "Sombar (समबार)"
+    en:"Monday",
+    bodo:"Sombar (समबार)"
   },
 
   {
-    en: "Tuesday",
-    bodo: "Mongolbar (मंगलबार)"
+    en:"Tuesday",
+    bodo:"Mongolbar (मंगलबार)"
   },
 
   {
-    en: "Wednesday",
-    bodo: "Budhbar (बुधबार)"
+    en:"Wednesday",
+    bodo:"Budhbar (बुधबार)"
   },
 
   {
-    en: "Thursday",
-    bodo: "Brihospatibar (बृहस्पतीबार)"
+    en:"Thursday",
+    bodo:"Brihospatibar (बृहस्पतीबार)"
   },
 
   {
-    en: "Friday",
-    bodo: "Sakrubar (शक्रुबार)"
+    en:"Friday",
+    bodo:"Sakrubar (शक्रुबार)"
   },
 
   {
-    en: "Saturday",
-    bodo: "Shanibar (शनिबार)"
+    en:"Saturday",
+    bodo:"Shanibar (शनिबार)"
   }
+
 ];
 
 
 /* =========================================================
-   3. MONTH NAME HELPERS
+   BASIC HELPERS
    ========================================================= */
 
-function getBodoMonthById(id) {
-  return bodoMonthsData.find(month => month.id === Number(id)) || null;
-}
-
-
-function getBodoMonthByEnglishName(name) {
-  if (!name) return null;
-
-  const searchName = String(name).trim().toLowerCase();
+function getBodoMonthById(id){
 
   return (
     bodoMonthsData.find(
-      month => month.englishName.toLowerCase() === searchName
+      month => Number(month.id) === Number(id)
     ) || null
   );
+
+}
+
+
+function getBodoMonthByEnglishName(name){
+
+  if(!name){
+    return null;
+  }
+
+  const value =
+    String(name).trim().toLowerCase();
+
+  return (
+    bodoMonthsData.find(
+      month =>
+        month.englishName.toLowerCase() === value
+    ) || null
+  );
+
 }
 
 
 /* =========================================================
-   4. GREGORIAN DATE HELPERS
+   DATE HELPERS
    ========================================================= */
 
-/*
-   Create a date safely using local calendar values.
+function createLocalDate(year,monthIndex,day){
 
-   IMPORTANT:
-   We intentionally use local Date objects instead of UTC
-   so the calendar does not accidentally shift by one day
-   because of timezone conversion.
-*/
-
-function createLocalDate(year, monthIndex, day) {
   return new Date(
     Number(year),
     Number(monthIndex),
@@ -243,119 +252,161 @@ function createLocalDate(year, monthIndex, day) {
     0,
     0
   );
+
 }
 
 
-function normalizeDate(date) {
-  if (date instanceof Date) {
-    return new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-      12,
-      0,
-      0,
-      0
+function normalizeDate(input){
+
+  if(input instanceof Date){
+
+    return createLocalDate(
+      input.getFullYear(),
+      input.getMonth(),
+      input.getDate()
     );
+
   }
 
-  if (typeof date === "string") {
-    const parts = date.split("-");
+  if(typeof input === "string"){
 
-    if (parts.length === 3) {
+    const parts =
+      input.split("-");
+
+    if(parts.length === 3){
+
       const year = Number(parts[0]);
       const month = Number(parts[1]) - 1;
       const day = Number(parts[2]);
 
-      if (
+      if(
         Number.isFinite(year) &&
         Number.isFinite(month) &&
         Number.isFinite(day)
-      ) {
-        return createLocalDate(year, month, day);
+      ){
+
+        return createLocalDate(
+          year,
+          month,
+          day
+        );
+
       }
+
     }
+
+    const parsed =
+      new Date(input);
+
+    if(!Number.isNaN(parsed.getTime())){
+
+      return createLocalDate(
+        parsed.getFullYear(),
+        parsed.getMonth(),
+        parsed.getDate()
+      );
+
+    }
+
   }
 
-  return new Date(
-    new Date().getFullYear(),
-    new Date().getMonth(),
-    new Date().getDate(),
-    12,
-    0,
-    0,
-    0
+  const now = new Date();
+
+  return createLocalDate(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
   );
+
 }
 
 
-/* =========================================================
-   5. LEAP YEAR
-   ========================================================= */
+function isGregorianLeapYear(year){
 
-function isGregorianLeapYear(year) {
   year = Number(year);
 
   return (
     year % 400 === 0 ||
-    (year % 100 !== 0 && year % 4 === 0)
+    (
+      year % 100 !== 0 &&
+      year % 4 === 0
+    )
   );
+
 }
 
 
 /* =========================================================
-   6. MONTH DAY COUNT
+   MONTH DAYS
    ========================================================= */
 
-function getBodoMonthDays(monthId, gregorianYear) {
-  const month = getBodoMonthById(monthId);
+function getBodoMonthDays(monthId,year){
 
-  if (!month) {
+  const month =
+    getBodoMonthById(monthId);
+
+  if(!month){
     return 0;
   }
 
-  /*
-     Fagun receives one extra day during Gregorian leap years.
-  */
-
-  if (
+  if(
     month.id === 1 &&
-    isGregorianLeapYear(gregorianYear)
-  ) {
+    isGregorianLeapYear(year)
+  ){
+
     return 29;
+
   }
 
   return month.daysCount;
+
 }
 
 
 /* =========================================================
-   7. BODO MONTH START DATE
+   MONTH START
    ========================================================= */
 
-function getBodoMonthStartDate(monthId, gregorianYear) {
-  const month = getBodoMonthById(monthId);
+function getBodoMonthStartDate(
+  monthId,
+  gregorianYear
+){
 
-  if (!month) {
+  /*
+   * IMPORTANT:
+   * The function accepts both:
+   *
+   * getBodoMonthStartDate(8,2026)
+   *
+   * and
+   *
+   * getBodoMonthStartDate(monthObject,2026)
+   */
+
+  if(
+    monthId &&
+    typeof monthId === "object"
+  ){
+
+    monthId = monthId.id;
+
+  }
+
+  const month =
+    getBodoMonthById(monthId);
+
+  if(!month){
     return null;
   }
 
-  /*
-     Push starts in December of the previous Gregorian year
-     and continues until 14 January.
+  let year =
+    Number(gregorianYear);
 
-     All other months begin in their corresponding
-     Gregorian year.
-  */
+  if(!Number.isFinite(year)){
 
-  let year = Number(gregorianYear);
+    year =
+      new Date().getFullYear();
 
-  if (month.id === 11) {
-    return createLocalDate(
-      year,
-      month.startGregMonth,
-      month.startGregDay
-    );
   }
 
   return createLocalDate(
@@ -363,537 +414,675 @@ function getBodoMonthStartDate(monthId, gregorianYear) {
     month.startGregMonth,
     month.startGregDay
   );
+
 }
 
 
 /* =========================================================
-   8. BODO MONTH END DATE
+   MONTH END
    ========================================================= */
 
-function getBodoMonthEndDate(monthId, gregorianYear) {
-  const month = getBodoMonthById(monthId);
+function getBodoMonthEndDate(
+  monthId,
+  gregorianYear
+){
 
-  if (!month) {
+  if(
+    monthId &&
+    typeof monthId === "object"
+  ){
+
+    monthId = monthId.id;
+
+  }
+
+  const month =
+    getBodoMonthById(monthId);
+
+  if(!month){
     return null;
   }
 
-  /*
-     The supplied Bodo month system uses fixed Gregorian
-     transition dates.
+  const start =
+    getBodoMonthStartDate(
+      monthId,
+      gregorianYear
+    );
 
-     Therefore the safest calculation is:
-     start date + month days - 1.
-  */
-
-  const startDate = getBodoMonthStartDate(
-    monthId,
-    gregorianYear
-  );
-
-  if (!startDate) {
+  if(!start){
     return null;
   }
 
-  const days = getBodoMonthDays(
-    monthId,
-    gregorianYear
+  const days =
+    getBodoMonthDays(
+      monthId,
+      gregorianYear
+    );
+
+  const end =
+    new Date(start);
+
+  end.setDate(
+    end.getDate() + days - 1
   );
 
-  const endDate = new Date(startDate);
+  return end;
 
-  endDate.setDate(
-    endDate.getDate() + days - 1
-  );
-
-  return endDate;
 }
 
 
 /* =========================================================
-   9. DATE COMPARISON
+   SAME DATE
    ========================================================= */
 
-function isSameCalendarDate(dateA, dateB) {
-  const a = normalizeDate(dateA);
-  const b = normalizeDate(dateB);
+function isSameCalendarDate(a,b){
+
+  const dateA =
+    normalizeDate(a);
+
+  const dateB =
+    normalizeDate(b);
 
   return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
+    dateA.getFullYear() === dateB.getFullYear() &&
+    dateA.getMonth() === dateB.getMonth() &&
+    dateA.getDate() === dateB.getDate()
   );
+
 }
 
 
 /* =========================================================
-   10. FIND BODO MONTH FOR A GREGORIAN DATE
+   FIND BODO MONTH
    ========================================================= */
 
-function getBodoMonthForDate(inputDate) {
-  const date = normalizeDate(inputDate);
+function getBodoMonthForDate(inputDate){
 
-  const gregorianYear = date.getFullYear();
+  const date =
+    normalizeDate(inputDate);
+
+  const year =
+    date.getFullYear();
 
   /*
-     January 1–14 belongs to Push of the Bodo year
-     that started in December of the previous Gregorian year.
-  */
+   * 1–14 January belongs to Push
+   * from the previous Bodo year.
+   */
 
-  if (
+  if(
     date.getMonth() === 0 &&
     date.getDate() <= 14
-  ) {
+  ){
+
     return {
-      month: bodoMonthsData[11],
-      bodoYear: gregorianYear - 1,
-      gregorianYear: gregorianYear,
-      isPreviousGregorianYearMonth: true
+
+      month:bodoMonthsData[11],
+
+      bodoYear:year - 1,
+
+      gregorianYear:year,
+
+      isPreviousGregorianYearMonth:true
+
     };
+
   }
 
-  /*
-     Find the month by comparing its start and end dates.
-  */
 
-  for (const month of bodoMonthsData) {
-    if (month.id === 11) {
+  /*
+   * Normal months.
+   */
+
+  for(
+    const month of bodoMonthsData
+  ){
+
+    if(month.id === 11){
       continue;
     }
 
-    const startDate = getBodoMonthStartDate(
-      month.id,
-      gregorianYear
-    );
+    const start =
+      getBodoMonthStartDate(
+        month.id,
+        year
+      );
 
-    const endDate = getBodoMonthEndDate(
-      month.id,
-      gregorianYear
-    );
+    const end =
+      getBodoMonthEndDate(
+        month.id,
+        year
+      );
 
-    if (
-      date >= startDate &&
-      date <= endDate
-    ) {
+    if(
+      date >= start &&
+      date <= end
+    ){
+
       return {
+
         month,
-        bodoYear: gregorianYear,
-        gregorianYear,
-        isPreviousGregorianYearMonth: false
+
+        bodoYear:year,
+
+        gregorianYear:year,
+
+        isPreviousGregorianYearMonth:false
+
       };
+
     }
+
   }
 
-  /*
-     Safety fallback.
-  */
 
-  return {
-    month: bodoMonthsData[11],
-    bodoYear: gregorianYear - 1,
-    gregorianYear,
-    isPreviousGregorianYearMonth: true
-  };
+  /*
+   * 19 December onwards belongs to Push.
+   */
+
+  const pushStart =
+    getBodoMonthStartDate(
+      11,
+      year
+    );
+
+  if(date >= pushStart){
+
+    return {
+
+      month:bodoMonthsData[11],
+
+      bodoYear:year,
+
+      gregorianYear:year,
+
+      isPreviousGregorianYearMonth:false
+
+    };
+
+  }
+
+
+  return null;
+
 }
 
 
 /* =========================================================
-   11. GET BODO DATE NUMBER
+   BODO DAY NUMBER
    ========================================================= */
 
-function getBodoDateNumber(inputDate) {
-  const date = normalizeDate(inputDate);
+function getBodoDateNumber(inputDate){
 
-  const info = getBodoMonthForDate(date);
+  const date =
+    normalizeDate(inputDate);
 
-  if (!info || !info.month) {
+  const info =
+    getBodoMonthForDate(date);
+
+  if(
+    !info ||
+    !info.month
+  ){
+
     return null;
+
   }
 
-  const startDate = getBodoMonthStartDate(
-    info.month.id,
-    info.bodoYear
-  );
+  const start =
+    getBodoMonthStartDate(
+      info.month.id,
+      info.bodoYear
+    );
 
-  if (!startDate) {
+  if(!start){
     return null;
   }
-
-  const millisecondsPerDay = 24 * 60 * 60 * 1000;
 
   const difference =
     Math.round(
-      (date.getTime() - startDate.getTime()) /
-      millisecondsPerDay
+      (
+        date.getTime() -
+        start.getTime()
+      ) /
+      (24 * 60 * 60 * 1000)
     );
 
   return difference + 1;
+
 }
 
 
 /* =========================================================
-   12. COMPLETE BODO DATE INFORMATION
+   COMPLETE DATE INFO
    ========================================================= */
 
-function getBodoDateInfo(inputDate) {
-  const date = normalizeDate(inputDate);
+function getBodoDateInfo(inputDate){
 
-  const info = getBodoMonthForDate(date);
+  const date =
+    normalizeDate(inputDate);
 
-  if (!info || !info.month) {
+  const info =
+    getBodoMonthForDate(date);
+
+  if(
+    !info ||
+    !info.month
+  ){
+
     return null;
+
   }
 
-  const bodoDay = getBodoDateNumber(date);
+  const month =
+    info.month;
 
-  const weekdayIndex = date.getDay();
+  const bodoDay =
+    getBodoDateNumber(date);
+
+  const weekdayIndex =
+    date.getDay();
 
   const weekday =
     bodoWeekdays[weekdayIndex] || null;
 
-  const month = info.month;
+  const startDate =
+    getBodoMonthStartDate(
+      month.id,
+      info.bodoYear
+    );
 
-  const startDate = getBodoMonthStartDate(
-    month.id,
-    info.bodoYear
-  );
-
-  const endDate = getBodoMonthEndDate(
-    month.id,
-    info.bodoYear
-  );
+  const endDate =
+    getBodoMonthEndDate(
+      month.id,
+      info.bodoYear
+    );
 
   return {
-    date: date,
 
-    gregorian: {
-      year: date.getFullYear(),
-      month: date.getMonth(),
-      monthNumber: date.getMonth() + 1,
-      day: date.getDate(),
+    date,
+
+    gregorian:{
+      year:date.getFullYear(),
+      month:date.getMonth(),
+      monthNumber:date.getMonth()+1,
+      day:date.getDate(),
       weekdayIndex,
-      weekdayEnglish: weekday ? weekday.en : "",
-      weekdayBodo: weekday ? weekday.bodo : ""
+      weekdayEnglish:weekday ? weekday.en : "",
+      weekdayBodo:weekday ? weekday.bodo : ""
     },
 
-    bodo: {
-      year: info.bodoYear,
-      monthId: month.id,
-      monthName: month.name,
-      englishMonthName: month.englishName,
-      day: bodoDay,
-      daysInMonth: getBodoMonthDays(
+    bodo:{
+      year:info.bodoYear,
+      monthId:month.id,
+      monthName:month.name,
+      englishMonthName:month.englishName,
+      nativeName:month.nativeName,
+      day:bodoDay,
+      daysInMonth:getBodoMonthDays(
         month.id,
         info.bodoYear
       ),
-      season: month.season,
-      dateRange: month.dateRange,
+      season:month.season,
+      dateRange:month.dateRange,
       startDate,
       endDate
     },
 
-    weekday: weekday,
+    weekday,
 
-    isToday: isSameCalendarDate(
+    isToday:isSameCalendarDate(
       date,
       new Date()
     )
+
   };
+
 }
 
 
 /* =========================================================
-   13. FORMATTERS
+   FORMATTERS
    ========================================================= */
 
-function formatGregorianDate(inputDate) {
-  const date = normalizeDate(inputDate);
+function formatGregorianDate(inputDate){
+
+  const date =
+    normalizeDate(inputDate);
 
   return date.toLocaleDateString(
     "en-IN",
     {
-      day: "numeric",
-      month: "short",
-      year: "numeric"
+      day:"numeric",
+      month:"long",
+      year:"numeric"
     }
   );
+
 }
 
 
-function formatBodoDate(inputDate) {
-  const info = getBodoDateInfo(inputDate);
+function formatBodoDate(inputDate){
 
-  if (!info) {
+  const info =
+    getBodoDateInfo(inputDate);
+
+  if(!info){
     return "";
   }
 
-  return `${info.bodo.day} ${info.bodo.englishMonthName}`;
+  return (
+    `${info.bodo.day} ${info.bodo.englishMonthName}`
+  );
+
 }
 
 
-function formatFullBodoDate(inputDate) {
-  const info = getBodoDateInfo(inputDate);
+function formatFullBodoDate(inputDate){
 
-  if (!info) {
+  const info =
+    getBodoDateInfo(inputDate);
+
+  if(!info){
     return "";
   }
 
-  return `${info.bodo.day} ${info.bodo.englishMonthName} — ${formatGregorianDate(
-    inputDate
-  )}`;
+  return (
+    `${info.bodo.day} ` +
+    `${info.bodo.englishMonthName} — ` +
+    `${formatGregorianDate(inputDate)}`
+  );
+
 }
 
 
 /* =========================================================
-   14. GENERATE DATES FOR A BODO MONTH
+   GET DATES OF BODO MONTH
    ========================================================= */
 
-function getBodoMonthDates(monthId, bodoYear) {
-  const month = getBodoMonthById(monthId);
+function getBodoMonthDates(
+  monthId,
+  bodoYear
+){
 
-  if (!month) {
+  const month =
+    getBodoMonthById(monthId);
+
+  if(!month){
     return [];
   }
 
-  /*
-     Push belongs to December of the Bodo year.
-  */
+  const start =
+    getBodoMonthStartDate(
+      monthId,
+      bodoYear
+    );
 
-  const startYear =
-    monthId === 11
-      ? Number(bodoYear)
-      : Number(bodoYear);
+  const days =
+    getBodoMonthDays(
+      monthId,
+      bodoYear
+    );
 
-  const startDate = getBodoMonthStartDate(
-    monthId,
-    startYear
-  );
+  const result = [];
 
-  const totalDays = getBodoMonthDays(
-    monthId,
-    startYear
-  );
+  for(let i=0;i<days;i++){
 
-  const dates = [];
-
-  for (let i = 0; i < totalDays; i++) {
-    const date = new Date(startDate);
+    const date =
+      new Date(start);
 
     date.setDate(
-      startDate.getDate() + i
+      start.getDate() + i
     );
 
-    dates.push(
+    result.push(
       getBodoDateInfo(date)
     );
+
   }
 
-  return dates;
+  return result;
+
 }
 
 
 /* =========================================================
-   15. GET CURRENT BODO MONTH
+   TODAY HELPERS
    ========================================================= */
 
-function getCurrentBodoDateInfo() {
-  return getBodoDateInfo(new Date());
+function getCurrentBodoDateInfo(){
+
+  return getBodoDateInfo(
+    new Date()
+  );
+
 }
 
 
-/* =========================================================
-   16. GET TODAY / TOMORROW / DAY AFTER TOMORROW
-   ========================================================= */
+function getTodayBodoDateInfo(){
 
-function getTodayBodoDateInfo() {
-  return getBodoDateInfo(new Date());
+  return getBodoDateInfo(
+    new Date()
+  );
+
 }
 
 
-function getTomorrowBodoDateInfo() {
-  const date = new Date();
+function getTomorrowBodoDateInfo(){
+
+  const date =
+    normalizeDate(new Date());
 
   date.setDate(
     date.getDate() + 1
   );
 
   return getBodoDateInfo(date);
+
 }
 
 
-function getDayAfterTomorrowBodoDateInfo() {
-  const date = new Date();
+function getDayAfterTomorrowBodoDateInfo(){
+
+  const date =
+    normalizeDate(new Date());
 
   date.setDate(
     date.getDate() + 2
   );
 
   return getBodoDateInfo(date);
+
 }
 
 
 /* =========================================================
-   17. GET WEEKDAY INFORMATION
+   WEEKDAY
    ========================================================= */
 
-function getBodoWeekday(inputDate) {
-  const date = normalizeDate(inputDate);
+function getBodoWeekday(inputDate){
+
+  const date =
+    normalizeDate(inputDate);
 
   return (
-    bodoWeekdays[date.getDay()] || null
+    bodoWeekdays[date.getDay()] ||
+    null
   );
+
 }
 
 
 /* =========================================================
-   18. MONTH REFERENCE DATA
+   REFERENCE
    ========================================================= */
 
-function getBodoMonthReference() {
-  return bodoMonthsData.map(month => ({
-    id: month.id,
-    englishName: month.englishName,
-    name: month.name,
-    dateRange: month.dateRange,
-    season: month.season,
-    daysCount: month.daysCount
-  }));
+function getBodoMonthReference(){
+
+  return bodoMonthsData.map(
+    month => ({
+      id:month.id,
+      englishName:month.englishName,
+      nativeName:month.nativeName,
+      name:month.name,
+      dateRange:month.dateRange,
+      season:month.season,
+      daysCount:month.daysCount
+    })
+  );
+
 }
 
 
 /* =========================================================
-   19. CALENDAR RANGE HELPER
+   DATE KEY
    ========================================================= */
 
-function getGregorianMonthRange(year, monthIndex) {
-  const firstDay = createLocalDate(
-    year,
-    monthIndex,
-    1
-  );
+function getDateKey(inputDate){
 
-  const lastDay = new Date(
-    year,
-    monthIndex + 1,
-    0,
-    12,
-    0,
-    0,
-    0
-  );
+  const date =
+    normalizeDate(inputDate);
 
-  return {
-    start: firstDay,
-    end: lastDay,
-    days: lastDay.getDate()
-  };
-}
+  const year =
+    date.getFullYear();
 
+  const month =
+    String(
+      date.getMonth()+1
+    ).padStart(2,"0");
 
-/* =========================================================
-   20. GENERATE GREGORIAN MONTH DAYS
-   ========================================================= */
-
-function getGregorianMonthDates(
-  year,
-  monthIndex
-) {
-  const range = getGregorianMonthRange(
-    year,
-    monthIndex
-  );
-
-  const dates = [];
-
-  for (
-    let day = 1;
-    day <= range.days;
-    day++
-  ) {
-    const date = createLocalDate(
-      year,
-      monthIndex,
-      day
-    );
-
-    dates.push(
-      getBodoDateInfo(date)
-    );
-  }
-
-  return dates;
-}
-
-
-/* =========================================================
-   21. SAFE DATE KEY
-   ========================================================= */
-
-function getDateKey(inputDate) {
-  const date = normalizeDate(inputDate);
-
-  const year = date.getFullYear();
-
-  const month = String(
-    date.getMonth() + 1
-  ).padStart(2, "0");
-
-  const day = String(
-    date.getDate()
-  ).padStart(2, "0");
+  const day =
+    String(
+      date.getDate()
+    ).padStart(2,"0");
 
   return `${year}-${month}-${day}`;
+
 }
 
 
-/* =========================================================
-   22. PARSE DATE KEY
-   ========================================================= */
+function parseDateKey(key){
 
-function parseDateKey(dateKey) {
-  if (!dateKey) {
+  if(!key){
     return null;
   }
 
-  const parts = String(
-    dateKey
-  ).split("-");
+  const parts =
+    String(key).split("-");
 
-  if (parts.length !== 3) {
+  if(parts.length !== 3){
     return null;
   }
 
-  const year = Number(parts[0]);
-  const month = Number(parts[1]);
-  const day = Number(parts[2]);
+  const year =
+    Number(parts[0]);
 
-  if (
+  const month =
+    Number(parts[1]);
+
+  const day =
+    Number(parts[2]);
+
+  if(
     !Number.isFinite(year) ||
     !Number.isFinite(month) ||
     !Number.isFinite(day)
-  ) {
+  ){
+
     return null;
+
   }
 
   return createLocalDate(
     year,
-    month - 1,
+    month-1,
     day
   );
+
 }
 
 
 /* =========================================================
-   23. EXPOSE DATA FOR OTHER FILES
-   =========================================================
+   GREGORIAN MONTH HELPERS
+   ========================================================= */
 
-   This makes the data available through window as well,
-   which is useful for app.js, events.js, debugging,
-   and future modules.
+function getGregorianMonthRange(
+  year,
+  monthIndex
+){
+
+  const start =
+    createLocalDate(
+      year,
+      monthIndex,
+      1
+    );
+
+  const end =
+    createLocalDate(
+      year,
+      monthIndex + 1,
+      0
+    );
+
+  return {
+    start,
+    end,
+    days:end.getDate()
+  };
+
+}
+
+
+function getGregorianMonthDates(
+  year,
+  monthIndex
+){
+
+  const range =
+    getGregorianMonthRange(
+      year,
+      monthIndex
+    );
+
+  const dates = [];
+
+  for(
+    let day=1;
+    day<=range.days;
+    day++
+  ){
+
+    dates.push(
+      getBodoDateInfo(
+        createLocalDate(
+          year,
+          monthIndex,
+          day
+        )
+      )
+    );
+
+  }
+
+  return dates;
+
+}
+
+
+/* =========================================================
+   PUBLIC API
    ========================================================= */
 
 window.BodoCalendarData = {
-  months: bodoMonthsData,
-  weekdays: bodoWeekdays,
+
+  months:bodoMonthsData,
+  weekdays:bodoWeekdays,
+
+  /*
+   * Backward compatibility names.
+   */
+  bodoMonthsData,
+  bodoWeekdays,
 
   getBodoMonthById,
   getBodoMonthByEnglishName,
@@ -917,6 +1106,12 @@ window.BodoCalendarData = {
 
   getBodoMonthDates,
 
+  /*
+   * Backward-compatible aliases.
+   */
+  generateMonthDates:getBodoMonthDates,
+  generateCalendarDates:getBodoMonthDates,
+
   getCurrentBodoDateInfo,
   getTodayBodoDateInfo,
   getTomorrowBodoDateInfo,
@@ -933,24 +1128,19 @@ window.BodoCalendarData = {
   parseDateKey,
 
   isSameCalendarDate
+
 };
 
 
-/* =========================================================
-   24. BACKWARD-COMPATIBILITY ALIASES
-   ========================================================= */
+/*
+ * Global compatibility.
+ */
 
-window.bodoMonthsData = bodoMonthsData;
-window.bodoWeekdays = bodoWeekdays;
+window.bodoMonthsData =
+  bodoMonthsData;
 
+window.bodoWeekdays =
+  bodoWeekdays;
 
-/* =========================================================
-   25. DATA READY FLAG
-   ========================================================= */
-
-window.BODO_CALENDAR_DATA_READY = true;
-
-
-/* =========================================================
-   END OF CALENDAR DATA
-   ========================================================= */
+window.BODO_CALENDAR_DATA_READY =
+  true;
