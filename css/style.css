@@ -1,6 +1,6 @@
 /* =========================================================
-   BODO CALENDAR — RESPONSIVE DESIGN
-   Desktop + Tablet + Android Mobile
+   BODO CALENDAR — FULL RESPONSIVE DESIGN & STYLESHEET
+   Desktop + Tablet + Mobile (Android & iOS)
    ========================================================= */
 
 :root {
@@ -33,7 +33,7 @@
 }
 
 /* =========================================================
-   RESET
+   RESET & BASE STYLES
    ========================================================= */
 
 *,
@@ -58,14 +58,7 @@ body {
   background: var(--bg);
   color: var(--text);
 
-  font-family:
-    Inter,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-
+  font-family: 'Nunito', 'Noto Sans Devanagari', system-ui, -apple-system, sans-serif;
   font-size: 16px;
   line-height: 1.5;
 
@@ -84,6 +77,7 @@ textarea {
 
 button {
   -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
 }
 
 img {
@@ -92,1604 +86,972 @@ img {
   display: block;
 }
 
-/* =========================================================
-   MAIN APP
-   ========================================================= */
-
-#app,
-.app,
-.site,
-.page {
-  width: 100%;
-  min-width: 0;
+.hidden {
+  display: none !important;
 }
 
-.container,
-main,
-.main-content {
-  width: min(100% - 32px, var(--max-width));
-  margin-left: auto;
-  margin-right: auto;
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }
 
 /* =========================================================
-   HEADER
+   APP SHELL & MAIN CONTAINER
    ========================================================= */
 
-.site-header,
-header {
+.app-shell {
   width: 100%;
-  background: var(--primary);
-  color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.header-inner,
-.header-container {
+.main-container {
   width: min(100% - 32px, var(--max-width));
-  min-height: 92px;
-
   margin: 0 auto;
-
-  display: flex;
-  align-items: center;
-  gap: 16px;
+  flex: 1;
 }
 
-.logo,
-.logo-box,
-.brand-icon {
-  flex: 0 0 auto;
-
-  width: 56px;
-  height: 56px;
-
-  border-radius: 17px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: linear-gradient(
-    135deg,
-    #20d99e,
-    #16b985
-  );
-
-  color: white;
-  font-size: 30px;
-  font-weight: 800;
-
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+.main-container > * {
+  margin-top: 20px;
 }
 
-.brand,
-.brand-text {
-  min-width: 0;
-}
-
-.brand h1,
-.site-title {
-  margin: 0;
-
-  color: white;
-
-  font-size: clamp(20px, 2.2vw, 28px);
-  font-weight: 800;
-
-  line-height: 1.15;
-}
-
-.brand p,
-.site-subtitle {
-  margin: 5px 0 0;
-
-  color: rgba(255, 255, 255, 0.76);
-
-  font-size: 12px;
-  line-height: 1.3;
-}
-
-/* =========================================================
-   SECTION SPACING
-   ========================================================= */
-
-section,
-.card,
-.panel {
-  min-width: 0;
-}
-
-main > *,
-.main-content > *,
-.container > * {
-  margin-top: 18px;
-}
-
-main > *:first-child,
-.main-content > *:first-child {
+.main-container > *:first-child {
   margin-top: 0;
 }
 
 /* =========================================================
-   COMMON CARD
+   HEADER STYLES
    ========================================================= */
 
-.card,
-.calendar-card,
-.content-card,
-.selected-date-card,
-.events-card,
-.history-card,
-.notes-card,
-.reference-card,
-.today-card {
-  background: var(--surface);
-
-  border: 1px solid var(--border);
-
-  border-radius: var(--radius-lg);
-
-  box-shadow: var(--shadow);
-
-  min-width: 0;
-}
-
-/* =========================================================
-   WELCOME / UPDATE
-   ========================================================= */
-
-.welcome-banner,
-.update-banner {
-  border-radius: var(--radius-lg);
-  padding: 24px;
-
-  min-width: 0;
-}
-
-.welcome-banner {
-  background:
-    radial-gradient(
-      circle at 90% 20%,
-      rgba(255,255,255,.12),
-      transparent 28%
-    ),
-    var(--primary);
-
-  color: white;
-}
-
-.welcome-banner h2,
-.welcome-banner h3 {
-  margin: 0;
-  font-size: clamp(21px, 3vw, 30px);
-}
-
-.welcome-banner p {
-  margin: 8px 0 0;
-  color: rgba(255,255,255,.78);
-}
-
-.update-banner {
-  background: #effcf7;
-  border-color: #a8e7d3;
-}
-
-/* =========================================================
-   CALENDAR NAVIGATION
-   ========================================================= */
-
-.calendar-controls,
-.calendar-navigation,
-.month-controls {
+.site-header {
   width: 100%;
-
-  display: grid;
-  grid-template-columns: auto minmax(180px, 1fr) auto;
-  gap: 10px;
-
-  align-items: center;
-
-  padding: 12px;
-
-  background: white;
-
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-
-  box-shadow: var(--shadow);
-}
-
-.calendar-controls button,
-.calendar-navigation button,
-.month-controls button,
-#prevMonthBtn,
-#nextMonthBtn,
-#todayBtn {
-  min-height: 50px;
-
-  padding: 10px 18px;
-
-  border: 0;
-  border-radius: 14px;
-
-  background: var(--primary-light);
-  color: var(--primary);
-
-  font-weight: 800;
-
-  cursor: pointer;
-
-  transition:
-    transform .15s ease,
-    background .15s ease;
-}
-
-.calendar-controls button:hover,
-.calendar-navigation button:hover,
-.month-controls button:hover,
-#prevMonthBtn:hover,
-#nextMonthBtn:hover,
-#todayBtn:hover {
-  background: #d6f1e9;
-}
-
-.calendar-controls button:active,
-.calendar-navigation button:active,
-.month-controls button:active {
-  transform: scale(.98);
-}
-
-#todayBtn {
-  grid-column: 1 / -1;
-
   background: var(--primary);
   color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-#bodoMonthSelect,
-.bodo-month-select,
-select {
-  width: 100%;
-  min-width: 0;
-
-  min-height: 50px;
-
-  padding: 0 16px;
-
-  border: 2px solid #36b998;
-  border-radius: 14px;
-
-  background: white;
-  color: var(--text);
-
-  font-size: 16px;
-
-  outline: none;
+.header-inner {
+  width: min(100% - 32px, var(--max-width));
+  min-height: 84px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
-/* =========================================================
-   TODAY / UPCOMING
-   ========================================================= */
-
-.today-upcoming,
-.today-section {
-  padding: 20px;
-}
-
-.today-upcoming h2,
-.today-section h2 {
-  margin: 0;
-
-  font-size: clamp(24px, 4vw, 32px);
-}
-
-.today-grid,
-.upcoming-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-
+.brand-area {
+  display: flex;
+  align-items: center;
   gap: 14px;
-
-  margin-top: 18px;
-}
-
-.today-item,
-.upcoming-item,
-.date-preview {
-  min-width: 0;
-
-  padding: 18px;
-
-  border: 1px solid var(--border);
-  border-radius: 17px;
-
-  background: var(--surface-soft);
-}
-
-.today-item h3,
-.upcoming-item h3 {
-  margin: 10px 0 3px;
-
-  font-size: 19px;
-}
-
-.today-item p,
-.upcoming-item p {
-  margin: 0;
-
-  color: var(--text-soft);
-}
-
-/* =========================================================
-   BODO MONTH HERO
-   ========================================================= */
-
-.month-hero,
-.current-month-card {
-  position: relative;
-
-  overflow: hidden;
-
-  min-height: 190px;
-
-  padding: 30px;
-
-  border-radius: 24px;
-
-  background:
-    radial-gradient(
-      circle at 92% 15%,
-      rgba(255,255,255,.10),
-      transparent 25%
-    ),
-    linear-gradient(
-      135deg,
-      #08725b,
-      #05634f
-    );
-
+  text-decoration: none;
   color: white;
 }
 
-.month-hero h1,
-.current-month-card h1 {
-  margin: 8px 0;
-
-  font-size: clamp(32px, 5vw, 48px);
-  line-height: 1.05;
-}
-
-.month-hero .native-name,
-.current-month-card .native-name {
-  font-size: 22px;
-  opacity: .9;
-}
-
-.month-hero .month-range,
-.current-month-card .month-range {
-  margin-top: 22px;
-
-  color: rgba(255,255,255,.82);
-}
-
-/* =========================================================
-   WEEK HEADER
-   ========================================================= */
-
-.week-header,
-.weekdays,
-.calendar-weekdays {
-  display: grid;
-
-  grid-template-columns:
-    repeat(7, minmax(0, 1fr));
-
-  gap: 6px;
-
-  margin-bottom: 8px;
-}
-
-.week-header > *,
-.weekdays > *,
-.calendar-weekdays > * {
-  min-width: 0;
-
-  padding: 8px 3px;
-
-  border-radius: 12px;
-
-  background: #f1f6f5;
-
-  text-align: center;
-
-  font-size: 11px;
-  font-weight: 800;
-
-  overflow: hidden;
-}
-
-/* =========================================================
-   MONTH CALENDAR GRID
-   ========================================================= */
-
-.month-grid,
-.calendar-grid {
-  width: 100%;
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(7, minmax(0, 1fr));
-
-  gap: 8px;
-
-  min-width: 0;
-}
-
-/* Empty calendar cells */
-
-.calendar-empty,
-.empty-day,
-.calendar-day.empty {
-  min-height: 92px;
-  visibility: hidden;
-}
-
-/* Calendar day */
-
-.calendar-day,
-.day-cell {
-  position: relative;
-
-  min-width: 0;
-  min-height: 92px;
-
-  padding: 10px 8px;
-
-  border: 1px solid var(--border);
-  border-radius: 14px;
-
-  background: white;
-
-  cursor: pointer;
-
-  transition:
-    border-color .15s ease,
-    background .15s ease,
-    transform .15s ease;
-}
-
-.calendar-day:hover,
-.day-cell:hover {
-  border-color: #4bc3a5;
-  background: #f4fcf9;
-}
-
-.calendar-day:active,
-.day-cell:active {
-  transform: scale(.98);
-}
-
-/* English weekday */
-
-.calendar-day .weekday,
-.day-cell .weekday,
-.calendar-day .day-weekday {
-  display: block;
-
-  color: var(--text-soft);
-
-  font-size: 10px;
-  line-height: 1.2;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Gregorian number */
-
-.calendar-day .gregorian,
-.day-cell .gregorian,
-.calendar-day .day-number,
-.day-cell .day-number {
-  display: block;
-
-  margin-top: 5px;
-
-  color: var(--primary);
-
-  font-size: 22px;
-  line-height: 1;
-
-  font-weight: 800;
-}
-
-/* Bodo number */
-
-.calendar-day .bodo-date,
-.day-cell .bodo-date,
-.calendar-day .bodo-day {
-  display: block;
-
-  margin-top: 7px;
-
-  color: var(--text-soft);
-
-  font-size: 11px;
-}
-
-/* Selected */
-
-.calendar-day.selected,
-.day-cell.selected,
-.calendar-day.is-selected,
-.day-cell.is-selected {
-  border: 2px solid #25b996;
-
-  background: var(--selected);
-
-  box-shadow:
-    0 0 0 2px rgba(37,185,150,.08);
-}
-
-/* Today */
-
-.calendar-day.today,
-.day-cell.today,
-.calendar-day.is-today,
-.day-cell.is-today {
-  background: var(--today);
-}
-
-/* Event dot */
-
-.event-dot,
-.calendar-day.has-event::after,
-.day-cell.has-event::after {
-  content: "";
-
-  position: absolute;
-
-  right: 8px;
-  bottom: 8px;
-
-  width: 8px;
-  height: 8px;
-
-  border-radius: 50%;
-
-  background: var(--event);
-}
-
-/* Note dot */
-
-.note-dot {
-  background: var(--note);
-}
-
-/* =========================================================
-   CALENDAR LEGEND
-   ========================================================= */
-
-.calendar-legend,
-.legend {
+.brand-logo {
+  flex: 0 0 auto;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #20d99e, #16b985);
+  color: white;
+  font-size: 28px;
+  font-weight: 900;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
 
-  flex-wrap: wrap;
+.brand-text h1 {
+  margin: 0;
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 800;
+  line-height: 1.2;
+}
 
-  gap: 16px;
+.brand-bodo {
+  font-weight: 600;
+  font-size: 0.9em;
+  opacity: 0.9;
+}
 
-  margin-top: 14px;
-  padding-top: 12px;
-
-  border-top: 1px solid var(--border);
-
-  color: var(--text-soft);
-
+.brand-text p {
+  margin: 3px 0 0;
+  color: rgba(255, 255, 255, 0.8);
   font-size: 12px;
 }
 
-.legend-item {
-  display: inline-flex;
-
+.header-actions {
+  display: flex;
   align-items: center;
+  gap: 10px;
+}
 
+.header-icon-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: background 0.2s;
+}
+
+.header-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.vip-button {
+  background: linear-gradient(135deg, #ffc107, #ff9800);
+  color: #1a1a1a;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
   gap: 6px;
+  box-shadow: 0 4px 10px rgba(255, 152, 0, 0.3);
+  transition: transform 0.15s ease;
 }
 
-.legend-dot {
-  width: 9px;
-  height: 9px;
-
-  border-radius: 50%;
-
-  background: var(--accent);
+.vip-button:active {
+  transform: scale(0.96);
 }
 
-/* =========================================================
-   SELECTED DATE
-   ========================================================= */
-
-.selected-date,
-.selected-date-card {
-  padding: 24px;
-}
-
-.selected-date h2,
-.selected-date-card h2 {
-  margin: 4px 0 8px;
-
-  font-size: clamp(22px, 4vw, 28px);
-}
-
-.selected-date p,
-.selected-date-card p {
-  margin: 6px 0;
-
-  color: var(--text-soft);
-}
-
-/* =========================================================
-   EVENTS / HISTORY / NOTES
-   ========================================================= */
-
-.monthly-events,
-.events-section,
-.history-section,
-.notes-section,
-.reference-section {
-  padding: 22px;
-}
-
-.monthly-events h2,
-.events-section h2,
-.history-section h2,
-.notes-section h2,
-.reference-section h2 {
-  margin: 0;
-
-  font-size: 23px;
-}
-
-.event-list,
-.events-list,
-.history-list,
-.notes-list {
-  display: grid;
-
-  gap: 12px;
-
-  margin-top: 15px;
-}
-
-.event-item,
-.history-item,
-.note-item {
-  padding: 15px;
-
-  border: 1px solid var(--border);
-  border-radius: 14px;
-
-  background: var(--surface-soft);
-}
-
-/* =========================================================
-   FOOTER
-   ========================================================= */
-
-footer {
-  width: 100%;
-
-  margin-top: 35px;
-  padding: 30px 16px;
-
-  text-align: center;
-
-  color: var(--text-soft);
-}
-
-/* =========================================================
-   TABLET
-   ========================================================= */
-
-@media (max-width: 900px) {
-
-  .container,
-  main,
-  .main-content {
-    width: min(100% - 24px, 760px);
-  }
-
-  .header-inner,
-  .header-container {
-    width: calc(100% - 24px);
-  }
-
-  .today-grid,
-  .upcoming-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-  }
-
-  .month-hero,
-  .current-month-card {
-    min-height: 175px;
-  }
-
-  .calendar-day,
-  .day-cell {
-    min-height: 82px;
-  }
-}
-
-/* =========================================================
-   MOBILE — 600px
-   ========================================================= */
-
-@media (max-width: 600px) {
-
-  body {
-    font-size: 15px;
-  }
-
-  .container,
-  main,
-  .main-content {
-    width: calc(100% - 16px);
-  }
-
-  .header-inner,
-  .header-container {
-    width: calc(100% - 16px);
-
-    min-height: 76px;
-
-    gap: 10px;
-  }
-
-  .logo,
-  .logo-box,
-  .brand-icon {
-    width: 48px;
-    height: 48px;
-
-    border-radius: 14px;
-
-    font-size: 25px;
-  }
-
-  .brand h1,
-  .site-title {
-    font-size: 20px;
-  }
-
-  .brand p,
-  .site-subtitle {
-    margin-top: 3px;
-
-    font-size: 10px;
-  }
-
-  /* -------------------------------------------------------
-     GENERAL CARDS
-     ------------------------------------------------------- */
-
-  .card,
-  .calendar-card,
-  .content-card,
-  .selected-date-card,
-  .events-card,
-  .history-card,
-  .notes-card,
-  .reference-card,
-  .today-card {
-    border-radius: 18px;
-  }
-
-  main > *,
-  .main-content > *,
-  .container > * {
-    margin-top: 12px;
-  }
-
-  /* -------------------------------------------------------
-     WELCOME
-     ------------------------------------------------------- */
-
-  .welcome-banner,
-  .update-banner {
-    padding: 18px;
-    border-radius: 18px;
-  }
-
-  .welcome-banner h2 {
-    font-size: 21px;
-  }
-
-  .welcome-banner p {
-    font-size: 13px;
-  }
-
-  /* -------------------------------------------------------
-     NAVIGATION
-     ------------------------------------------------------- */
-
-  .calendar-controls,
-  .calendar-navigation,
-  .month-controls {
-    grid-template-columns:
-      1fr 1fr;
-
-    gap: 8px;
-
-    padding: 9px;
-
-    border-radius: 18px;
-  }
-
-  #bodoMonthSelect,
-  .bodo-month-select,
-  select {
-    grid-column: 1 / -1;
-
-    grid-row: 1;
-
-    min-height: 48px;
-
-    font-size: 15px;
-  }
-
-  #prevMonthBtn,
-  #nextMonthBtn {
-    min-height: 45px;
-
-    padding: 8px 10px;
-
-    font-size: 14px;
-  }
-
-  #todayBtn {
-    grid-column: 1 / -1;
-
-    min-height: 45px;
-
-    font-size: 15px;
-  }
-
-  /* -------------------------------------------------------
-     TODAY / UPCOMING
-     ------------------------------------------------------- */
-
-  .today-upcoming,
-  .today-section {
-    padding: 15px;
-  }
-
-  .today-upcoming h2,
-  .today-section h2 {
-    font-size: 24px;
-  }
-
-  .today-grid,
-  .upcoming-grid {
-    grid-template-columns: 1fr;
-
-    gap: 9px;
-
-    margin-top: 12px;
-  }
-
-  .today-item,
-  .upcoming-item,
-  .date-preview {
-    padding: 14px;
-
-    border-radius: 14px;
-  }
-
-  .today-item h3,
-  .upcoming-item h3 {
-    font-size: 17px;
-  }
-
-  /* -------------------------------------------------------
-     MONTH HERO
-     ------------------------------------------------------- */
-
-  .month-hero,
-  .current-month-card {
-    min-height: 155px;
-
-    padding: 21px;
-
-    border-radius: 20px;
-  }
-
-  .month-hero h1,
-  .current-month-card h1 {
-    margin: 6px 0;
-
-    font-size: 32px;
-  }
-
-  .month-hero .native-name,
-  .current-month-card .native-name {
-    font-size: 18px;
-  }
-
-  .month-hero .month-range,
-  .current-month-card .month-range {
-    margin-top: 16px;
-
-    font-size: 13px;
-  }
-
-  /* -------------------------------------------------------
-     WEEKDAYS
-     ------------------------------------------------------- */
-
-  .week-header,
-  .weekdays,
-  .calendar-weekdays {
-    gap: 4px;
-
-    margin-bottom: 5px;
-  }
-
-  .week-header > *,
-  .weekdays > *,
-  .calendar-weekdays > * {
-    padding: 6px 2px;
-
-    border-radius: 9px;
-
-    font-size: 9px;
-
-    line-height: 1.1;
-  }
-
-  /* -------------------------------------------------------
-     CALENDAR
-     ------------------------------------------------------- */
-
-  .month-grid,
-  .calendar-grid {
-    gap: 5px;
-  }
-
-  .calendar-empty,
-  .empty-day,
-  .calendar-day.empty {
-    min-height: 68px;
-  }
-
-  .calendar-day,
-  .day-cell {
-    min-height: 68px;
-
-    padding: 7px 4px;
-
-    border-radius: 11px;
-  }
-
-  .calendar-day .weekday,
-  .day-cell .weekday,
-  .calendar-day .day-weekday {
-    font-size: 8px;
-
-    line-height: 1;
-
-    text-align: center;
-  }
-
-  .calendar-day .gregorian,
-  .day-cell .gregorian,
-  .calendar-day .day-number,
-  .day-cell .day-number {
-    margin-top: 5px;
-
-    font-size: 19px;
-
-    text-align: center;
-  }
-
-  .calendar-day .bodo-date,
-  .day-cell .bodo-date,
-  .calendar-day .bodo-day {
-    margin-top: 5px;
-
-    font-size: 9px;
-
-    text-align: center;
-  }
-
-  .event-dot,
-  .calendar-day.has-event::after,
-  .day-cell.has-event::after {
-    right: 5px;
-    bottom: 5px;
-
-    width: 6px;
-    height: 6px;
-  }
-
-  /* -------------------------------------------------------
-     LEGEND
-     ------------------------------------------------------- */
-
-  .calendar-legend,
-  .legend {
-    gap: 10px;
-
-    margin-top: 10px;
-    padding-top: 9px;
-
-    font-size: 10px;
-  }
-
-  /* -------------------------------------------------------
-     SELECTED DATE
-     ------------------------------------------------------- */
-
-  .selected-date,
-  .selected-date-card {
-    padding: 17px;
-  }
-
-  .selected-date h2,
-  .selected-date-card h2 {
-    font-size: 22px;
-  }
-
-  .selected-date p,
-  .selected-date-card p {
-    font-size: 14px;
-  }
-
-  /* -------------------------------------------------------
-     EVENTS
-     ------------------------------------------------------- */
-
-  .monthly-events,
-  .events-section,
-  .history-section,
-  .notes-section,
-  .reference-section {
-    padding: 17px;
-  }
-
-  .monthly-events h2,
-  .events-section h2,
-  .history-section h2,
-  .notes-section h2,
-  .reference-section h2 {
-    font-size: 20px;
-  }
-}
-
-/* =========================================================
-   SMALL PHONES — 430px
-   ========================================================= */
-
-@media (max-width: 430px) {
-
-  .container,
-  main,
-  .main-content {
-    width: calc(100% - 12px);
-  }
-
-  .header-inner,
-  .header-container {
-    width: calc(100% - 12px);
-  }
-
-  .logo,
-  .logo-box,
-  .brand-icon {
-    width: 44px;
-    height: 44px;
-
-    border-radius: 13px;
-
-    font-size: 23px;
-  }
-
-  .brand h1,
-  .site-title {
-    font-size: 18px;
-  }
-
-  .brand p,
-  .site-subtitle {
-    font-size: 9px;
-  }
-
-  .month-hero,
-  .current-month-card {
-    min-height: 145px;
-
-    padding: 18px;
-  }
-
-  .month-hero h1,
-  .current-month-card h1 {
-    font-size: 29px;
-  }
-
-  .month-hero .native-name,
-  .current-month-card .native-name {
-    font-size: 17px;
-  }
-
-  .month-hero .month-range,
-  .current-month-card .month-range {
-    font-size: 11px;
-  }
-
-  .week-header,
-  .weekdays,
-  .calendar-weekdays,
-  .month-grid,
-  .calendar-grid {
-    gap: 3px;
-  }
-
-  .calendar-day,
-  .day-cell {
-    min-height: 63px;
-
-    padding: 6px 2px;
-
-    border-radius: 9px;
-  }
-
-  .calendar-day .weekday,
-  .day-cell .weekday,
-  .calendar-day .day-weekday {
-    font-size: 7px;
-  }
-
-  .calendar-day .gregorian,
-  .day-cell .gregorian,
-  .calendar-day .day-number,
-  .day-cell .day-number {
-    font-size: 17px;
-  }
-
-  .calendar-day .bodo-date,
-  .day-cell .bodo-date,
-  .calendar-day .bodo-day {
-    font-size: 8px;
-  }
-
-  .calendar-day.selected,
-  .day-cell.selected,
-  .calendar-day.is-selected,
-  .day-cell.is-selected {
-    border-width: 2px;
-  }
-}
-
-/* =========================================================
-   VERY SMALL PHONES — 360px
-   ========================================================= */
-
-@media (max-width: 360px) {
-
-  .container,
-  main,
-  .main-content {
-    width: calc(100% - 8px);
-  }
-
-  .header-inner,
-  .header-container {
-    width: calc(100% - 8px);
-  }
-
-  .calendar-controls,
-  .calendar-navigation,
-  .month-controls {
-    padding: 7px;
-  }
-
-  .calendar-day,
-  .day-cell {
-    min-height: 58px;
-
-    padding: 5px 1px;
-  }
-
-  .calendar-day .weekday,
-  .day-cell .weekday,
-  .calendar-day .day-weekday {
-    font-size: 6.5px;
-  }
-
-  .calendar-day .gregorian,
-  .day-cell .gregorian,
-  .calendar-day .day-number,
-  .day-cell .day-number {
-    font-size: 16px;
-  }
-
-  .calendar-day .bodo-date,
-  .day-cell .bodo-date,
-  .calendar-day .bodo-day {
-    font-size: 7px;
-  }
-}
-
-/* =========================================================
-   TOUCH DEVICES
-   ========================================================= */
-
-@media (hover: none) and (pointer: coarse) {
-
-  button,
-  select,
-  .calendar-day,
-  .day-cell {
-    touch-action: manipulation;
-  }
-
-  .calendar-day,
-  .day-cell {
-    cursor: pointer;
-  }
-}
-
-/* =========================================================
-   LANDSCAPE MOBILE
-   ========================================================= */
-
-@media (max-width: 900px) and (orientation: landscape) {
-
-  .header-inner,
-  .header-container {
-    min-height: 68px;
-  }
-
-  .month-hero,
-  .current-month-card {
-    min-height: 135px;
-  }
-
-  .calendar-day,
-  .day-cell {
-    min-height: 68px;
-  }
-}
-
-/* =========================================================
-   SAFE AREA — ANDROID / IOS
-   ========================================================= */
-
-@supports (padding: env(safe-area-inset-bottom)) {
-
-  body {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
-  footer {
-    padding-bottom:
-      calc(30px + env(safe-area-inset-bottom));
-  }
-}
-
-/* =========================================================
-   ACCESSIBILITY
-   ========================================================= */
-
-button:focus-visible,
-select:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-.calendar-day:focus-visible,
-.day-cell:focus-visible {
-  outline: 3px solid rgba(22,184,137,.35);
-  outline-offset: 2px;
-}
-
-/* =========================================================
-   REDUCE MOTION
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    transition: none !important;
-    animation: none !important;
-  }
-}
 /* =========================================================
    BODO CULTURAL HERO
    ========================================================= */
 
 .bodo-culture-hero {
   width: 100%;
-  margin: 18px 0 0;
-
+  margin-top: 20px;
   overflow: hidden;
-
   border-radius: 24px;
-
   background: #075d4b;
-
   border: 1px solid rgba(0, 0, 0, 0.08);
-
-  box-shadow:
-    0 8px 28px rgba(5, 73, 59, 0.14);
+  box-shadow: 0 8px 28px rgba(5, 73, 59, 0.14);
 }
-
-/* Main cultural image */
 
 .bodo-hero-image {
   position: relative;
-
   width: 100%;
-  height: 330px;
-
+  height: 320px;
   overflow: hidden;
 }
 
 .bodo-hero-image img {
   width: 100%;
   height: 100%;
-
   display: block;
-
   object-fit: cover;
   object-position: center 45%;
-
-  transform: scale(1.01);
 }
-
-/* Green cinematic overlay */
 
 .bodo-hero-overlay {
   position: absolute;
-
   inset: 0;
-
   background:
-    linear-gradient(
-      90deg,
-      rgba(3, 67, 53, 0.78) 0%,
-      rgba(3, 67, 53, 0.38) 45%,
-      rgba(3, 67, 53, 0.08) 100%
-    ),
-
-    linear-gradient(
-      0deg,
-      rgba(3, 67, 53, 0.45),
-      transparent 55%
-    );
+    linear-gradient(90deg, rgba(3, 67, 53, 0.8) 0%, rgba(3, 67, 53, 0.4) 50%, rgba(3, 67, 53, 0.1) 100%),
+    linear-gradient(0deg, rgba(3, 67, 53, 0.5), transparent 60%);
 }
-
-/* Hero text */
 
 .bodo-hero-content {
   position: absolute;
-
   left: 30px;
   bottom: 28px;
-
   z-index: 2;
-
   color: white;
-
-  text-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.28);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .bodo-hero-label {
   display: inline-block;
-
   margin-bottom: 8px;
-  padding: 5px 10px;
-
+  padding: 5px 12px;
   border-radius: 999px;
-
-  background: rgba(255, 255, 255, 0.15);
-
-  border: 1px solid rgba(255, 255, 255, 0.25);
-
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(8px);
-
   font-size: 11px;
   font-weight: 800;
-
   letter-spacing: 1.5px;
 }
 
 .bodo-hero-content h2 {
   margin: 0;
-
-  font-size: clamp(30px, 5vw, 48px);
-
+  font-size: clamp(30px, 5vw, 46px);
   line-height: 1.05;
-
   font-weight: 900;
 }
 
 .bodo-hero-content p {
-  margin: 7px 0 0;
-
+  margin: 6px 0 0;
   font-size: 15px;
-
-  color: rgba(255, 255, 255, 0.88);
-
-  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.9);
 }
-
-/* =========================================================
-   TRADITIONAL TEXTILE STRIP
-   ========================================================= */
 
 .bodo-textile-strip {
   position: relative;
-
   width: 100%;
-  height: 62px;
-
+  height: 56px;
   overflow: hidden;
-
   background: #111;
-}
-
-.bodo-textile-strip::after {
-  content: "";
-
-  position: absolute;
-
-  inset: 0;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(0, 0, 0, 0.15),
-      transparent 30%,
-      transparent 70%,
-      rgba(0, 0, 0, 0.18)
-    );
 }
 
 .bodo-textile-strip img {
   width: 100%;
   height: 100%;
-
-  display: block;
-
   object-fit: cover;
-
   object-position: center 45%;
-
-  filter: saturate(1.08) contrast(1.05);
 }
 
+/* =========================================================
+   WELCOME & NOTIFICATION CARDS
+   ========================================================= */
+
+.welcome-card,
+.notification-panel {
+  position: relative;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.welcome-card {
+  background: linear-gradient(135deg, #05634f, #08725b);
+  color: white;
+  border: none;
+}
+
+.welcome-icon,
+.notification-icon {
+  font-size: 32px;
+  flex: 0 0 auto;
+}
+
+.welcome-content h2,
+.notification-content h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.welcome-content p {
+  margin: 6px 0 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+}
+
+.close-card-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(0, 0, 0, 0.1);
+  color: currentColor;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 /* =========================================================
-   TABLET
+   LIVE CALENDAR PANEL
+   ========================================================= */
+
+.live-calendar-panel {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.live-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.live-small-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--accent);
+}
+
+.live-panel-header h2 {
+  margin: 2px 0;
+  font-size: 22px;
+}
+
+.live-panel-header p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #e8f8f2;
+  color: var(--accent);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+.live-date-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+
+  margin-bottom: 20px;
+}
+
+.live-date-card {
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+
+.live-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.live-card-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-soft);
+}
+
+.live-date-content {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.calendar-system-status {
+  border-top: 1px dashed var(--border);
+  padding-top: 16px;
+}
+
+.system-status-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-soft);
+  margin-bottom: 12px;
+}
+
+.calendar-system-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.system-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-soft);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+}
+
+.system-card .system-icon {
+  font-size: 20px;
+}
+
+.system-label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-soft);
+}
+
+.system-card strong {
+  display: block;
+  font-size: 13px;
+  color: var(--text);
+}
+
+/* =========================================================
+   CALENDAR NAVIGATION
+   ========================================================= */
+
+.calendar-navigation-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.nav-button,
+.today-button {
+  min-height: 48px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 14px;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 800;
+  transition: background 0.15s ease;
+}
+
+.nav-button:hover,
+.today-button:hover {
+  background: #d6f1e9;
+}
+
+.today-button {
+  background: var(--primary);
+  color: white;
+}
+
+.month-selector-wrapper {
+  flex: 1;
+}
+
+.month-selector {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  background: white;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 16px;
+  outline: none;
+}
+
+/* =========================================================
+   MONTH BANNER
+   ========================================================= */
+
+.month-banner {
+  position: relative;
+  background: linear-gradient(135deg, #08725b, #05634f);
+  color: white;
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.month-season-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  opacity: 0.8;
+}
+
+.month-banner h2 {
+  margin: 4px 0 2px;
+  font-size: clamp(32px, 4vw, 44px);
+  font-weight: 900;
+}
+
+.month-native-name {
+  margin: 0;
+  font-size: 20px;
+  opacity: 0.9;
+}
+
+.month-date-range {
+  margin-top: 14px;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.month-banner-decoration {
+  position: absolute;
+  right: 24px;
+  bottom: 20px;
+  font-size: 36px;
+  display: flex;
+  gap: 10px;
+  opacity: 0.3;
+}
+
+/* =========================================================
+   CALENDAR MAIN LAYOUT (GRID + SIDEBAR)
+   ========================================================= */
+
+.calendar-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+.calendar-main-section {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.weekday-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.weekday-header > * {
+  text-align: center;
+  padding: 8px 2px;
+  background: var(--surface-soft);
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+/* Calendar Cells */
+
+.calendar-day,
+.day-cell {
+  position: relative;
+  min-height: 88px;
+  padding: 8px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.15s ease;
+}
+
+.calendar-day:hover {
+  border-color: var(--accent);
+  background: #f4fcf9;
+}
+
+.calendar-day.today {
+  background: var(--today);
+  border-color: var(--accent);
+}
+
+.calendar-day.selected {
+  background: var(--selected);
+  border: 2px solid var(--accent);
+}
+
+.calendar-day .weekday {
+  font-size: 10px;
+  color: var(--text-soft);
+}
+
+.calendar-day .gregorian {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.calendar-day .bodo-date {
+  font-size: 11px;
+  color: var(--text-soft);
+}
+
+.calendar-day.has-event::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  background: var(--event);
+  border-radius: 50%;
+}
+
+.calendar-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.today-legend { background: var(--accent); }
+.event-legend { background: var(--event); }
+.note-legend { background: var(--note); }
+
+/* =========================================================
+   EVENTS SIDEBAR
+   ========================================================= */
+
+.events-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sidebar-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.sidebar-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.sidebar-icon {
+  font-size: 24px;
+}
+
+.sidebar-overline {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--text-soft);
+}
+
+.sidebar-card-heading h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.secondary-action-button,
+.primary-action-button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  border: none;
+  margin-top: 10px;
+}
+
+.primary-action-button {
+  background: var(--primary);
+  color: white;
+}
+
+.secondary-action-button {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+/* =========================================================
+   QUICK REFERENCE & ABOUT
+   ========================================================= */
+
+.reference-section,
+.about-calendar-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.section-overline {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--text-soft);
+}
+
+.reference-table-wrapper {
+  overflow-x: auto;
+  margin-top: 16px;
+}
+
+.reference-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.reference-table th,
+.reference-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.reference-table th {
+  background: var(--surface-soft);
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+.about-calendar-card {
+  display: flex;
+  gap: 20px;
+}
+
+.about-icon {
+  font-size: 40px;
+}
+
+.about-note {
+  font-size: 13px;
+  color: var(--text-soft);
+  font-style: italic;
+}
+
+/* =========================================================
+   FOOTER STYLES
+   ========================================================= */
+
+.site-footer {
+  background: #044234;
+  color: white;
+  margin-top: 40px;
+  padding: 40px 0 20px;
+}
+
+.footer-inner {
+  width: min(100% - 32px, var(--max-width));
+  margin: 0 auto;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.footer-logo {
+  width: 40px;
+  height: 40px;
+  background: var(--accent);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 20px;
+}
+
+.footer-brand h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.footer-brand p {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.footer-links {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.footer-links button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  padding: 0;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+  font-size: 12px;
+  opacity: 0.6;
+  text-align: center;
+}
+
+/* =========================================================
+   MODALS
+   ========================================================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal-box {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: min(100%, 480px);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--text-soft);
+}
+
+/* =========================================================
+   RESPONSIVE DESIGN (TABLET & MOBILE)
    ========================================================= */
 
 @media (max-width: 900px) {
+  .calendar-layout {
+    grid-template-columns: 1fr;
+  }
 
-  .bodo-culture-hero {
-    border-radius: 20px;
+  .live-date-grid,
+  .calendar-system-grid {
+    grid-template-columns: 1fr;
   }
 
   .bodo-hero-image {
-    height: 260px;
-  }
-
-  .bodo-hero-content {
-    left: 24px;
-    bottom: 22px;
-  }
-
-  .bodo-textile-strip {
-    height: 54px;
+    height: 240px;
   }
 }
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
 
 @media (max-width: 600px) {
+  .header-inner {
+    min-height: 70px;
+  }
 
-  .bodo-culture-hero {
-    margin-top: 12px;
+  .brand-logo {
+    width: 42px;
+    height: 42px;
+    font-size: 22px;
+  }
 
-    border-radius: 18px;
+  .brand-text h1 {
+    font-size: 18px;
+  }
+
+  .calendar-navigation-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .month-selector-wrapper {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  #todayBtn {
+    grid-column: 1 / -1;
+  }
+
+  .calendar-day {
+    min-height: 64px;
+    padding: 4px;
+  }
+
+  .calendar-day .gregorian {
+    font-size: 16px;
+  }
+
+  .calendar-day .weekday,
+  .calendar-day .bodo-date {
+    font-size: 8px;
   }
 
   .bodo-hero-image {
-    height: 205px;
-  }
-
-  .bodo-hero-image img {
-    object-position: center center;
-  }
-
-  .bodo-hero-overlay {
-    background:
-      linear-gradient(
-        90deg,
-        rgba(3, 67, 53, 0.72),
-        rgba(3, 67, 53, 0.20)
-      ),
-      linear-gradient(
-        0deg,
-        rgba(3, 67, 53, 0.48),
-        transparent 65%
-      );
+    height: 190px;
   }
 
   .bodo-hero-content {
-    left: 17px;
-    bottom: 17px;
-  }
-
-  .bodo-hero-label {
-    margin-bottom: 5px;
-
-    padding: 4px 8px;
-
-    font-size: 9px;
-
-    letter-spacing: 1.2px;
+    left: 16px;
+    bottom: 16px;
   }
 
   .bodo-hero-content h2 {
-    font-size: 28px;
-  }
-
-  .bodo-hero-content p {
-    margin-top: 4px;
-
-    font-size: 12px;
+    font-size: 26px;
   }
 
   .bodo-textile-strip {
-    height: 43px;
-  }
-}
-
-
-/* =========================================================
-   SMALL ANDROID PHONES
-   ========================================================= */
-
-@media (max-width: 380px) {
-
-  .bodo-hero-image {
-    height: 185px;
-  }
-
-  .bodo-hero-content {
-    left: 14px;
-    bottom: 14px;
-  }
-
-  .bodo-hero-content h2 {
-    font-size: 25px;
-  }
-
-  .bodo-hero-content p {
-    font-size: 11px;
-  }
-
-  .bodo-textile-strip {
-    height: 38px;
+    height: 40px;
   }
 }
